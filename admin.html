@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Convenor Admin</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+:root{
+  --blue:#0f4c9e;--blue2:#1a6dd6;--blue-lt:#e8f1fd;
+  --green:#16a34a;--red:#dc2626;--orange:#ea580c;
+  --bg:#f4f7fc;--card:#fff;--border:#dde4ef;
+  --text:#0d1b2e;--text2:#4a5f7a;--text3:#8ea0b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);}
+#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+.hdr{background:var(--blue);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 12px rgba(15,76,158,0.35);}
+.hdr-t{flex:1;font-size:0.95rem;font-weight:700;color:#fff;line-height:1.2;}
+.hdr-s{font-size:0.68rem;color:rgba(255,255,255,0.65);}
+.hdr-out{background:rgba(255,255,255,0.15);border:none;border-radius:8px;padding:6px 12px;color:#fff;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.tabs{background:#fff;border-bottom:1.5px solid var(--border);display:flex;flex-shrink:0;overflow-x:auto;}
+.tab{flex-shrink:0;padding:11px 14px;font-size:0.7rem;font-weight:700;color:var(--text3);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+#content{flex:1;min-height:0;overflow:hidden;position:relative;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
+.screen.active{display:flex;}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 80px;}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(15,76,158,0.06);}
+.card-hd{font-size:0.7rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;}
+.flbl{font-size:0.7rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:10px 0 4px;}
+.finp{width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;font-family:inherit;color:var(--text);background:#fff;outline:none;}
+.finp:focus{border-color:var(--blue);}
+.fsel{width:100%;padding:11px 32px 11px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.88rem;font-family:inherit;color:var(--text);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%230f4c9e' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;appearance:none;outline:none;}
+
+.fcard{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.fcard-top{display:flex;align-items:center;gap:10px;}
+.fcard-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.fcard-ico.permanent{background:#e0f2fe;}
+.fcard-ico.temp{background:#fef3c7;}
+.fcard-info{flex:1;min-width:0;}
+.fcard-name{font-size:0.88rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fcard-meta{font-size:0.7rem;color:var(--text2);margin-top:2px;}
+.fcard-badge{font-size:0.62rem;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0;}
+.fcard-badge.perm{background:#e0f2fe;color:#0369a1;}
+.fcard-badge.temp{background:#fef3c7;color:#92400e;}
+.fcard-actions{display:flex;gap:6px;margin-top:8px;}
+.fact{flex:1;padding:8px;border-radius:8px;font-size:0.72rem;font-weight:700;font-family:inherit;cursor:pointer;border:none;text-align:center;}
+.fact-del{background:#fee2e2;color:var(--red);}
+.fact-merge{background:var(--blue-lt);color:var(--blue);}
+
+.ucard{background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid var(--border);}
+.ucard-top{display:flex;align-items:center;gap:10px;}
+.uavt{width:38px;height:38px;border-radius:50%;background:var(--blue-lt);color:var(--blue);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.uinfo{flex:1;min-width:0;}
+.uname{font-size:0.88rem;font-weight:700;color:var(--text);}
+.uemail{font-size:0.7rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ubadge{font-size:0.62rem;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0;}
+.ubadge.active{background:#dcfce7;color:#166534;}
+.ubadge.inactive{background:#fee2e2;color:#991b1b;}
+.ucard-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+.umeta{font-size:0.65rem;background:var(--blue-lt);color:var(--blue);padding:2px 7px;border-radius:5px;font-weight:600;}
+.ucard-actions{display:flex;gap:6px;margin-top:8px;}
+.uact{flex:1;padding:8px;border-radius:8px;font-size:0.72rem;font-weight:700;font-family:inherit;cursor:pointer;border:none;}
+.uact-edit{background:var(--blue-lt);color:var(--blue);}
+.uact-block{background:#fef3c7;color:#92400e;}
+.uact-del{background:#fee2e2;color:var(--red);}
+
+.upzone{border:2px dashed #93c5fd;border-radius:12px;padding:24px;text-align:center;background:linear-gradient(135deg,#eff6ff,#e0ecff);position:relative;cursor:pointer;}
+.upzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.sbox{background:#fff;border-radius:12px;padding:12px;text-align:center;border:1px solid var(--border);}
+.snum{font-size:1.5rem;font-weight:700;color:var(--blue);}
+.slbl{font-size:0.62rem;color:var(--text2);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+
+.prog-wrap{margin-top:10px;display:none;}
+.prog-track{height:7px;background:#dde4ef;border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:4px;width:0%;transition:width 0.3s;}
+.prog-lbl{font-size:0.7rem;color:var(--text2);margin-top:4px;text-align:center;font-weight:600;}
+
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#0f4c9e,#1a6dd6);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:24px;}
+.lcard{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+.lico{font-size:3rem;text-align:center;margin-bottom:8px;}
+.lt{font-size:1.2rem;font-weight:700;text-align:center;color:var(--blue);margin-bottom:4px;}
+.ls{font-size:0.78rem;color:var(--text2);text-align:center;margin-bottom:20px;}
+.btn-login{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;margin-top:12px;}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:flex-end;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:92vh;overflow-y:auto;}
+.modal-hd{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text3);}
+
+.overlay{position:fixed;inset:0;background:rgba(255,255,255,0.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9998;gap:16px;backdrop-filter:blur(4px);}
+.spin{width:44px;height:44px;border:5px solid #dde4ef;border-top-color:var(--blue);border-radius:50%;animation:rot 0.75s linear infinite;}
+@keyframes rot{to{transform:rotate(360deg);}}
+.spin-t{font-size:0.88rem;color:var(--text2);font-weight:600;text-align:center;}
+.toast{position:fixed;bottom:16px;left:12px;right:12px;background:#0d1b2e;color:#fff;border-radius:12px;padding:13px 16px;font-size:0.85rem;font-weight:600;display:flex;align-items:center;gap:10px;transform:translateY(120px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:9999;box-shadow:0 6px 24px rgba(0,0,0,0.28);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{background:#15803d;}
+.toast.err{background:#b91c1c;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="lcard">
+    <div class="lico">🛡️</div>
+    <div class="lt">Admin Panel</div>
+    <div class="ls">Convenor Map Management</div>
+    <div class="flbl">Email or Username</div>
+    <input class="finp" id="lEmail" type="text" placeholder="admin@gmail.com లేదా Rayala12"/>
+    <div class="flbl">Password</div>
+    <input class="finp" id="lPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+    <button class="btn-login" id="lBtn" onclick="doAdminLogin()">🔐 Login</button>
+    <div id="lErr" style="color:#dc2626;font-size:0.78rem;text-align:center;margin-top:8px;display:none;"></div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <div class="hdr">
+    <div style="font-size:1.4rem;">🛡️</div>
+    <div class="hdr-t">Admin Panel<div class="hdr-s" id="adminEmail"></div></div>
+    <button class="hdr-out" id="logoutBtn">Logout</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="goTab('files')">📁 Files</div>
+    <div class="tab" onclick="goTab('users')">👥 Users</div>
+    <div class="tab" onclick="goTab('create')">➕ Create</div>
+    <div class="tab" onclick="goTab('stats')">📊 Stats</div>
+  </div>
+
+  <div id="content">
+
+    <div class="screen active" id="tab-files">
+      <div class="scroll">
+        <div class="card">
+          <div class="card-hd">📌 Permanent Section Files</div>
+          <div style="font-size:0.75rem;color:var(--text2);margin-bottom:10px;">ఈ files ఎప్పటికీ ఉంటాయి. కొత్త services వస్తే merge చేయవచ్చు.</div>
+          <div id="permFilesList">
+            <div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div>
+          </div>
+          <button class="btn btn-blue" onclick="openAddPermFile()">➕ New Section File Add చేయి</button>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">⏳ Temporary Files (Supervisor uploaded)</div>
+          <div style="font-size:0.75rem;color:var(--text2);margin-bottom:10px;">Supervisors upload చేసిన files. పని అయిన తర్వాత delete చేయవచ్చు.</div>
+          <div id="tempFilesList">
+            <div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="tab-users">
+      <div class="scroll">
+        <div class="card">
+          <div class="card-hd">👥 All Users</div>
+          <input class="finp" id="searchUser" placeholder="🔍 Search..." oninput="filterUsers()" style="margin-bottom:10px;"/>
+          <div id="usersList"><div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="tab-create">
+      <div class="scroll">
+        <div class="card">
+          <div class="card-hd">➕ New User</div>
+          <div class="flbl">Full Name *</div>
+          <input class="finp" id="cName" placeholder="ఉదా: సమ్మయ్య"/>
+          <div class="flbl">Username (లేదా Email) *</div>
+          <input class="finp" id="cEmail" type="text" placeholder="ఉదా: Rayala12 లేదా user@gmail.com"/>
+          <div class="flbl">Password *</div>
+          <input class="finp" id="cPass" type="password" placeholder="Min 6 characters"/>
+          <div class="flbl">Role *</div>
+          <select class="fsel" id="cRole">
+            <option value="user">User — Map చూడగలరు</option>
+            <option value="supervisor">Supervisor — Files upload చేయగలరు</option>
+          </select>
+          <div class="flbl">Expiry Date</div>
+          <input class="finp" id="cExpiry" type="date"/>
+          <button class="btn btn-green" id="createBtn">✅ User Create చేయి</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="tab-stats">
+      <div class="scroll">
+        <div class="sgrid">
+          <div class="sbox"><div class="snum" id="stUsers">0</div><div class="slbl">Total Users</div></div>
+          <div class="sbox"><div class="snum" id="stActive">0</div><div class="slbl">Active</div></div>
+          <div class="sbox"><div class="snum" id="stPermFiles">0</div><div class="slbl">Perm Files</div></div>
+          <div class="sbox"><div class="snum" id="stTempFiles">0</div><div class="slbl">Temp Files</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hd">📋 Recent Logs</div>
+          <div id="logsList"><div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-bg" id="addPermModal">
+  <div class="modal">
+    <div class="modal-hd">📌 Section File Add <button class="modal-close" onclick="closeModal('addPermModal')">×</button></div>
+    <div class="flbl">File/Section Name *</div>
+    <input class="finp" id="permFileName" placeholder="ఉదా: పినపాక సెక్షన్"/>
+    <div class="flbl">Excel File Select *</div>
+    <div class="upzone">
+      <input type="file" id="permFileInp" accept=".xlsx,.xls,.csv"/>
+      <div style="font-size:2rem;">📊</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--blue);margin-top:6px;">Excel Select చేయండి</div>
+    </div>
+    <div class="prog-wrap" id="permProg">
+      <div class="prog-track"><div class="prog-fill" id="permProgBar"></div></div>
+      <div class="prog-lbl" id="permProgTxt">Loading...</div>
+    </div>
+    <div id="permColMap" style="display:none;">
+      <div class="flbl">Latitude *</div><select class="fsel" id="pLat"></select>
+      <div class="flbl">Longitude *</div><select class="fsel" id="pLon"></select>
+      <div class="flbl">Service Number *</div><select class="fsel" id="pSvc"></select>
+      <div class="flbl">Name (Optional)</div><select class="fsel" id="pName"><option value="">(Optional)</option></select>
+      <div class="flbl">Section Column</div><select class="fsel" id="pSec"></select>
+      <div class="flbl">Area Column *</div><select class="fsel" id="pArea"></select>
+      <div class="flbl">Pole Column *</div><select class="fsel" id="pPole"></select>
+    </div>
+    <button class="btn btn-green" id="permUploadBtn" style="display:none;">☁️ Supabase కి Save చేయి</button>
+    <button class="btn btn-red" onclick="closeModal('addPermModal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="mergeModal">
+  <div class="modal">
+    <div class="modal-hd">🔗 Merge — కొత్త Services Add <button class="modal-close" onclick="closeModal('mergeModal')">×</button></div>
+    <div id="mergeFileName" style="background:var(--blue-lt);border-radius:8px;padding:8px 12px;font-size:0.82rem;font-weight:700;color:var(--blue);margin-bottom:10px;"></div>
+    <div class="flbl">New Services Excel Select *</div>
+    <div class="upzone">
+      <input type="file" id="mergeFileInp" accept=".xlsx,.xls,.csv"/>
+      <div style="font-size:2rem;">📊</div>
+      <div style="font-size:0.85rem;font-weight:700;color:var(--blue);margin-top:6px;">Excel Select చేయండి</div>
+    </div>
+    <div class="prog-wrap" id="mergeProg">
+      <div class="prog-track"><div class="prog-fill" id="mergeProgBar"></div></div>
+      <div class="prog-lbl" id="mergeProgTxt">Loading...</div>
+    </div>
+    <div id="mergeInfo" style="display:none;background:#f0fdf4;border-radius:8px;padding:10px;font-size:0.8rem;color:#166534;margin-top:8px;"></div>
+    
+    <div id="mergeColMap" style="display:none; margin-top:10px;">
+      <div class="flbl">Latitude *</div><select class="fsel" id="mLat"></select>
+      <div class="flbl">Longitude *</div><select class="fsel" id="mLon"></select>
+      <div class="flbl">Service Number *</div><select class="fsel" id="mSvc"></select>
+      <div class="flbl">Name (Optional)</div><select class="fsel" id="mName"><option value="">(Optional)</option></select>
+      <div class="flbl">Section Column</div><select class="fsel" id="mSec"></select>
+      <div class="flbl">Area Column *</div><select class="fsel" id="mArea"></select>
+      <div class="flbl">Pole Column *</div><select class="fsel" id="mPole"></select>
+    </div>
+
+    <button class="btn btn-green" id="mergeUploadBtn" style="display:none;">🔗 Existing Data తో Merge చేయి</button>
+    <button class="btn btn-red" onclick="closeModal('mergeModal')" style="margin-top:6px;">Cancel</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-hd">✏️ Edit User <button class="modal-close" onclick="closeModal('editModal')">×</button></div>
+    <div class="flbl">Name</div><input class="finp" id="eName"/>
+    <div class="flbl">Role</div>
+    <select class="fsel" id="eRole">
+      <option value="user">User</option>
+      <option value="supervisor">Supervisor</option>
+    </select>
+    <div class="flbl">Expiry</div><input class="finp" id="eExpiry" type="date"/>
+    <div class="flbl">Status</div>
+    <select class="fsel" id="eStatus"><option value="active">Active</option><option value="blocked">Blocked</option></select>
+    
+    <button class="btn btn-blue" id="saveEditBtn">💾 Save Details</button>
+
+    <div style="margin-top:20px;padding-top:15px;border-top:1.5px dashed var(--border);">
+      <div class="flbl" style="margin-top:0;color:var(--orange);">Password Reset</div>
+      <div style="font-size:0.7rem;color:var(--text2);margin-bottom:8px;">యూజర్ కి పాస్‌వర్డ్ మార్చుకునే లింక్ మెయిల్‌కి వెళ్తుంది.</div>
+      <button class="btn btn-sm" onclick="sendReset()" style="background:#fff;border:1.5px solid var(--orange);color:var(--orange);width:100%;">📧 Send Reset Link to Email</button>
+    </div>
+
+    <button class="btn btn-red" onclick="closeModal('editModal')" style="margin-top:15px;">Cancel</button>
+  </div>
+</div>
+
+<div class="overlay" id="loader"><div class="spin"></div><div class="spin-t" id="loaderT">Loading...</div></div>
+<div class="toast" id="toast"><span id="toastIco"></span><span id="toastMsg"></span></div>
+
+<script>
+function doAdminLogin() {
+  const e = document.getElementById('lEmail').value.trim();
+  const p = document.getElementById('lPass').value;
+  if (!e || !p) {
+    const el = document.getElementById('lErr');
+    el.textContent = 'Username లేదా Email & Password enter చేయండి!';
+    el.style.display = 'block';
+    return;
+  }
+  document.getElementById('loaderT').textContent = 'Logging in...';
+  document.getElementById('loader').style.display = 'flex';
+  if (window._doAdminFirebaseLogin) {
+    window._doAdminFirebaseLogin(e, p);
+  } else {
+    setTimeout(() => {
+      if (window._doAdminFirebaseLogin) {
+        window._doAdminFirebaseLogin(e, p);
+      } else {
+        document.getElementById('loader').style.display = 'none';
+        const el = document.getElementById('lErr');
+        el.textContent = 'App load కాలేదు. Page refresh చేయండి.';
+        el.style.display = 'block';
+      }
+    }, 2000);
+  }
+}
+</script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPA_URL = 'https://tjkoqfrbfpkxvxwxumir.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa29xZnJiZnBreHZ4d3h1bWlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDE4ODQsImV4cCI6MjA5NjExNzg4NH0.N3JQEC4WjtoJET1wxEB3kCKvCI2hPqGJKB_MRxRcCUo';
+const supabase = createClient(SUPA_URL, SUPA_KEY);
+const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa29xZnJiZnBreHZ4d3h1bWlyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDU0MTg4NCwiZXhwIjoyMDk2MTE3ODg0fQ.OP33qR54nEDapUcwJY8o5wkfBI0tBVlNOqUPzSd6ECI';
+const supabaseAdmin = createClient(SUPA_URL, SERVICE_KEY);
+const ADMIN_EMAILS = ['rsambaiah92@gmail.com'];
+let allUsers = [], editUid = null, mergeFileId = null;
+
+const LAT_K=['lat','latitude']; const LON_K=['lon','lng','longitude'];
+const SVC_K=['servicenumber','service_number','serviceno','scno','svc'];
+const NAME_K=['name','convenorname']; const SEC_K=['section','sectionname'];
+const AREA_K=['area','areaname','area name'];
+const POLE_K=['poleno','pole_no','pole'];
+
+async function checkAdminSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session && ADMIN_EMAILS.includes(session.user.email)) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('adminEmail').textContent = session.user.email;
+    hideLoader(); loadAll();
+  } else if (session) {
+    await supabase.auth.signOut(); hideLoader();
+    showErr('Admin access లేదు! మీ email: ' + session.user.email);
+  } else {
+    hideLoader();
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+}
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session) {
+    if (ADMIN_EMAILS.includes(session.user.email)) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('adminEmail').textContent = session.user.email;
+      hideLoader(); loadAll();
+    } else {
+      await supabase.auth.signOut(); hideLoader();
+      showErr('Admin access లేదు!');
+    }
+  } else if (event === 'SIGNED_OUT') {
+    hideLoader();
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+checkAdminSession();
+
+window._doAdminFirebaseLogin = async (input, p) => {
+  showLoader('Logging in...');
+  const email = input.includes('@') ? input : `${input.toLowerCase().replace(/\s/g, '')}@convenor.map`;
+  const { error } = await supabase.auth.signInWithPassword({ email, password: p });
+  if (error) { showErr('Login Failed: యూజర్ నేమ్/పాస్వర్డ్ సరిచూసుకోండి.'); hideLoader(); }
+};
+
+document.getElementById('logoutBtn').addEventListener('click', () => supabase.auth.signOut());
+function showErr(m) {
+  const el = document.getElementById('lErr');
+  el.textContent = m; el.style.display = 'block';
+}
+
+function loadAll() { loadFiles(); loadUsers(); }
+
+async function loadFiles() {
+  try {
+    const { data: pFiles } = await supabase.from('permanent_files').select('*').order('created_at',{ascending:false});
+    const pEl = document.getElementById('permFilesList');
+    pEl.innerHTML = '';
+    const pCount = pFiles?.length || 0;
+    if (!pCount) {
+      pEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">Files లేవు. Add చేయండి!</div>';
+    } else {
+      pFiles.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'fcard';
+        div.innerHTML = `
+          <div class="fcard-top">
+            <div class="fcard-ico permanent">📌</div>
+            <div class="fcard-info">
+              <div class="fcard-name">${f.name}</div>
+              <div class="fcard-meta">${(f.total_records||0).toLocaleString('en-IN')} records • ${formatDate(f.created_at)}</div>
+            </div>
+            <span class="fcard-badge perm">Permanent</span>
+          </div>
+          <div class="fcard-actions">
+            <button class="fact fact-merge" onclick="openMerge('${f.id}','${f.name}')">🔗 Merge (కొత్త services)</button>
+            <button class="fact fact-del" onclick="deleteFile('${f.id}','${f.name}','perm')">🗑️ Delete</button>
+          </div>`;
+        pEl.appendChild(div);
+      });
+    }
+    document.getElementById('stPermFiles').textContent = pCount;
+
+    const { data: tFiles } = await supabase.from('temp_files').select('*').order('created_at',{ascending:false});
+    const tEl = document.getElementById('tempFilesList');
+    tEl.innerHTML = '';
+    const tCount = tFiles?.length || 0;
+    if (!tCount) {
+      tEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">Temp files లేవు.</div>';
+    } else {
+      tFiles.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'fcard';
+        div.innerHTML = `
+          <div class="fcard-top">
+            <div class="fcard-ico temp">📄</div>
+            <div class="fcard-info">
+              <div class="fcard-name">${f.name}</div>
+              <div class="fcard-meta">${(f.total_records||0).toLocaleString('en-IN')} records • ${f.uploaded_by||'—'} • ${formatDate(f.created_at)}</div>
+            </div>
+            <span class="fcard-badge temp">Temporary</span>
+          </div>
+          <div class="fcard-actions">
+            <button class="fact fact-del" onclick="deleteFile('${f.id}','${f.name}','temp')">🗑️ Delete</button>
+          </div>`;
+        tEl.appendChild(div);
+      });
+    }
+    document.getElementById('stTempFiles').textContent = tCount;
+  } catch(e) { console.error(e); }
+}
+
+let permData = [], permCols = [];
+window.openAddPermFile = () => {
+  permData = []; permCols = [];
+  document.getElementById('permFileName').value = '';
+  document.getElementById('permFileInp').value = '';
+  document.getElementById('permColMap').style.display = 'none';
+  document.getElementById('permUploadBtn').style.display = 'none';
+  document.getElementById('permProg').style.display = 'none';
+  document.getElementById('addPermModal').classList.add('open');
+};
+
+document.getElementById('permFileInp').addEventListener('change', e => {
+  if (e.target.files[0]) readFile(e.target.files[0], 'perm');
+});
+
+function readFile(file, type) {
+  const prog = document.getElementById(type+'Prog');
+  const bar  = document.getElementById(type+'ProgBar');
+  const txt  = document.getElementById(type+'ProgTxt');
+  prog.style.display = 'block'; bar.style.width = '20%'; txt.textContent = 'Reading...';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    bar.style.width = '60%';
+    setTimeout(() => {
+      try {
+        const wb = XLSX.read(ev.target.result, {type:'array'});
+        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
+        bar.style.width = '100%';
+        if (!json.length) { toast('Data లేదు!','err'); return; }
+        if (type === 'perm') {
+          permData = json; permCols = Object.keys(json[0]);
+          buildMapper(permCols, 'p');
+          document.getElementById('permColMap').style.display = 'block';
+          document.getElementById('permUploadBtn').style.display = 'flex';
+          txt.textContent = json.length.toLocaleString('en-IN') + ' records ready!';
+        } else if (type === 'merge') {
+          mergeData = json; mergeCols = Object.keys(json[0]);
+          buildMapper(mergeCols, 'm');
+          document.getElementById('mergeColMap').style.display = 'block';
+          document.getElementById('mergeInfo').style.display = 'block';
+          document.getElementById('mergeInfo').textContent = '✅ ' + json.length.toLocaleString('en-IN') + ' new records ready to merge!';
+          document.getElementById('mergeUploadBtn').style.display = 'flex';
+          txt.textContent = json.length.toLocaleString('en-IN') + ' records found!';
+        }
+        prog.style.display = 'none';
+      } catch(ex) { toast('Error: '+ex.message,'err'); }
+    }, 100);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function buildMapper(cols, prefix) {
+  const map = {
+    [prefix+'Lat']:LAT_K,[prefix+'Lon']:LON_K,[prefix+'Svc']:SVC_K,
+    [prefix+'Sec']:SEC_K,[prefix+'Area']:AREA_K,[prefix+'Pole']:POLE_K
+  };
+  for (const [id,keys] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.innerHTML = '';
+    cols.forEach(c => el.add(new Option(c,c)));
+    const f = cols.find(c => keys.some(k => c.toLowerCase().replace(/[\s_]/g,'').includes(k)));
+    if (f) el.value = f;
+  }
+  const nm = document.getElementById(prefix+'Name');
+  if (nm) {
+    nm.innerHTML = '<option value="">(Optional)</option>';
+    cols.forEach(c => nm.add(new Option(c,c)));
+    const fn = cols.find(c => NAME_K.some(k => c.toLowerCase().includes(k)));
+    if (fn) nm.value = fn;
+  }
+}
+
+// FIXED ADMIN UPLOAD BUTTON
+document.getElementById('permUploadBtn').addEventListener('click', async () => {
+  const name = document.getElementById('permFileName').value.trim();
+  if (!name) { toast('File name enter చేయండి!','err'); return; }
+  const latC = document.getElementById('pLat').value;
+  const lonC = document.getElementById('pLon').value;
+  const svcC = document.getElementById('pSvc').value;
+  const nmC  = document.getElementById('pName').value;
+  const secC = document.getElementById('pSec').value;
+  const areaC= document.getElementById('pArea').value;
+  const poleC= document.getElementById('pPole').value;
+  if (!latC||!lonC||!svcC||!areaC||!poleC) { toast('అన్ని columns select చేయండి!','err'); return; }
+
+  showLoader('Supabase కి save అవుతోంది...');
+  const bar = document.getElementById('permProgBar');
+  const txt = document.getElementById('permProgTxt');
+  document.getElementById('permProg').style.display = 'block';
+  try {
+    const { data: fileRef, error: fErr } = await supabase.from('permanent_files').insert({
+      name, lat:latC, lon:lonC, svc:svcC, name_col:nmC,
+      section:secC, area:areaC, pole_col:poleC,
+      total_records: permData.length
+    }).select().single();
+    if(fErr) throw fErr;
+    const BATCH=500; let done=0;
+    for (let i=0; i<permData.length; i+=BATCH) {
+      const batch = permData.slice(i,i+BATCH).map((row,idx) => ({
+        ...row,
+        file_id: fileRef.id,
+        idx: i+idx,
+        _sec: String(row[secC]||'').toUpperCase().trim(),
+        _area: String(row[areaC]||'').toUpperCase().trim()
+      }));
+      const {error} = await supabase.from('permanent_records').insert(batch);
+      if(error) throw error;
+      done += Math.min(BATCH, permData.length-i);
+      const pct = Math.round(done/permData.length*100);
+      bar.style.width = pct+'%';
+      txt.textContent = done.toLocaleString('en-IN')+' / '+permData.length.toLocaleString('en-IN')+' ('+pct+'%)';
+      document.getElementById('loaderT').textContent = 'Upload: '+pct+'% అయింది...';
+      await new Promise(r => setTimeout(r, 100));
+    }
+    closeModal('addPermModal');
+    hideLoader();
+    toast('✅ '+name+' saved! '+permData.length.toLocaleString('en-IN')+' records','ok');
+    loadFiles();
+  } catch(ex) { toast('Error: '+ex.message,'err'); hideLoader(); }
+});
+
+let mergeData = [], mergeCols = [];
+window.openMerge = (id, name) => {
+  mergeFileId = id;
+  document.getElementById('mergeFileName').textContent = '📌 ' + name + ' లో కొత్త services add చేయి';
+  document.getElementById('mergeFileInp').value = '';
+  document.getElementById('mergeInfo').style.display = 'none';
+  document.getElementById('mergeColMap').style.display = 'none';
+  document.getElementById('mergeUploadBtn').style.display = 'none';
+  document.getElementById('mergeProg').style.display = 'none';
+  document.getElementById('mergeModal').classList.add('open');
+};
+
+document.getElementById('mergeFileInp').addEventListener('change', e => {
+  if (e.target.files[0]) readFile(e.target.files[0], 'merge');
+});
+
+// FIXED MERGE BUTTON
+document.getElementById('mergeUploadBtn').addEventListener('click', async () => {
+  if (!mergeFileId || !mergeData.length) return;
+  
+  const newLat = document.getElementById('mLat').value;
+  const newLon = document.getElementById('mLon').value;
+  const newSvc = document.getElementById('mSvc').value;
+  const newNm  = document.getElementById('mName').value;
+  const newSec = document.getElementById('mSec').value;
+  const newArea= document.getElementById('mArea').value;
+  const newPole= document.getElementById('mPole').value;
+  if (!newLat||!newLon||!newSvc||!newArea||!newPole) { toast('అన్ని columns select చేయండి!','err'); return; }
+
+  showLoader('Merging...');
+  try {
+    const { data: fMeta } = await supabase.from('permanent_files').select('*').eq('id', mergeFileId).single();
+    const origLat = fMeta.lat; const origLon = fMeta.lon; const origSvc = fMeta.svc;
+    const origNm  = fMeta.name_col||'name'; const origSec = fMeta.section||'section';
+    const origArea= fMeta.area||'area'; const origPole= fMeta.pole_col||'Pole No';
+
+    const BATCH=500; let done=0;
+    for (let i=0; i<mergeData.length; i+=BATCH) {
+      const batch = mergeData.slice(i,i+BATCH).map((row,idx) => {
+        const newDoc = {...row};
+        newDoc[origLat]=row[newLat]; newDoc[origLon]=row[newLon]; newDoc[origSvc]=row[newSvc];
+        if(newNm) newDoc[origNm]=row[newNm];
+        newDoc[origSec]=row[newSec]; newDoc[origArea]=row[newArea]; newDoc[origPole]=row[newPole];
+        newDoc.file_id = mergeFileId;
+        newDoc.idx = Date.now()+i+idx;
+        newDoc._sec = String(row[newSec]||'').toUpperCase().trim();
+        newDoc._area = String(row[newArea]||'').toUpperCase().trim();
+        return newDoc;
+      });
+      const {error} = await supabase.from('permanent_records').insert(batch);
+      if(error) throw error;
+      done += Math.min(BATCH, mergeData.length-i);
+      document.getElementById('loaderT').textContent = 'Merging: '+done+' / '+mergeData.length;
+      await new Promise(r => setTimeout(r, 100));
+    }
+    await supabase.from('permanent_files').update({
+      total_records: (fMeta.total_records||0) + mergeData.length
+    }).eq('id', mergeFileId);
+    closeModal('mergeModal');
+    hideLoader();
+    toast('✅ '+mergeData.length.toLocaleString('en-IN')+' new records merged!','ok');
+    loadFiles();
+  } catch(ex) { toast('Error: '+ex.message,'err'); hideLoader(); }
+});
+
+window.deleteFile = async (id, name, type) => {
+  if (!confirm('"'+name+'" delete చేయాలా?\n\n⚠️ Records ఎక్కువుంటే కొంచెం time పడుతుంది.')) return;
+  showLoader('Records delete అవుతున్నాయి...');
+  try {
+    const recTable = type==='perm' ? 'permanent_records' : 'temp_records';
+    const fileTable = type==='perm' ? 'permanent_files' : 'temp_files';
+    await supabase.from(recTable).delete().eq('file_id', id);
+    await supabase.from(fileTable).delete().eq('id', id);
+    hideLoader();
+    toast('🗑️ "'+name+'" deleted!','ok');
+    loadFiles();
+  } catch(ex) { toast('Error: '+ex.message,'err'); hideLoader(); }
+};
+
+async function loadUsers() {
+  try {
+    const { data } = await supabase.from('users').select('*').order('name');
+    allUsers = (data||[]).map(u => ({...u, uid:u.id}));
+    renderUsers(allUsers);
+    document.getElementById('stUsers').textContent = allUsers.length;
+    document.getElementById('stActive').textContent = allUsers.filter(u=>getUserStatus(u).cls==='active').length;
+  } catch(e) { console.error(e); }
+}
+
+function renderUsers(users) {
+  const el = document.getElementById('usersList');
+  if (!users.length) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);">Users లేరు.</div>'; return; }
+  el.innerHTML = '';
+  users.forEach(u => {
+    const s = getUserStatus(u);
+    const div = document.createElement('div');
+    div.className = 'ucard';
+    div.innerHTML = `
+      <div class="ucard-top">
+        <div class="uavt">${(u.name||'U')[0].toUpperCase()}</div>
+        <div class="uinfo">
+          <div class="uname">${u.name||'—'}</div>
+          <div class="uemail">${u.username ? '@'+u.username : u.email}</div>
+        </div>
+        <span class="ubadge ${s.cls}">${s.label}</span>
+      </div>
+      <div class="ucard-meta">
+        <span class="umeta">👤 ${u.role||'user'}</span>
+        ${u.expiry?`<span class="umeta">📅 ${u.expiry}</span>`:''}
+        <span class="umeta">🔐 ${u.loginCount||0} logins</span>
+      </div>
+      <div class="ucard-actions">
+        <button class="uact uact-edit" onclick="openEdit('${u.uid}')">✏️ Edit</button>
+        <button class="uact uact-block" onclick="toggleBlock('${u.uid}','${u.status}')">${u.status==='blocked'?'✅ Unblock':'🚫 Block'}</button>
+        <button class="uact uact-del" onclick="delUser('${u.uid}','${u.name||u.email}')">🗑️</button>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+function getUserStatus(u) {
+  if (u.status==='blocked') return {cls:'inactive',label:'Blocked'};
+  if (u.expiry && new Date(u.expiry)<new Date()) return {cls:'inactive',label:'Expired'};
+  return {cls:'active',label:'Active'};
+}
+
+window.filterUsers = () => {
+  const q = document.getElementById('searchUser').value.toLowerCase();
+  renderUsers(allUsers.filter(u => (u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)||(u.username||'').toLowerCase().includes(q)));
+};
+
+window.openEdit = uid => {
+  const u = allUsers.find(x=>x.uid===uid); if (!u) return;
+  editUid = uid;
+  document.getElementById('eName').value   = u.name||'';
+  document.getElementById('eRole').value   = u.role||'user';
+  document.getElementById('eExpiry').value = u.expiry||'';
+  document.getElementById('eStatus').value = u.status||'active';
+  document.getElementById('editModal').classList.add('open');
+};
+
+document.getElementById('saveEditBtn').addEventListener('click', async () => {
+  if (!editUid) return;
+  showLoader('Saving...');
+  try {
+    await supabase.from('users').update({
+      name:   document.getElementById('eName').value.trim(),
+      role:   document.getElementById('eRole').value,
+      expiry: document.getElementById('eExpiry').value||null,
+      status: document.getElementById('eStatus').value
+    }).eq('id', editUid);
+    toast('✅ Updated!','ok'); closeModal('editModal'); loadUsers();
+  } catch(ex) { toast('Error: '+ex.message,'err'); }
+  hideLoader();
+});
+
+window.sendReset = async () => {
+  const u = allUsers.find(x=>x.uid===editUid); if(!u) return;
+  if(!confirm(u.email + ' కి password reset లింక్ పంపాలా?')) return;
+  showLoader('Sending email...');
+  try {
+    await supabase.auth.resetPasswordForEmail(u.email);
+    toast('✅ Reset లింక్ పంపబడింది!','ok');
+  } catch(ex) { toast('Error: '+ex.message,'err'); }
+  hideLoader();
+};
+
+window.toggleBlock = async (uid, cur) => {
+  showLoader('Updating...');
+  try {
+    await supabase.from('users').update({status: cur==='blocked'?'active':'blocked'}).eq('id', uid);
+    toast(cur==='blocked'?'✅ Unblocked!':'🚫 Blocked!','ok'); loadUsers();
+  } catch(ex) { toast('Error: '+ex.message,'err'); }
+  hideLoader();
+};
+
+window.delUser = async (uid, name) => {
+  if (!confirm('"'+name+'" delete చేయాలా?')) return;
+  showLoader('Deleting...');
+  try {
+    await supabase.from('users').delete().eq('id', uid);
+    toast('🗑️ Deleted','ok'); loadUsers();
+  } catch(ex) { toast('Error: '+ex.message,'err'); }
+  hideLoader();
+};
+
+document.getElementById('createBtn').addEventListener('click', async () => {
+  const name   = document.getElementById('cName').value.trim();
+  const input  = document.getElementById('cEmail').value.trim();
+  const pass   = document.getElementById('cPass').value;
+  const role   = document.getElementById('cRole').value;
+  const expiry = document.getElementById('cExpiry').value;
+  
+  if (!name||!input||!pass) { toast('Name, Username/Email, Password అవసరం!','err'); return; }
+  if (pass.length<6) { toast('Password min 6 characters!','err'); return; }
+  
+  const email = input.includes('@') ? input : `${input.toLowerCase().replace(/\s/g, '')}@convenor.map`;
+  const username = input.includes('@') ? '' : input;
+
+ showLoader('Creating user...');
+try {
+  const { data: authData, error: authErr } = 
+    await supabaseAdmin.auth.admin.createUser({
+      email: email,
+      password: pass,
+      email_confirm: true,
+      user_metadata: { name, role, username }
+    });
+  if (authErr) throw authErr;
+
+  const { error: dbErr } = await supabase
+    .from('users').upsert({
+      id: authData.user.id,
+      name, username, email, role,
+      status: 'active',
+      expiry: expiry||null,
+      login_count: 0
+    });
+  if (dbErr) throw dbErr;
+
+  toast('✅ User created: '+name,'ok');
+  document.getElementById('cName').value='';
+  document.getElementById('cEmail').value='';
+  document.getElementById('cPass').value='';
+  loadUsers();
+} catch(ex) { toast('Error: '+ex.message,'err'); }
+hideLoader();
+});
+
+async function loadLogs() {
+  try {
+    const { data: logs } = await supabase.from('logs').select('*').order('created_at',{ascending:false}).limit(30);
+    const el = document.getElementById('logsList');
+    el.innerHTML = '';
+    if (!logs?.length) { el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">No logs</div>'; return; }
+    logs.forEach(l => {
+      const div = document.createElement('div');
+      div.style.cssText = 'padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;';
+      div.innerHTML = `<div style="font-size:1.1rem;">${l.action==='login'?'🔐':'📍'}</div>
+        <div><div style="font-size:0.82rem;font-weight:600;">${l.user_name||l.user_email||'?'} — ${l.action||'?'}</div>
+        <div style="font-size:0.7rem;color:var(--text2);">${l.detail||''} • ${formatDate(l.created_at)}</div></div>`;
+      el.appendChild(div);
+    });
+  } catch(e) { console.error(e); }
+}
+
+const TABS = ['files','users','create','stats'];
+window.goTab = name => {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', TABS[i]===name));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name==='stats') loadLogs();
+};
+
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.toLocaleDateString('te-IN')+' '+d.toLocaleTimeString('te-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+function showLoader(m) { document.getElementById('loaderT').textContent=m||'Loading...'; document.getElementById('loader').style.display='flex'; }
+function hideLoader() { document.getElementById('loader').style.display='none'; }
+let toastT;
+function toast(msg,type='info') {
+  const t=document.getElementById('toast');
+  document.getElementById('toastIco').textContent={ok:'✅',err:'❌',info:'ℹ️'}[type]||'ℹ️';
+  document.getElementById('toastMsg').textContent=msg;
+  t.className=`toast ${type} show`;
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
