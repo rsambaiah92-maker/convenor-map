@@ -130,19 +130,19 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
 .map-btn{background:#fff;border:none;border-radius:12px;padding:10px 13px;font-size:0.76rem;font-weight:700;color:var(--blue);box-shadow:0 3px 12px rgba(0,0,0,0.15);cursor:pointer;display:flex;align-items:center;gap:5px;font-family:inherit;}
 .map-btn:active{transform:scale(0.96);}
 
-/* POPUP */
-.custom-popup .leaflet-popup-content-wrapper{background:#fff !important;border-radius:16px !important;box-shadow:0 10px 40px rgba(0,0,0,0.22) !important;padding:0 !important;overflow:hidden;min-width:260px;max-width:min(300px,90vw);border:none !important;}
+/* POPUP (COMPACT & SCROLLABLE) */
+.custom-popup .leaflet-popup-content-wrapper{background:#fff !important;border-radius:12px !important;box-shadow:0 8px 30px rgba(0,0,0,0.25) !important;padding:0 !important;overflow:hidden;min-width:240px;max-width:min(280px,90vw);border:none !important;}
 .custom-popup .leaflet-popup-content{margin:0 !important;width:100% !important;color:#0d1b2e !important;}
 .custom-popup .leaflet-popup-tip-container{display:none !important;}
 .custom-popup .leaflet-popup-close-button {
-  top: 8px !important;
-  right: 8px !important;
-  width: 30px !important;
-  height: 30px !important;
-  background: rgba(255,255,255,0.3) !important;
+  top: 6px !important;
+  right: 6px !important;
+  width: 26px !important;
+  height: 26px !important;
+  background: rgba(255,255,255,0.2) !important;
   border-radius: 50% !important;
   color: #fff !important;
-  font-size: 1.2rem !important;
+  font-size: 1.1rem !important;
   font-weight: 900 !important;
   z-index: 999 !important;
   display: flex !important;
@@ -151,19 +151,19 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
   line-height: 1 !important;
   padding: 0 !important;
   text-decoration: none !important;
-  pointer-events: all !important;
 }
 .leaflet-popup{z-index:700 !important;}
-.pop-head{background:var(--blue) !important;padding:14px 40px 12px 14px;}
-.pop-svc{font-size:1rem;font-weight:700;color:#fff !important;}
-.pop-nm{font-size:0.76rem;color:rgba(255,255,255,0.8) !important;margin-top:3px;}
-.pop-body{padding:10px 14px;background:#fff !important;}
-.pop-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid #f0f4f8;gap:10px;}
+.pop-head{background:var(--blue) !important;padding:10px 36px 8px 12px;}
+.pop-svc{font-size:0.9rem;font-weight:700;color:#fff !important;line-height:1.2;}
+.pop-nm{font-size:0.7rem;color:rgba(255,255,255,0.85) !important;margin-top:3px;line-height:1.2;}
+/* Scrollable body to prevent full screen stretch */
+.pop-body{padding:6px 12px;background:#fff !important; max-height: 40vh; overflow-y: auto;}
+.pop-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #f0f4f8;gap:8px;}
 .pop-row:last-child{border:none;}
-.pop-k{font-size:0.66rem;font-weight:700;color:#4a5f7a !important;text-transform:uppercase;letter-spacing:0.4px;flex-shrink:0;}
-.pop-v{font-size:0.8rem;font-weight:700;color:#0d1b2e !important;text-align:right;word-break:break-word;}
-.pop-foot{padding:10px 14px 14px;background:#fff !important;display:flex;flex-direction:column;gap:6px;}
-.pop-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:10px;font-size:0.82rem;font-weight:700;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
+.pop-k{font-size:0.6rem;font-weight:700;color:#4a5f7a !important;text-transform:uppercase;letter-spacing:0.3px;flex-shrink:0;}
+.pop-v{font-size:0.75rem;font-weight:700;color:#0d1b2e !important;text-align:right;word-break:break-word;line-height:1.2;}
+.pop-foot{padding:8px 12px 10px;background:#fff !important;display:flex;flex-direction:column;gap:5px; border-top: 1px solid #f0f4f8;}
+.pop-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;border-radius:8px;font-size:0.75rem;font-weight:700;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
 .pop-btn-g{background:var(--blue) !important;color:#fff !important;}
 .pop-btn-w{background:#33ccff !important;color:#000 !important;}
 .pop-btn-a{background:var(--green) !important;color:#fff !important;}
