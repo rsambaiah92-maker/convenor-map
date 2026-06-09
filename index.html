@@ -156,7 +156,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
 .pop-head{background:var(--blue) !important;padding:10px 36px 8px 12px;}
 .pop-svc{font-size:0.9rem;font-weight:700;color:#fff !important;line-height:1.2;}
 .pop-nm{font-size:0.7rem;color:rgba(255,255,255,0.85) !important;margin-top:3px;line-height:1.2;}
-/* Scrollable body to prevent full screen stretch */
 .pop-body{padding:6px 12px;background:#fff !important; max-height: 40vh; overflow-y: auto;}
 .pop-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #f0f4f8;gap:8px;}
 .pop-row:last-child{border:none;}
@@ -272,7 +271,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
         <div id="svSection" style="display:none;">
           <div style="padding:8px 12px 4px;font-size:0.68rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.8px;">📂 Supervisor — Upload File</div>
           <div class="card">
-            <div style="background:#fef3c7;border-radius:8px;padding:8px 10px;font-size:0.76rem;color:#92400e;margin-bottom:10px;">⚠️ File upload చేస్తే అన్ని users కి కనిపిస్తుంది. పని తర్వాత మీరు గాని Admin గాని delete చేయగలరు.</div>
+            <div style="background:#fef3c7;border-radius:8px;padding:8px 10px;font-size:0.76rem;color:#92400e;margin-bottom:10px;">⚠️ File upload చేస్తే అన్ని users కి కనిపిస్తుంది. పని తర్వాత Admin delete చేయగలరు.</div>
             <div class="flbl">File పేరు *</div>
             <input class="finp" id="svFileName" placeholder="ఉదా: నరసయ్య - జనవరి 2026"/>
             <div class="flbl" style="margin-top:10px;">Excel Select *</div>
@@ -316,7 +315,7 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
             <div class="flbl">Pole Group (Sub Area)</div>
             <select class="fsel" id="fPole" disabled onchange="onPole()"><option>-- Area Select చేయండి --</option></select>
           </div>
-          
+
           <div class="filter-row" style="margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px;">
             <div class="flbl">Amount Column (బకాయిలు)</div>
             <select class="fsel" id="fAmtCol" disabled><option value="">-- Amount Column Select --</option></select>
@@ -415,7 +414,6 @@ function doLogin() {
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// SECURITY FIX: Removed SERVICE_KEY from here. Only Anon Key is present.
 const SUPA_URL = 'https://tjkoqfrbfpkxvxwxumir.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa29xZnJiZnBreHZ4d3h1bWlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDE4ODQsImV4cCI6MjA5NjExNzg4NH0.N3JQEC4WjtoJET1wxEB3kCKvCI2hPqGJKB_MRxRcCUo';
 const supabase = createClient(SUPA_URL, SUPA_KEY);
@@ -570,8 +568,11 @@ async function openFile(fileId, fileMeta, type) {
       const recTable = type === 'perm' ? 'permanent_records' : 'temp_records';
       const { data: tempData } = await supabase.from(recTable).select('*').eq('file_id', fileId);
 
+      // JSONB FIX: FLATTENING DATA
+      const flatData = tempData.map(r => ({ ...(r.raw_data || r), file_id: r.file_id, idx: r.idx }));
+
       hierarchy = {};
-      tempData.forEach(row => {
+      flatData.forEach(row => {
         const s = String(row[secKey]||'').trim();
         const a = String(row[areaKey]||'').trim();
         const pStr = String(row[poleKey]||'').trim();
@@ -593,9 +594,9 @@ async function openFile(fileId, fileMeta, type) {
 
       try {
         sessionStorage.setItem(cacheKey, JSON.stringify({sections, hierarchy}));
-        sessionStorage.setItem('cmap_data_'+fileId, JSON.stringify(tempData));
+        sessionStorage.setItem('cmap_data_'+fileId, JSON.stringify(flatData));
       } catch(e) { console.warn('Cache full:', e); }
-      allData = tempData;
+      allData = flatData;
     }
 
     if (!allData.length) {
@@ -611,22 +612,21 @@ async function openFile(fileId, fileMeta, type) {
     fSec.innerHTML = '<option value="">-- Section Select చేయండి --</option>';
     sections.forEach(s => fSec.add(new Option(s,s)));
     fSec.disabled = false;
-    
+
     document.getElementById('fArea').disabled = true;
     document.getElementById('fArea').innerHTML = '<option>-- Section Select చేయండి --</option>';
     document.getElementById('fPole').disabled = true;
     document.getElementById('fPole').innerHTML = '<option>-- Area Select చేయండి --</option>';
     document.getElementById('btnShow').disabled = true;
-    
+
     window._hierarchyIndex = hierarchy;
 
-    // AMOUNT COLUMN AUTO-SELECT LOGIC ADDED HERE
+    // AMOUNT COLUMN AUTO-SELECT LOGIC
     const fAmt = document.getElementById('fAmtCol');
     fAmt.innerHTML = '<option value="">-- అన్నీ చూపించు (All Amounts) --</option>';
     if (allData.length > 0) {
       const cols = Object.keys(allData[0]);
       cols.forEach(c => fAmt.add(new Option(c, c)));
-      // It looks for "amount" or "total" in your Excel headers
       const match = cols.find(c => c.toLowerCase().replace(/\s/g,'').includes('amount') || c.toLowerCase().includes('total'));
       if (match) fAmt.value = match;
       fAmt.disabled = false;
@@ -661,7 +661,7 @@ window.onArea = () => {
   const poles = window._hierarchyIndex?.[curSec]?.[curArea] || [];
   poles.forEach(p => fp.add(new Option(p, p)));
   fp.disabled = false;
-  curPole = fp.value; 
+  curPole = fp.value;
   document.getElementById('btnShow').disabled = false;
 };
 
@@ -675,7 +675,6 @@ window.showMap = () => {
   const svcC=curFileMeta.svc, nmC=curFileMeta.name_col||'';
   const areaC=window._areaKey, secC=window._secKey, poleC=window._poleKey;
 
-  // GET AMOUNT FILTER VALUES
   const amtCol = document.getElementById('fAmtCol').value;
   const minVal = parseFloat(document.getElementById('fMinAmt').value) || 0;
   const maxInput = document.getElementById('fMaxAmt').value;
@@ -686,8 +685,7 @@ window.showMap = () => {
     const rows = allData.filter(r => {
       if (r[secC] !== curSec || r[areaC] !== curArea) return false;
       if (curPole !== 'ALL' && getPolePrefix(r[poleC]) !== curPole) return false;
-      
-      // APPLY AMOUNT FILTER LOGIC
+
       if (amtCol) {
         const amtStr = String(r[amtCol]||'').replace(/,/g, '');
         const amt = parseFloat(amtStr);
@@ -709,7 +707,7 @@ window.showMap = () => {
     });
     if (!valid.length) { toast('Valid coordinates లేవు!','err'); hideLoader(); return; }
     document.getElementById('loaderT').textContent='0/'+valid.length+' pins...';
-    
+
     const CHUNK=150; let idx=0; const tempM=[];
     function addChunk(){
       const end=Math.min(idx+CHUNK,valid.length), batch=[];
@@ -735,7 +733,7 @@ window.showMap = () => {
           popupAnchor:[0,-26]
         });
         let pRows=`<div class="pop-row"><span class="pop-k">Section</span><span class="pop-v">${curSec}</span></div><div class="pop-row"><span class="pop-k">Area</span><span class="pop-v">${curArea}</span></div>`;
-        Object.keys(row).forEach(k=>{if([latC,lonC,svcC,nmC,secC,areaC].includes(k))return;const v=row[k];if(v!==''&&v!==null&&v!==undefined)pRows+=`<div class="pop-row"><span class="pop-k">${k}</span><span class="pop-v">${v}</span></div>`;});
+        Object.keys(row).forEach(k=>{if(['file_id','idx',latC,lonC,svcC,nmC,secC,areaC].includes(k))return;const v=row[k];if(v!==''&&v!==null&&v!==undefined)pRows+=`<div class="pop-row"><span class="pop-k">${k}</span><span class="pop-v">${v}</span></div>`;});
         const popHTML=`<div class="pop-head"><div class="pop-svc">🔢 ${svc}</div>${nm?`<div class="pop-nm">👤 ${nm}</div>`:''}</div><div class="pop-body">${pRows}</div><div class="pop-foot"><a class="pop-btn pop-btn-g" href="http://maps.google.com/maps?q=${la},${lo}" target="_blank">🧭 Google Maps</a><a class="pop-btn pop-btn-w" href="https://waze.com/ul?ll=${la},${lo}&navigate=yes" target="_blank">🚗 Waze</a><a class="pop-btn pop-btn-a" href="https://maps.apple.com/?daddr=${la},${lo}&dirflg=d" target="_blank">🗺 Apple Maps</a></div>`;
         const mk=L.marker([la,lo],{icon}).bindPopup(popHTML,{className:'custom-popup',maxWidth:300,closeOnClick:false,autoClose:false,keepInView:true});
         mk.on('click',function(e){L.DomEvent.stopPropagation(e);this.openPopup();});
@@ -896,7 +894,7 @@ window.goTo=name=>{
   if(name==='map'){if(!mapReady)initMap();refreshMap();}
 };
 
-// ── SUPERVISOR UPLOAD ──────────────────────────────────────────
+// ── SUPERVISOR UPLOAD (FIXED ERROR) ──────────────────────────────────────────
 let svData=[],svCols=[];
 document.getElementById('svFileInp').addEventListener('change',e=>{if(e.target.files[0])svRead(e.target.files[0]);});
 function svRead(file){
@@ -934,6 +932,7 @@ function svBuildMapper(){
   const fn=svCols.find(c=>NAME_K.some(k=>c.toLowerCase().includes(k))); if(fn)nm.value=fn;
 }
 
+// JSONB FIX: UPLOAD LOGIC
 document.getElementById('svUploadBtn').addEventListener('click',async()=>{
   const name=document.getElementById('svFileName').value.trim();
   if(!name){toast('File పేరు enter చేయండి!','err');return;}
@@ -955,7 +954,9 @@ document.getElementById('svUploadBtn').addEventListener('click',async()=>{
     const BATCH=500; let done=0;
     for(let i=0;i<svData.length;i+=BATCH){
       const batch = svData.slice(i,i+BATCH).map((row,idx)=>({
-        ...row, file_id:fRef.id, idx:i+idx
+        file_id: fRef.id,
+        idx: i+idx,
+        raw_data: row
       }));
       const {error} = await supabase.from('temp_records').insert(batch);
       if(error) throw error;
