@@ -151,13 +151,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
         <div class="card">
           <div class="card-hd">⏳ Temporary Files (Supervisor uploaded)</div>
           <div style="font-size:0.75rem;color:var(--text2);margin-bottom:10px;">Supervisors upload చేసిన files. పని అయిన తర్వాత delete చేయవచ్చు.</div>
+          <button id="deleteAllTempBtn" onclick="deleteAllTempFiles()" style="background: var(--red); color: #fff; border: none; border-radius: 10px; padding: 10px 14px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-bottom: 12px; display: none; width: 100%;">🗑️ Delete All Temporary Files</button>
           <div id="tempFilesList">
-            <div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div>
-          </div>
-
-          <!-- D-LIST FILES SECTION -->
-          <div class="fcard-hd" style="padding:8px 0 4px;font-size:0.68rem;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:0.8px;">📋 D-List Files</div>
-          <div id="dlistFilesList">
             <div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div>
           </div>
         </div>
@@ -238,8 +233,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
       <div class="flbl">Area Column *</div><select class="fsel" id="pArea"></select>
       <div class="flbl">Pole Column *</div><select class="fsel" id="pPole"></select>
     </div>
-    <button class="btn btn-green" id="permUploadBtn" style="display:none;">☁️ Supabase కి Save చేయి</button>
-    <button class="btn btn-red" onclick="closeModal('addPermModal')" style="margin-top:6px;">Cancel</button>
+    <button class="btn btn-green" id="permUploadBtn" style="display:none; width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; font-weight: bold; background: var(--green); color: white; cursor: pointer;">☁️ Supabase కి Save చేయి</button>
+    <button class="btn btn-red" onclick="closeModal('addPermModal')" style="margin-top:10px; width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; background: var(--red); color: white; cursor: pointer;">Cancel</button>
   </div>
 </div>
 
@@ -269,8 +264,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
       <div class="flbl">Pole Column *</div><select class="fsel" id="mPole"></select>
     </div>
 
-    <button class="btn btn-green" id="mergeUploadBtn" style="display:none;">🔗 Existing Data తో Merge చేయి</button>
-    <button class="btn btn-red" onclick="closeModal('mergeModal')" style="margin-top:6px;">Cancel</button>
+    <button class="btn btn-green" id="mergeUploadBtn" style="display:none; width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; font-weight: bold; background: var(--green); color: white; cursor: pointer;">🔗 Existing Data తో Merge చేయి</button>
+    <button class="btn btn-red" onclick="closeModal('mergeModal')" style="margin-top:10px; width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; background: var(--red); color: white; cursor: pointer;">Cancel</button>
   </div>
 </div>
 
@@ -287,15 +282,15 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
     <div class="flbl">Status</div>
     <select class="fsel" id="eStatus"><option value="active">Active</option><option value="blocked">Blocked</option></select>
     
-    <button class="btn btn-blue" id="saveEditBtn">💾 Save Details</button>
+    <button class="btn" id="saveEditBtn" style="width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: none; font-weight: bold; background: var(--blue); color: white; cursor: pointer;">💾 Save Details</button>
 
     <div style="margin-top:20px;padding-top:15px;border-top:1.5px dashed var(--border);">
       <div class="flbl" style="margin-top:0;color:var(--orange);">Password Reset</div>
       <div style="font-size:0.7rem;color:var(--text2);margin-bottom:8px;">యూజర్ కి పాస్‌వర్డ్ మార్చుకునే లింక్ మెయిల్‌కి వెళ్తుంది.</div>
-      <button class="btn btn-sm" onclick="sendReset()" style="background:#fff;border:1.5px solid var(--orange);color:var(--orange);width:100%;">📧 Send Reset Link to Email</button>
+      <button class="btn btn-sm" onclick="sendReset()" style="background:#fff;border:1.5px solid var(--orange);color:var(--orange);width:100%; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">📧 Send Reset Link to Email</button>
     </div>
 
-    <button class="btn btn-red" onclick="closeModal('editModal')" style="margin-top:15px;">Cancel</button>
+    <button class="btn btn-red" onclick="closeModal('editModal')" style="margin-top:15px; width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; background: var(--red); color: white; cursor: pointer;">Cancel</button>
   </div>
 </div>
 
@@ -336,8 +331,11 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPA_URL = 'https://tjkoqfrbfpkxvxwxumir.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa29xZnJiZnBreHZ4d3h1bWlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDE4ODQsImV4cCI6MjA5NjExNzg4NH0.N3JQEC4WjtoJET1wxEB3kCKvCI2hPqGJKB_MRxRcCUo';
 const supabase = createClient(SUPA_URL, SUPA_KEY);
+
+// ADMIN KEY IS KEPT HERE. DO NOT SHARE THIS FILE.
 const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa29xZnJiZnBreHZ4d3h1bWlyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDU0MTg4NCwiZXhwIjoyMDk2MTE3ODg0fQ.OP33qR54nEDapUcwJY8o5wkfBI0tBVlNOqUPzSd6ECI';
 const supabaseAdmin = createClient(SUPA_URL, SERVICE_KEY);
+
 const ADMIN_EMAILS = ['rsambaiah92@gmail.com'];
 let allUsers = [], editUid = null, mergeFileId = null;
 
@@ -395,11 +393,12 @@ function showErr(m) {
   el.textContent = m; el.style.display = 'block';
 }
 
-function loadAll() { loadFiles(); loadUsers(); loadLogs(); loadDlistFiles(); }
+function loadAll() { loadFiles(); loadUsers(); }
 
 async function loadFiles() {
   try {
-    const { data: pFiles } = await supabase.from('permanent_files').select('*').order('created_at',{ascending:false});
+    // USED supabaseAdmin TO LOAD FILES BYPASSING RLS
+    const { data: pFiles } = await supabaseAdmin.from('permanent_files').select('*').order('created_at',{ascending:false});
     const pEl = document.getElementById('permFilesList');
     pEl.innerHTML = '';
     const pCount = pFiles?.length || 0;
@@ -427,13 +426,18 @@ async function loadFiles() {
     }
     document.getElementById('stPermFiles').textContent = pCount;
 
-    const { data: tFiles } = await supabase.from('temp_files').select('*').order('created_at',{ascending:false});
+    // USED supabaseAdmin TO LOAD TEMP FILES BYPASSING RLS
+    const { data: tFiles } = await supabaseAdmin.from('temp_files').select('*').order('created_at',{ascending:false});
     const tEl = document.getElementById('tempFilesList');
     tEl.innerHTML = '';
     const tCount = tFiles?.length || 0;
+    const delAllBtn = document.getElementById('deleteAllTempBtn');
+    
     if (!tCount) {
       tEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">Temp files లేవు.</div>';
+      if(delAllBtn) delAllBtn.style.display = 'none';
     } else {
+      if(delAllBtn) delAllBtn.style.display = 'block';
       tFiles.forEach(f => {
         const div = document.createElement('div');
         div.className = 'fcard';
@@ -529,7 +533,6 @@ function buildMapper(cols, prefix) {
   }
 }
 
-// FIXED ADMIN UPLOAD BUTTON
 document.getElementById('permUploadBtn').addEventListener('click', async () => {
   const name = document.getElementById('permFileName').value.trim();
   if (!name) { toast('File name enter చేయండి!','err'); return; }
@@ -594,7 +597,6 @@ document.getElementById('mergeFileInp').addEventListener('change', e => {
   if (e.target.files[0]) readFile(e.target.files[0], 'merge');
 });
 
-// FIXED MERGE BUTTON
 document.getElementById('mergeUploadBtn').addEventListener('click', async () => {
   if (!mergeFileId || !mergeData.length) return;
   
@@ -643,18 +645,39 @@ document.getElementById('mergeUploadBtn').addEventListener('click', async () => 
   } catch(ex) { toast('Error: '+ex.message,'err'); hideLoader(); }
 });
 
+// SINGLE FILE DELETE FUNCTION FIX
 window.deleteFile = async (id, name, type) => {
   if (!confirm('"'+name+'" delete చేయాలా?\n\n⚠️ Records ఎక్కువుంటే కొంచెం time పడుతుంది.')) return;
   showLoader('Records delete అవుతున్నాయి...');
   try {
     const recTable = type==='perm' ? 'permanent_records' : 'temp_records';
     const fileTable = type==='perm' ? 'permanent_files' : 'temp_files';
-    await supabase.from(recTable).delete().eq('file_id', id);
-    await supabase.from(fileTable).delete().eq('id', id);
+    await supabaseAdmin.from(recTable).delete().eq('file_id', id);
+    await supabaseAdmin.from(fileTable).delete().eq('id', id);
     hideLoader();
     toast('🗑️ "'+name+'" deleted!','ok');
     loadFiles();
   } catch(ex) { toast('Error: '+ex.message,'err'); hideLoader(); }
+};
+
+// DELETE ALL TEMP FILES FUNCTION ADDED HERE
+window.deleteAllTempFiles = async () => {
+  if (!confirm('నిజంగా అన్ని Temporary Files మరియు వాటి రికార్డ్స్ మొత్తాన్ని డిలీట్ చేయాలా?\nఈ చర్యను వెనక్కి తీసుకోలేము!')) return;
+  showLoader('అన్ని రికార్డ్స్ డిలీట్ అవుతున్నాయి...');
+  try {
+    const { error: recErr } = await supabaseAdmin.from('temp_records').delete().neq('file_id', '00000000-0000-0000-0000-000000000000');
+    if (recErr) throw recErr;
+
+    showLoader('అన్ని ఫైల్స్ డిలీట్ అవుతున్నాయి...');
+    const { error: fileErr } = await supabaseAdmin.from('temp_files').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (fileErr) throw fileErr;
+
+    toast('✅ అన్ని Temporary Files విజయవంతంగా డిలీట్ అయ్యాయి!', 'ok');
+    loadFiles();
+  } catch (ex) {
+    toast('Error: ' + ex.message, 'err');
+  }
+  hideLoader();
 };
 
 async function loadUsers() {
@@ -850,59 +873,6 @@ function toast(msg,type='info') {
   t.className=`toast ${type} show`;
   clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3500);
 }
-
-// ═══════════════════════════════════════════════
-// D-LIST ADMIN FUNCTIONS
-// ═══════════════════════════════════════════════
-
-async function loadDlistFiles() {
-  try {
-    const { data: files } = await supabase
-      .from('dlist_files')
-      .select('*')
-      .order('created_at', {ascending: false});
-    
-    const el = document.getElementById('dlistFilesList');
-    el.innerHTML = '';
-    
-    document.getElementById('stDlistFiles').textContent = files?.length || 0;
-    
-    if (!files || !files.length) {
-      el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">D-List files లేవు.</div>';
-      return;
-    }
-    
-    files.forEach(f => {
-      const div = document.createElement('div');
-      div.className = 'fcard';
-      div.innerHTML = `
-        <div class="fcard-top">
-          <div class="fcard-ico temp" style="background:#fef9c3;">📋</div>
-          <div class="fcard-info">
-            <div class="fcard-name">${f.name}</div>
-            <div class="fcard-meta">${(f.total_records||0).toLocaleString('en-IN')} records • ${f.uploaded_by||'—'} • ${f.type||'permanent'} • ${formatDate(f.created_at)}</div>
-          </div>
-          <span class="fcard-badge temp" style="background:#fef9c3;color:#854d0e;">${f.type==='temp'?'D-Temp':'D-Perm'}</span>
-        </div>
-        <div class="fcard-actions">
-          <button class="fact fact-del" onclick="deleteDlistFile('${f.id}','${f.name}')">🗑️ Delete</button>
-        </div>`;
-      el.appendChild(div);
-    });
-  } catch(e) { console.error(e); }
-}
-
-window.deleteDlistFile = async (id, name) => {
-  if (!confirm('"'+name+'" delete చేయాలా?')) return;
-  showLoader('Deleting...');
-  try {
-    await supabase.from('dlist_records').delete().eq('file_id', id);
-    await supabase.from('dlist_files').delete().eq('id', id);
-    toast('🗑️ "'+name+'" deleted!', 'ok');
-    loadDlistFiles();
-  } catch(ex) { toast('Error: '+ex.message, 'err'); }
-  hideLoader();
-};
 </script>
 </body>
 </html>

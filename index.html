@@ -75,9 +75,6 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
 .fitem{background:#fff;border-radius:12px;margin:5px 12px;padding:13px;display:flex;align-items:center;gap:11px;border:1px solid var(--border);border-left:4px solid #93c5fd;box-shadow:0 1px 4px rgba(0,0,0,0.05);cursor:pointer;transition:all 0.15s;}
 .fitem:active{transform:scale(0.99);background:var(--blue-lt);}
 .fitem.temp-item{border-left-color:var(--accent);}
-.fitem.dlist-item{border-left-color:#eab308;}
-.fitem-ico.dlist{background:#fef9c3;}
-.fitem-badge.dlist{background:#fef9c3;color:#854d0e;}
 .fitem-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
 .fitem-ico.perm{background:#e0f2fe;}
 .fitem-ico.temp{background:#fef3c7;}
@@ -157,13 +154,13 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
   pointer-events: all !important;
 }
 .leaflet-popup{z-index:700 !important;}
-.pop-head{background:var(--blue) !important;padding:8px 36px 8px 10px;}
-.pop-svc{font-size:0.85rem;font-weight:700;color:#fff !important;}
-.pop-nm{font-size:0.68rem;color:rgba(255,255,255,0.8) !important;margin-top:1px;}
-.pop-body{padding:6px 10px;background:#fff !important;}
-.pop-row{display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #f0f4f8;gap:8px;}
+.pop-head{background:var(--blue) !important;padding:14px 40px 12px 14px;}
+.pop-svc{font-size:1rem;font-weight:700;color:#fff !important;}
+.pop-nm{font-size:0.76rem;color:rgba(255,255,255,0.8) !important;margin-top:3px;}
+.pop-body{padding:10px 14px;background:#fff !important;}
+.pop-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid #f0f4f8;gap:10px;}
 .pop-row:last-child{border:none;}
-.pop-k{font-size:0.62rem;font-weight:700;color:#4a5f7a !important;text-transform:uppercase;letter-spacing:0.4px;flex-shrink:0;}
+.pop-k{font-size:0.66rem;font-weight:700;color:#4a5f7a !important;text-transform:uppercase;letter-spacing:0.4px;flex-shrink:0;}
 .pop-v{font-size:0.8rem;font-weight:700;color:#0d1b2e !important;text-align:right;word-break:break-word;}
 .pop-foot{padding:10px 14px 14px;background:#fff !important;display:flex;flex-direction:column;gap:6px;}
 .pop-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:10px;font-size:0.82rem;font-weight:700;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;}
@@ -272,16 +269,10 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
           <div class="empty"><div class="empty-ico">📭</div><div class="empty-t">Temporary files లేవు</div></div>
         </div>
 
-        <!-- D-LIST FILES SECTION -->
-        <div style="padding:8px 12px 4px;font-size:0.68rem;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:0.8px;">📋 D-List Files</div>
-        <div id="dlistFilesList">
-          <div class="empty"><div class="empty-ico">📭</div><div class="empty-t">D-List files లేవు</div></div>
-        </div>
-
         <div id="svSection" style="display:none;">
           <div style="padding:8px 12px 4px;font-size:0.68rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.8px;">📂 Supervisor — Upload File</div>
           <div class="card">
-            <div style="background:#fef3c7;border-radius:8px;padding:8px 10px;font-size:0.76rem;color:#92400e;margin-bottom:10px;">⚠️ File upload చేస్తే అన్ని users కి కనిపిస్తుంది. పని తర్వాత Admin delete చేయగలరు.</div>
+            <div style="background:#fef3c7;border-radius:8px;padding:8px 10px;font-size:0.76rem;color:#92400e;margin-bottom:10px;">⚠️ File upload చేస్తే అన్ని users కి కనిపిస్తుంది. పని తర్వాత మీరు గాని Admin గాని delete చేయగలరు.</div>
             <div class="flbl">File పేరు *</div>
             <input class="finp" id="svFileName" placeholder="ఉదా: నరసయ్య - జనవరి 2026"/>
             <div class="flbl" style="margin-top:10px;">Excel Select *</div>
@@ -301,34 +292,10 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
               <div class="flbl">Name (Optional)</div><select class="fsel" id="svName"><option value="">(Optional)</option></select>
               <div class="flbl">Section Column</div><select class="fsel" id="svSec"></select>
               <div class="flbl">Area Column *</div><select class="fsel" id="svArea"></select>
-              <button class="btn-main" id="svUploadBtn" style="background:var(--green);margin-top:10px;">☁️ Supabase కి Upload చేయి</button>
+              <button class="btn-main" id="svUploadBtn" style="background:var(--green);margin-top:10px;">☁️ Firebase కి Upload చేయి</button>
             </div>
           </div>
         </div>
-
-          <!-- D-LIST UPLOAD -->
-          <div style="padding:8px 12px 4px;font-size:0.68rem;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:0.8px;margin-top:4px;">📋 D-List Upload</div>
-          <div class="card" style="border-left:4px solid #eab308;">
-            <div style="background:#fef9c3;border-radius:8px;padding:8px 10px;font-size:0.76rem;color:#854d0e;margin-bottom:10px;">📋 D-List file — Map లో 🟡 pins కనిపిస్తాయి</div>
-            <div class="flbl">File పేరు *</div>
-            <input class="finp" id="dlFileName" placeholder="ఉదా: BGM D-List జనవరి 2026"/>
-            <div class="flbl" style="margin-top:8px;">Type</div>
-            <select class="fsel" id="dlType">
-              <option value="permanent">Permanent D-List</option>
-              <option value="temp">Temporary D-List</option>
-            </select>
-            <div class="flbl" style="margin-top:8px;">Excel Select *</div>
-            <div class="upzone">
-              <input type="file" id="dlFileInp" accept=".xlsx,.xls,.csv"/>
-              <div style="font-size:2rem;">📋</div>
-              <div style="font-size:0.82rem;font-weight:700;color:#854d0e;margin-top:5px;">D-List Excel / CSV</div>
-            </div>
-            <div class="prog-wrap" id="dlProg" style="display:none;">
-              <div class="prog-track"><div class="prog-fill" id="dlProgBar"></div></div>
-              <div class="prog-lbl" id="dlProgTxt"></div>
-            </div>
-            <button class="btn-main" id="dlUploadBtn" style="display:none;background:#eab308;color:#1a1a1a;">📤 D-List Upload చేయి</button>
-          </div>
       </div>
     </div>
 
@@ -349,6 +316,22 @@ html,body{height:100%;width:100%;overflow:hidden;font-family:'DM Sans','Noto San
             <div class="flbl">Pole Group (Sub Area)</div>
             <select class="fsel" id="fPole" disabled onchange="onPole()"><option>-- Area Select చేయండి --</option></select>
           </div>
+          
+          <div class="filter-row" style="margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 10px;">
+            <div class="flbl">Amount Column (బకాయిలు)</div>
+            <select class="fsel" id="fAmtCol" disabled><option value="">-- Amount Column Select --</option></select>
+          </div>
+          <div class="filter-row" style="display:flex; gap:10px; margin-bottom: 15px;">
+            <div style="flex:1;">
+              <div class="flbl">ఎంత నుండి (From ₹)</div>
+              <input type="number" class="finp" id="fMinAmt" placeholder="0" value="0">
+            </div>
+            <div style="flex:1;">
+              <div class="flbl">ఎంత వరకు (To ₹)</div>
+              <input type="number" class="finp" id="fMaxAmt" placeholder="ఉదా: 50000">
+            </div>
+          </div>
+
           <button class="btn-main" id="btnShow" disabled onclick="showMap()">🗺 Map లో చూపించు</button>
           <button class="btn-danger" onclick="clearMap()">✕ Clear & Back</button>
         </div>
@@ -432,11 +415,11 @@ function doLogin() {
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+// SECURITY FIX: Removed SERVICE_KEY from here. Only Anon Key is present.
 const SUPA_URL = 'https://tjkoqfrbfpkxvxwxumir.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa29xZnJiZnBreHZ4d3h1bWlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NDE4ODQsImV4cCI6MjA5NjExNzg4NH0.N3JQEC4WjtoJET1wxEB3kCKvCI2hPqGJKB_MRxRcCUo';
 const supabase = createClient(SUPA_URL, SUPA_KEY);
-const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqa29xZnJiZnBreHZ4d3h1bWlyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDU0MTg4NCwiZXhwIjoyMDk2MTE3ODg0fQ.OP33qR54nEDapUcwJY8o5wkfBI0tBVlNOqUPzSd6ECI';
-const supabaseAdmin = createClient(SUPA_URL, SERVICE_KEY);
+
 let curUser=null, curProfile=null;
 let allData=[], curFileId=null, curFileMeta=null;
 let markers=[], curSec='', curArea='', curPole='ALL';
@@ -448,14 +431,12 @@ const SVC_K=['servicenumber','service_number','serviceno','scno','svc'];
 const NAME_K=['name','convenorname']; const SEC_K=['section','sectionname'];
 const AREA_K=['area','areaname','area name'];
 
-// Helper to extract clean Alphabet Prefix from Pole No (ignores trailing numbers/hyphens)
 function getPolePrefix(val) {
   if (!val) return '';
   const match = String(val).trim().match(/^[A-Za-z]+/);
   return match ? match[0].toUpperCase() : 'OTHER';
 }
 
-// Check existing session on page load
 async function checkSession() {
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
@@ -562,7 +543,6 @@ async function loadFiles() {
       });
     }
   } catch(ex) { console.error(ex); }
-  loadDlistFiles();
 }
 
 async function openFile(fileId, fileMeta, type) {
@@ -639,6 +619,19 @@ async function openFile(fileId, fileMeta, type) {
     document.getElementById('btnShow').disabled = true;
     
     window._hierarchyIndex = hierarchy;
+
+    // AMOUNT COLUMN AUTO-SELECT LOGIC ADDED HERE
+    const fAmt = document.getElementById('fAmtCol');
+    fAmt.innerHTML = '<option value="">-- అన్నీ చూపించు (All Amounts) --</option>';
+    if (allData.length > 0) {
+      const cols = Object.keys(allData[0]);
+      cols.forEach(c => fAmt.add(new Option(c, c)));
+      // It looks for "amount" or "total" in your Excel headers
+      const match = cols.find(c => c.toLowerCase().replace(/\s/g,'').includes('amount') || c.toLowerCase().includes('total'));
+      if (match) fAmt.value = match;
+      fAmt.disabled = false;
+    }
+
     hideLoader();
     goTo('filter');
   } catch(ex) { toast('Error: '+ex.message,'err'); hideLoader(); }
@@ -682,15 +675,31 @@ window.showMap = () => {
   const svcC=curFileMeta.svc, nmC=curFileMeta.name_col||'';
   const areaC=window._areaKey, secC=window._secKey, poleC=window._poleKey;
 
+  // GET AMOUNT FILTER VALUES
+  const amtCol = document.getElementById('fAmtCol').value;
+  const minVal = parseFloat(document.getElementById('fMinAmt').value) || 0;
+  const maxInput = document.getElementById('fMaxAmt').value;
+  const maxVal = maxInput === '' ? Infinity : parseFloat(maxInput);
+
   showLoader('Pins prepare...');
   setTimeout(()=>{
     const rows = allData.filter(r => {
       if (r[secC] !== curSec || r[areaC] !== curArea) return false;
-      if (curPole === 'ALL') return true;
-      return getPolePrefix(r[poleC]) === curPole;
+      if (curPole !== 'ALL' && getPolePrefix(r[poleC]) !== curPole) return false;
+      
+      // APPLY AMOUNT FILTER LOGIC
+      if (amtCol) {
+        const amtStr = String(r[amtCol]||'').replace(/,/g, '');
+        const amt = parseFloat(amtStr);
+        if (!isNaN(amt)) {
+          if (amt < minVal || amt > maxVal) return false;
+        }
+      }
+
+      return true;
     });
 
-    if (!rows.length) { toast('Records లేవు!','err'); hideLoader(); return; }
+    if (!rows.length) { toast('ఈ ఫిల్టర్ కి Records లేవు!','err'); hideLoader(); return; }
     if (!mapReady) initMap();
     cluster.clearLayers(); markers=[];
     const valid=[],bounds=[];
@@ -774,7 +783,9 @@ function renderList(){
 window.navDir=(e,la,lo)=>{e.stopPropagation();const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent);window.open(iOS?`https://maps.apple.com/?daddr=${la},${lo}&dirflg=d`:`http://maps.google.com/maps?q=${la},${lo}`,'_blank');};
 
 window.clearMap=()=>{
-  if(mapReady)cluster.clearLayers();
+  if(mapReady && cluster){
+    cluster.clearLayers();
+  }
   markers=[]; allData=[];
   document.getElementById('hPins').textContent='0';
   document.getElementById('sPins2').textContent='0';
@@ -825,7 +836,6 @@ function initMap(){
     if (Math.abs(bearing - lastBearing) > 2) {
       lastBearing = bearing;
       const mapEl = document.getElementById('map');
-      // MAP CUT ISSUE FIXED HERE (Added scale 1.5)
       mapEl.style.transform = `rotate(${-bearing}deg) scale(1.5)`;
       mapEl.style.transformOrigin = 'center center';
     }
@@ -886,7 +896,7 @@ window.goTo=name=>{
   if(name==='map'){if(!mapReady)initMap();refreshMap();}
 };
 
-// ── SUPERVISOR UPLOAD (FIXED ERROR) ──────────────────────────────────────────
+// ── SUPERVISOR UPLOAD ──────────────────────────────────────────
 let svData=[],svCols=[];
 document.getElementById('svFileInp').addEventListener('change',e=>{if(e.target.files[0])svRead(e.target.files[0]);});
 function svRead(file){
@@ -924,7 +934,6 @@ function svBuildMapper(){
   const fn=svCols.find(c=>NAME_K.some(k=>c.toLowerCase().includes(k))); if(fn)nm.value=fn;
 }
 
-// FIXED UPLOAD BUTTON LOGIC
 document.getElementById('svUploadBtn').addEventListener('click',async()=>{
   const name=document.getElementById('svFileName').value.trim();
   if(!name){toast('File పేరు enter చేయండి!','err');return;}
@@ -1036,223 +1045,6 @@ window.toast=(msg,type='info')=>{
   t.className=`toast ${type} show`;
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3200);
 };
-
-// ═══════════════════════════════════════════════
-// D-LIST FUNCTIONS
-// ═══════════════════════════════════════════════
-
-// Load D-List Files
-async function loadDlistFiles() {
-  try {
-    const { data: files } = await supabase
-      .from('dlist_files')
-      .select('*')
-      .order('created_at', {ascending: false});
-    
-    const el = document.getElementById('dlistFilesList');
-    el.innerHTML = '';
-    
-    if (!files || !files.length) {
-      el.innerHTML = '<div class="empty"><div class="empty-ico">📭</div><div class="empty-t">D-List files లేవు</div></div>';
-      return;
-    }
-    
-    files.forEach(f => {
-      const isMine = f.uploaded_by === (curProfile?.name || curUser?.email);
-      const isSupervisor = curProfile?.role === 'supervisor';
-      const div = document.createElement('div');
-      div.className = 'fitem dlist-item';
-      div.innerHTML = `
-        <div class="fitem-ico dlist">📋</div>
-        <div class="fitem-body">
-          <div class="fitem-name">${f.name}</div>
-          <div class="fitem-meta">${(f.total_records||0).toLocaleString('en-IN')} records • ${f.uploaded_by||'—'} • ${f.type||'permanent'}</div>
-        </div>
-        <span class="fitem-badge dlist">${f.type==='temp'?'D-Temp':'D-Perm'}</span>
-        ${(isSupervisor && isMine) ? `<button onclick="dlDeleteFile(event,'${f.id}','${f.name}')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:7px 10px;font-size:0.7rem;font-weight:700;cursor:pointer;flex-shrink:0;">🗑️</button>` : '<div class="fitem-arrow">▶</div>'}`;
-      div.addEventListener('click', e => {
-        if (e.target.tagName === 'BUTTON') return;
-        openDlistFile(f.id, f);
-      });
-      el.appendChild(div);
-    });
-  } catch(ex) { console.error(ex); }
-}
-
-// Delete D-List File
-window.dlDeleteFile = async (e, fileId, fileName) => {
-  e.stopPropagation();
-  if (!confirm('"'+fileName+'" delete చేయాలా?')) return;
-  showLoader('Deleting...');
-  try {
-    await supabase.from('dlist_records').delete().eq('file_id', fileId);
-    await supabase.from('dlist_files').delete().eq('id', fileId);
-    toast('🗑️ "'+fileName+'" deleted!', 'ok');
-    loadDlistFiles();
-  } catch(ex) { toast('Error: '+ex.message, 'err'); }
-  hideLoader();
-};
-
-// Open D-List File on Map
-async function openDlistFile(fileId, fileMeta) {
-  showLoader('D-List load అవుతోంది...');
-  try {
-    // Get D-List records
-    const { data: dlistRecs } = await supabase
-      .from('dlist_records')
-      .select('*')
-      .eq('file_id', fileId);
-    
-    if (!dlistRecs || !dlistRecs.length) {
-      toast('Records లేవు!', 'err');
-      hideLoader();
-      return;
-    }
-    
-    // Get SCNOs from D-List
-    const scnos = dlistRecs.map(r => r['SCNO']).filter(Boolean);
-    
-    // Match with permanent records to get lat/lng
-    const { data: permRecs } = await supabase
-      .from('permanent_records')
-      .select('"SCNO","Latitude","Longitude","Name"')
-      .in('"SCNO"', scnos);
-    
-    // Create lookup map
-    const locMap = {};
-    (permRecs || []).forEach(r => {
-      locMap[r['SCNO']] = { lat: r['Latitude'], lon: r['Longitude'], name: r['Name'] };
-    });
-    
-    // Clear existing D-List markers
-    if (window.dlistCluster) map.removeLayer(window.dlistCluster);
-    window.dlistCluster = L.markerClusterGroup({maxClusterRadius:40});
-    
-    // Yellow icon for D-List
-    const dlIcon = L.divIcon({
-      className:'',
-      html:`<div style="background:#eab308;width:28px;height:28px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;color:#1a1a1a;">DL</div>`,
-      iconSize:[28,28], iconAnchor:[14,14]
-    });
-    
-    let pinCount = 0;
-    dlistRecs.forEach(rec => {
-      const scno = rec['SCNO'];
-      const loc = locMap[scno];
-      if (!loc) return;
-      
-      const latStr = String(loc.lat||'').replace(/[NSEW°]/gi,'').trim();
-      const lonStr = String(loc.lon||'').replace(/[NSEW°]/gi,'').trim();
-      const la = parseFloat(latStr);
-      const lo = parseFloat(lonStr);
-      if (!la || !lo || isNaN(la) || isNaN(lo)) return;
-      
-      const popHTML = `<div class="pop-head"><div class="pop-svc">📋 ${scno}</div>${rec['NAME']?`<div class="pop-nm">👤 ${rec['NAME']}</div>`:''}</div>
-        <div class="pop-body">
-          <div class="pop-row"><span class="pop-k">Status</span><span class="pop-v">${rec['STATUS']||'—'}</span></div>
-          <div class="pop-row"><span class="pop-k">Total Amt</span><span class="pop-v">₹${rec['TOTAL AMT']||'—'}</span></div>
-          <div class="pop-row"><span class="pop-k">Arrears</span><span class="pop-v">₹${rec['ARREARS AMT']||'—'}</span></div>
-          <div class="pop-row"><span class="pop-k">Mobile</span><span class="pop-v">${rec['MOBILE']||'—'}</span></div>
-          <div class="pop-row"><span class="pop-k">Address</span><span class="pop-v">${rec['ADDRESS']||'—'}</span></div>
-        </div>
-        <div class="pop-foot">
-          <a class="pop-btn pop-btn-g" href="http://maps.google.com/maps?q=${la},${lo}" target="_blank">🧭 Google Maps</a>
-        </div>`;
-      
-      const mk = L.marker([la, lo], {icon: dlIcon}).bindPopup(popHTML, {className:'custom-popup', maxWidth:280});
-      window.dlistCluster.addLayer(mk);
-      pinCount++;
-    });
-    
-    map.addLayer(window.dlistCluster);
-    hideLoader();
-    toast(`📋 ${fileMeta.name}: ${pinCount} D-List pins!`, 'ok');
-    
-    // Switch to map screen
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('scrMap').classList.add('active');
-    document.querySelector('[data-screen="scrMap"]')?.classList.add('active');
-    
-  } catch(ex) {
-    toast('Error: '+ex.message, 'err');
-    hideLoader();
-  }
-}
-
-// D-List File Input Handler
-document.getElementById('dlFileInp').addEventListener('change', async function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  showLoader('Reading D-List...');
-  try {
-    const data = await file.arrayBuffer();
-    const wb = XLSX.read(data);
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-    
-    if (!rows.length) { toast('File empty!', 'err'); hideLoader(); return; }
-    
-    window._dlData = rows;
-    document.getElementById('dlUploadBtn').style.display = 'block';
-    document.getElementById('dlProg').style.display = 'block';
-    document.getElementById('dlProgTxt').textContent = rows.length.toLocaleString('en-IN') + ' records ready!';
-    
-    hideLoader();
-    toast(`📋 ${rows.length.toLocaleString('en-IN')} D-List records ready!`, 'ok');
-  } catch(ex) { toast('Error: '+ex.message, 'err'); hideLoader(); }
-});
-
-// D-List Upload Button
-document.getElementById('dlUploadBtn').addEventListener('click', async () => {
-  const name = document.getElementById('dlFileName').value.trim();
-  const type = document.getElementById('dlType').value;
-  const dlData = window._dlData;
-  
-  if (!name) { toast('File పేరు పెట్టండి!', 'err'); return; }
-  if (!dlData || !dlData.length) { toast('File select చేయండి!', 'err'); return; }
-  
-  showLoader('D-List upload అవుతోంది...');
-  const pb = document.getElementById('dlProgBar');
-  const pt = document.getElementById('dlProgTxt');
-  
-  try {
-    const { data: fileRef, error: fErr } = await supabase
-      .from('dlist_files')
-      .insert({
-        name,
-        type,
-        total_records: dlData.length,
-        uploaded_by: curProfile?.name || curUser?.email
-      })
-      .select().single();
-    if (fErr) throw fErr;
-    
-    const BATCH = 500; let done = 0;
-    for (let i = 0; i < dlData.length; i += BATCH) {
-      const batch = dlData.slice(i, i+BATCH).map((row, idx) => ({
-        ...row,
-        file_id: fileRef.id,
-        idx: i+idx
-      }));
-      const { error } = await supabase.from('dlist_records').insert(batch);
-      if (error) throw error;
-      done += Math.min(BATCH, dlData.length-i);
-      pb.style.width = Math.round(done/dlData.length*100)+'%';
-      pt.textContent = done.toLocaleString('en-IN')+' / '+dlData.length.toLocaleString('en-IN');
-    }
-    
-    document.getElementById('dlFileName').value = '';
-    document.getElementById('dlFileInp').value = '';
-    document.getElementById('dlUploadBtn').style.display = 'none';
-    window._dlData = null;
-    hideLoader();
-    toast('✅ D-List uploaded! '+dlData.length.toLocaleString('en-IN')+' records', 'ok');
-    loadDlistFiles();
-  } catch(ex) { toast('Error: '+ex.message, 'err'); hideLoader(); }
-});
-
 </script>
 </body>
 </html>
