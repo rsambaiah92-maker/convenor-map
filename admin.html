@@ -154,6 +154,12 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
           <div id="tempFilesList">
             <div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div>
           </div>
+
+          <!-- D-LIST FILES SECTION -->
+          <div class="fcard-hd" style="padding:8px 0 4px;font-size:0.68rem;font-weight:700;color:#854d0e;text-transform:uppercase;letter-spacing:0.8px;">📋 D-List Files</div>
+          <div id="dlistFilesList">
+            <div style="text-align:center;padding:20px;color:var(--text3);">Loading...</div>
+          </div>
         </div>
       </div>
     </div>
@@ -389,7 +395,7 @@ function showErr(m) {
   el.textContent = m; el.style.display = 'block';
 }
 
-function loadAll() { loadFiles(); loadUsers(); }
+function loadAll() { loadFiles(); loadUsers(); loadLogs(); loadDlistFiles(); }
 
 async function loadFiles() {
   try {
@@ -844,6 +850,59 @@ function toast(msg,type='info') {
   t.className=`toast ${type} show`;
   clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3500);
 }
+
+// ═══════════════════════════════════════════════
+// D-LIST ADMIN FUNCTIONS
+// ═══════════════════════════════════════════════
+
+async function loadDlistFiles() {
+  try {
+    const { data: files } = await supabase
+      .from('dlist_files')
+      .select('*')
+      .order('created_at', {ascending: false});
+    
+    const el = document.getElementById('dlistFilesList');
+    el.innerHTML = '';
+    
+    document.getElementById('stDlistFiles').textContent = files?.length || 0;
+    
+    if (!files || !files.length) {
+      el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);">D-List files లేవు.</div>';
+      return;
+    }
+    
+    files.forEach(f => {
+      const div = document.createElement('div');
+      div.className = 'fcard';
+      div.innerHTML = `
+        <div class="fcard-top">
+          <div class="fcard-ico temp" style="background:#fef9c3;">📋</div>
+          <div class="fcard-info">
+            <div class="fcard-name">${f.name}</div>
+            <div class="fcard-meta">${(f.total_records||0).toLocaleString('en-IN')} records • ${f.uploaded_by||'—'} • ${f.type||'permanent'} • ${formatDate(f.created_at)}</div>
+          </div>
+          <span class="fcard-badge temp" style="background:#fef9c3;color:#854d0e;">${f.type==='temp'?'D-Temp':'D-Perm'}</span>
+        </div>
+        <div class="fcard-actions">
+          <button class="fact fact-del" onclick="deleteDlistFile('${f.id}','${f.name}')">🗑️ Delete</button>
+        </div>`;
+      el.appendChild(div);
+    });
+  } catch(e) { console.error(e); }
+}
+
+window.deleteDlistFile = async (id, name) => {
+  if (!confirm('"'+name+'" delete చేయాలా?')) return;
+  showLoader('Deleting...');
+  try {
+    await supabase.from('dlist_records').delete().eq('file_id', id);
+    await supabase.from('dlist_files').delete().eq('id', id);
+    toast('🗑️ "'+name+'" deleted!', 'ok');
+    loadDlistFiles();
+  } catch(ex) { toast('Error: '+ex.message, 'err'); }
+  hideLoader();
+};
 </script>
 </body>
 </html>
