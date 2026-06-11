@@ -1,13 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>User Dashboard</title>
-</head>
-<body>
+<h2>USER DASHBOARD</h2>
 
-<h1>USER DASHBOARD</h1>
+<div>
+Total Records :
+<span id="totalRecords">0</span>
 
-<p>Login Success</p>
+<br><br>
 
-</body>
-</html>
+Total Amount :
+<span id="totalAmount">0</span>
+</div>
+
+<br>
+
+<input type="text" id="searchBox"
+placeholder="Search SCNO / UAN / Name / Mobile">
+
+<button onclick="loadData()">Search</button>
+
+<br><br>
+
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>SCNO</th>
+<th>NAME</th>
+<th>MOBILE</th>
+<th>TOTAL</th>
+<th>MAP</th>
+</tr>
+</thead>
+
+<tbody id="tableBody">
+</tbody>
+</table>
