@@ -86,7 +86,22 @@ total += Number(r.total_amt || 0);
 
 document.getElementById("totalAmount").innerText =
 total;
+    
+const areaFilter =
+document.getElementById("areaFilter");
 
+const areas =
+[...new Set(data.map(r => r.area))];
+
+areaFilter.innerHTML =
+'<option value="">ALL AREAS</option>';
+
+areas.forEach(a => {
+
+areaFilter.innerHTML +=
+`<option value="${a}">${a}</option>`;
+
+});
 let html = "";
 
 data.forEach(r=>{
