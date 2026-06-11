@@ -117,8 +117,13 @@ const records = rows.map(row => ({
   arrears: Number(row["ARREARS"] || 0),
   total_amt: Number(row["TOTAL AMT"] || 0),
   mobile_no: row["MOBILE NO"] || "",
-  latitude: row["LATITUDE"] || null,
-  longitude: row["LONGITUDE"] || null,
+  latitude: parseFloat(
+String(row["LATITUDE"] || "").replace("N","")
+),
+
+longitude: parseFloat(
+String(row["LONGITUDE"] || "").replace("E","")
+),
   load: row["LOAD"] || "",
   rmd: row["RMD"] || "",
   uploaded_by: "section"
