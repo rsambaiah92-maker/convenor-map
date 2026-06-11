@@ -1,67 +1,46 @@
-async function login() {
+async function login() { // A ని స్మాల్ లెటర్ కి మార్చాను
 
-const username =
-document.getElementById("username").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const msg = document.getElementById("msg");
 
-const password =
-document.getElementById("password").value.trim();
+    if (!username || !password) {
+        msg.innerText = "Enter Username and Password";
+        return;
+    }
 
-const msg =
-document.getElementById("msg");
+    const { data, error } = await supabaseClient
+        .from("users")
+        .select("*")
+        .eq("username", username)
+        .eq("password", password)
+        .single();
 
-if (!username || !password) {
+    // ఎర్రర్ ఏమిటో బ్రౌజర్ లో చూడటానికి ఈ రెండు లైన్లు వాడండి
+    console.log("Supabase Error:", error); 
+    console.log("Supabase Data:", data);
 
-msg.innerText =
-"Enter Username and Password";
+    if (error || !data) {
+        msg.innerText = "Invalid Login";
+        return;
+    }
 
-return;
-}
+    localStorage.setItem("user", JSON.stringify(data));
 
-const { data, error } =
-await supabaseClient
-.from("users")
-.select("*")
-.eq("username", username)
-.eq("password", password)
-.single();
+    if (data.role === "admin") {
+        window.location = "admin.html";
+        return;
+    }
 
-if (error || !data) {
+    if (data.role === "section") {
+        window.location = "section.html";
+        return;
+    }
 
-msg.innerText =
-"Invalid Login";
+    if (data.role === "user") {
+        window.location = "user.html";
+        return;
+    }
 
-return;
-}
-
-localStorage.setItem(
-"user",
-JSON.stringify(data)
-);
-
-if (data.role === "admin") {
-
-window.location =
-"admin.html";
-
-return;
-}
-
-if (data.role === "section") {
-
-window.location =
-"section.html";
-
-return;
-}
-
-if (data.role === "user") {
-
-window.location =
-"user.html";
-
-return;
-}
-
-msg.innerText =
-"Role Not Found";
+    msg.innerText = "Role Not Found";
 }
