@@ -102,6 +102,40 @@ workbook.SheetNames[0]
 
 const rows =
 XLSX.utils.sheet_to_json(sheet);
+const records = rows.map(row => ({
+  section: row["SECTION"] || "",
+  area: row["AREA"] || "",
+  scno: row["SCNO"] || "",
+  uan_no: row["UAN NO"] || "",
+  name: row["NAME"] || "",
+  address: row["ADDRESS"] || "",
+  cat: row["CAT"] || "",
+  subcat: row["SUBCAT"] || "",
+  pole_no: row["POLE NO"] || "",
+  due_date: row["DUE DATE"] || "",
+  current_demand: Number(row["CURRENT DEMAND"] || 0),
+  arrears: Number(row["ARREARS"] || 0),
+  total_amt: Number(row["TOTAL AMT"] || 0),
+  mobile_no: row["MOBILE NO"] || "",
+  latitude: row["LATITUDE"] || null,
+  longitude: row["LONGITUDE"] || null,
+  load: row["LOAD"] || "",
+  rmd: row["RMD"] || "",
+  uploaded_by: "section"
+}));
+
+const { error } = await supabaseClient
+  .from("records")
+  .insert(records);
+
+if (error) {
+  document.getElementById("status").innerHTML =
+    "Upload Error : " + error.message;
+  return;
+}
+
+document.getElementById("status").innerHTML =
+  "Upload Success : " + records.length + " Records";
 
 document.getElementById("status").innerHTML =
 "Rows Found : " + rows.length;
