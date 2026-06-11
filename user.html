@@ -102,6 +102,19 @@ areaFilter.innerHTML +=
 `<option value="${a}">${a}</option>`;
 
 });
+const selectedArea =
+areaFilter.value;
+
+let filteredData = data;
+
+if(selectedArea){
+
+filteredData =
+data.filter(r =>
+r.area === selectedArea
+);
+
+}
 let html = "";
 
 data.forEach(r=>{
