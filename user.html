@@ -59,8 +59,6 @@ placeholder="Search SCNO / UAN / Name / Mobile">
 
 async function loadData(){
 
-alert("loadData Started");
-
 const { data, error } =
 await supabaseClient
 .from("records")
