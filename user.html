@@ -109,7 +109,25 @@ html;
 
 loadData();
 
-</script>
+</script>function searchData() {
+
+const search =
+document.getElementById("searchBox").value.toLowerCase();
+
+const rows =
+document.querySelectorAll("#tableBody tr");
+
+rows.forEach(row => {
+
+if (row.innerText.toLowerCase().includes(search)) {
+row.style.display = "";
+} else {
+row.style.display = "none";
+}
+
+});
+
+}
 
 </body>
 </html>
