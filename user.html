@@ -112,7 +112,26 @@ areaFilter.innerHTML +=
 });
 const selectedArea =
 areaFilter.value;
+    
+const poleFilter =
+document.getElementById("poleFilter");
 
+const poles =
+[...new Set(data.map(r => r.pole_no))];
+
+poleFilter.innerHTML =
+'<option value="">ALL POLES</option>';
+
+poles.forEach(p => {
+
+poleFilter.innerHTML +=
+`<option value="${p}">${p}</option>`;
+
+});
+
+const selectedPole =
+poleFilter.value;
+    
 let filteredData = data;
 
 if(selectedArea){
