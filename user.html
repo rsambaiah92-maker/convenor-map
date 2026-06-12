@@ -1,1 +1,209 @@
-<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>TGNPDCL V2</title></head><body><h2>TGNPDCL USER DASHBOARD V2</h2><p>V2 template with Area Filter, Pole Filter, Amount Filter and Leaflet Map placeholder.</p></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TGNPDCL User Dashboard</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+body{font-family:Arial,sans-serif;padding:10px}
+input,select,button{width:100%;padding:12px;margin-top:8px;box-sizing:border-box}
+.card{border:1px solid #ddd;padding:10px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;display:block;overflow:auto}
+th,td{border:1px solid #ccc;padding:8px}
+#map{height:300px;border:1px solid #ccc;margin-top:10px}
+</style>
+</head>
+<body>
+
+<h2>TGNPDCL USER DASHBOARD</h2>
+
+<div class="card">
+Total Records: <span id="totalRecords">0</span><br><br>
+Total Amount: <span id="totalAmount">0</span>
+</div>
+
+<input type="text" id="searchBox" placeholder="Search">
+
+<select id="areaFilter">
+<option value="">ALL AREAS</option>
+</select>
+
+<select id="poleFilter">
+<option value="">ALL POLES</option>
+</select>
+
+<select id="amountFilter">
+<option value="">ALL AMOUNTS</option>
+<option value="0-500">0-500</option>
+<option value="501-1000">501-1000</option>
+<option value="1001-5000">1001-5000</option>
+<option value="5000+">5000+</option>
+</select>
+
+<button onclick="loadData()">Apply Filters</button>
+
+<div id="map"></div>
+
+<table>
+<thead>
+<tr>
+<th>SCNO</th>
+<th>NAME</th>
+<th>MOBILE</th>
+<th>TOTAL</th>
+<th>MAP</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+
+<script>
+let masterData=[];
+
+async function loadData(){
+
+if(masterData.length===0){
+ const {data,error}=await supabaseClient.from("records").select("*");
+ if(error){alert(error.message);return;}
+ masterData=data||[];
+
+ const areas=[...new Set(masterData.map(r=>r.area).filter(Boolean))];
+ const area=document.getElementById("areaFilter");
+ areas.forEach(a=>area.innerHTML+=`<option value="${a}">${a}</option>`);
+
+ const poles=[...new Set(masterData.map(r=>(r.pole_no||'').split('-')[0]).filter(Boolean))];
+ const pole=document.getElementById("poleFilter");
+ poles.forEach(p=>pole.innerHTML+=`<option value="${p}">${p}</option>`);
+}
+
+const area=document.getElementById("areaFilter").value;
+const pole=document.getElementById("poleFilter").value;
+const amount=document.getElementById("amountFilter").value;
+const search=document.getElementById("searchBox").value.toLowerCase();
+
+let filtered=[...masterData];
+
+if(area) filtered=filtered.filter(r=>r.area===area);
+if(pole) filtered=filtered.filter(r=>(r.pole_no||'').startsWith(pole));
+
+if(amount){
+ filtered=filtered.filter(r=>{
+   const v=Number(r.total_amt||0);
+   if(amount==="0-500") return v<=500;
+   if(amount==="501-1000") return v>=501 && v<=1000;
+   if(amount==="1001-5000") return v>=1001 && v<=5000;
+   if(amount==="5000+") return v>5000;
+   return true;
+ });
+}
+
+if(search){
+ filtered=filtered.filter(r=>
+ JSON.stringify(r).toLowerCase().includes(search)
+ );
+}
+
+document.getElementById("totalRecords").innerText=filtered.length;
+
+let total=0;
+filtered.forEach(r=>total+=Number(r.total_amt||0));
+document.getElementById("totalAmount").innerText=total;
+
+let html='';
+filtered.forEach(r=>{
+ html+=`<tr>
+ <td>${r.scno||''}</td>
+ <td>${r.name||''}</td>
+ <td>${r.mobile_no||''}</td>
+ <td>${r.total_amt||0}</td>
+ <td><a target="_blank" href="https://maps.google.com/?q=${r.latitude},${r.longitude}">MAP</a></td>
+ </tr>`;
+});
+
+document.getElementById("tableBody").innerHTML=html;
+}
+
+loadData();
+</script>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let map=L.map('map').setView([17.95,80.82],11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+let markers=[];
+
+function clearMarkers(){
+ markers.forEach(m=>map.removeLayer(m));
+ markers=[];
+}
+
+function cleanCoord(v){
+ if(!v) return null;
+ return parseFloat(String(v).replace(/[NSEW]/gi,''));
+}
+
+const oldLoadData = loadData;
+loadData = async function(){
+ await oldLoadData();
+
+ if(typeof masterData==="undefined") return;
+
+ clearMarkers();
+
+ const area=document.getElementById("areaFilter").value;
+ const pole=document.getElementById("poleFilter").value;
+ const amount=document.getElementById("amountFilter").value;
+ const search=document.getElementById("searchBox").value.toLowerCase();
+
+ let filtered=[...masterData];
+
+ if(area) filtered=filtered.filter(r=>r.area===area);
+ if(pole) filtered=filtered.filter(r=>(r.pole_no||'').startsWith(pole));
+
+ if(amount){
+  filtered=filtered.filter(r=>{
+   const v=Number(r.total_amt||0);
+   if(amount==="0-500") return v<=500;
+   if(amount==="501-1000") return v>=501 && v<=1000;
+   if(amount==="1001-5000") return v>=1001 && v<=5000;
+   if(amount==="5000+") return v>5000;
+   return true;
+  });
+ }
+
+ if(search){
+  filtered=filtered.filter(r=>JSON.stringify(r).toLowerCase().includes(search));
+ }
+
+ filtered.forEach(r=>{
+  const lat=cleanCoord(r.latitude);
+  const lng=cleanCoord(r.longitude);
+  if(lat && lng){
+   const m=L.marker([lat,lng]).addTo(map);
+   m.bindPopup(
+   "<b>"+(r.name||"")+"</b><br>"+
+   "SCNO: "+(r.scno||"")+"<br>"+
+   "Mobile: "+(r.mobile_no||"")+"<br>"+
+   "Amount: "+(r.total_amt||0)+"<br><br>"+
+   "<a href='tel:"+(r.mobile_no||"")+"'>Call</a> | "+
+   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>Navigate</a>"
+   );
+   markers.push(m);
+  }
+ });
+}
+
+document.getElementById("areaFilter").onchange=()=>loadData();
+document.getElementById("poleFilter").onchange=()=>loadData();
+document.getElementById("amountFilter").onchange=()=>loadData();
+document.getElementById("searchBox").oninput=()=>loadData();
+
+setTimeout(()=>loadData(),1000);
+</script>
+
+</body>
+</html>
