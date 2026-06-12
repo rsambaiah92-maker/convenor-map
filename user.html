@@ -83,17 +83,7 @@ alert(error.message);
 return;
 }
 
-document.getElementById("totalRecords").innerText =
-data.length;
 
-let total = 0;
-
-data.forEach(r=>{
-total += Number(r.total_amt || 0);
-});
-
-document.getElementById("totalAmount").innerText =
-total;
     
 const areaFilter =
 document.getElementById("areaFilter");
@@ -151,7 +141,17 @@ filteredData =
 filteredData.filter(r =>
 r.area === selectedArea
 );
+document.getElementById("totalRecords").innerText =
+filteredData.length;
 
+let total = 0;
+
+filteredData.forEach(r => {
+  total += Number(r.total_amt || 0);
+});
+
+document.getElementById("totalAmount").innerText =
+total;
 }
 let html = "";
 
