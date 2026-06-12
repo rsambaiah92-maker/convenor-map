@@ -133,7 +133,14 @@ const selectedPole =
 poleFilter.value;
     
 let filteredData = data;
+if(selectedPole){
 
+filteredData =
+filteredData.filter(r =>
+r.pole_no === selectedPole
+);
+
+}
 if(selectedArea){
 
 filteredData =
