@@ -117,7 +117,11 @@ const poleFilter =
 document.getElementById("poleFilter");
 
 const poles =
-[...new Set(data.map(r => r.pole_no))];
+[...new Set(
+data.map(r =>
+r.pole_no.split("-")[0]
+)
+)];
 
 poleFilter.innerHTML =
 '<option value="">ALL POLES</option>';
