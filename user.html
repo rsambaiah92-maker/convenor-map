@@ -144,14 +144,14 @@ r.pole_no === selectedPole
 if(selectedArea){
 
 filteredData =
-data.filter(r =>
+filteredData.filter(r =>
 r.area === selectedArea
 );
 
 }
 let html = "";
 
-data.forEach(r=>{
+filteredData.forEach(r=>{
 
 html += `
 <tr>
