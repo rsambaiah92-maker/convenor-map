@@ -141,7 +141,7 @@ if(selectedPole){
 
 filteredData =
 filteredData.filter(r =>
-r.pole_no === selectedPole
+r.pole_no.startsWith(selectedPole)
 );
 
 }
