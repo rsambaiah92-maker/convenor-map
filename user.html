@@ -185,13 +185,22 @@ loadData = async function(){
   if(lat && lng){
    const m=L.marker([lat,lng]).addTo(map);
    m.bindPopup(
-   "<b>"+(r.name||"")+"</b><br>"+
-   "SCNO: "+(r.scno||"")+"<br>"+
-   "Mobile: "+(r.mobile_no||"")+"<br>"+
-   "Amount: "+(r.total_amt||0)+"<br><br>"+
-   "<a href='tel:"+(r.mobile_no||"")+"'>Call</a> | "+
-   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>Navigate</a>"
-   );
+"⚡ Current Demand : ₹"+(r.current_demand||0)+"<br>"+
+"🔴 Arrears : ₹"+(r.arrears||0)+"<br>"+
+"💰 Total AMT : ₹"+(r.total_amt||0)+"<br><hr>"+
+
+"👤 "+(r.name||"")+"<br>"+
+"🔢 SCNO : "+(r.scno||"")+"<br>"+
+"📍 Area : "+(r.area||"")+"<br>"+
+"⚡ Pole : "+(r.pole_no||"")+"<br>"+
+"📞 Mobile : "+(r.mobile_no||"")+"<br><br>"+
+
+"<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a> | "+
+
+"<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>💬 WhatsApp</a> | "+
+
+"<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>🧭 Navigate</a>"
+);
    markers.push(m);
   }
  });
