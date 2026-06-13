@@ -145,11 +145,14 @@ await delay(50);
 const rows =
 XLSX.utils.sheet_to_json(sheet);
 
-// మీరు అప్‌డేట్ చేయమన్న 1 సెకను బ్రేక్ కోడ్
+// 1 సెకను బ్రేక్ కోడ్
 document.getElementById("status").innerHTML =
 "Rows Found : " + rows.length;
-
 await new Promise(resolve => setTimeout(resolve, 1000));
+
+// --- మీరు అడిగిన కొత్త లైన్ ---
+document.getElementById("status").innerHTML = "Creating Records...";
+await delay(50);
 // --- ఇక్కడి వరకు కొత్త స్టేటస్ కోడ్ ముగింపు ---
 
 const records = rows.map(row => ({
