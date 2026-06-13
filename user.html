@@ -4,6 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TGNPDCL User Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
 <style>
 body{font-family:Arial,sans-serif;padding:10px}
 input,select,button{width:100%;padding:12px;margin-top:8px;box-sizing:border-box}
@@ -42,6 +43,8 @@ Total Amount :
 </div>
 
 <button onclick="loadData()">Apply Filters</button>
+
+<button onclick="showMyLocation()">📍 My Location</button>
 
 <div id="map"></div>
 
@@ -149,12 +152,14 @@ document.getElementById("tableBody").innerHTML=html;
 }
 </script>
 
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
 <script>
 let map=L.map('map').setView([17.95,80.82],11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
 let markers=[];
+let routingControl = null;
 
 function clearMarkers(){
  markers.forEach(m=>map.removeLayer(m));
@@ -203,7 +208,28 @@ loadData = async function(){
   const lat=cleanCoord(r.latitude);
   const lng=cleanCoord(r.longitude);
   if(lat && lng){
-   const m=L.marker([lat,lng]).addTo(map);
+   
+   let pinColor = "blue";
+   const arrears = Number(r.arrears || 0);
+
+   if (arrears === 0) {
+     pinColor = "green";
+   } else if (arrears <= 5000) {
+     pinColor = "orange";
+   } else {
+     pinColor = "red";
+   }
+
+   const icon = L.icon({
+     iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${pinColor}.png`,
+     shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+     iconSize: [25, 41],
+     iconAnchor: [12, 41],
+     popupAnchor: [1, -34]
+   });
+
+   const m = L.marker([lat,lng], {icon}).addTo(map);
+   
    m.bindPopup(
    "<b>"+(r.name||"")+"</b><br>"+
    "SCNO: "+(r.scno||"")+"<br>"+
@@ -213,7 +239,8 @@ loadData = async function(){
    "Amount: "+(r.total_amt||0)+"<br><br>"+
    "<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a><br><br>"+
    "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>🟢 WhatsApp</a><br><br>"+
-   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>📍 Navigate</a>"
+   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>📍 Navigate</a><br><br>"+
+   "<button onclick='showRoute("+lat+","+lng+")'>🛣 Route</button>"
    );
    markers.push(m);
   }
@@ -236,6 +263,55 @@ document.getElementById("poleFilter").onchange=()=>{
 document.getElementById("searchBox").oninput=()=>{};
 document.getElementById("minAmount").oninput=()=>{};
 document.getElementById("maxAmount").oninput=()=>{};
+
+function showMyLocation(){
+  if(!navigator.geolocation){
+    alert("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    map.setView([lat,lng],16);
+
+    L.marker([lat,lng])
+      .addTo(map)
+      .bindPopup("📍 My Location")
+      .openPopup();
+
+  },()=>{
+    alert("Location permission denied");
+  });
+}
+
+function showRoute(lat,lng){
+  if(!navigator.geolocation){
+    alert("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+
+    const myLat = pos.coords.latitude;
+    const myLng = pos.coords.longitude;
+
+    if(routingControl){
+      map.removeControl(routingControl);
+    }
+
+    routingControl = L.Routing.control({
+      waypoints:[
+        L.latLng(myLat,myLng),
+        L.latLng(lat,lng)
+      ],
+      routeWhileDragging:false,
+      show:false
+    }).addTo(map);
+
+  });
+}
 
 window.onload = async () => {
  await loadData();
