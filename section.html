@@ -70,6 +70,22 @@ UPLOAD EXCEL
 
 <div id="status"></div>
 
+<div style="width:100%;background:#ddd;border-radius:10px;margin-top:10px;">
+  <div id="progressBar"
+       style="
+         width:0%;
+         height:25px;
+         background:#4CAF50;
+         border-radius:10px;
+         text-align:center;
+         color:white;
+         line-height:25px;
+         font-weight:bold;
+       ">
+    0%
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -96,6 +112,10 @@ alert("Select Excel File");
 
 return;
 }
+
+// అప్లోడ్ స్టార్ట్ అయ్యే ముందు ప్రోగ్రెస్ బార్ ని 0% కి రీసెట్ చేయడం
+document.getElementById("progressBar").style.width = "0%";
+document.getElementById("progressBar").innerHTML = "0%";
 
 document.getElementById("status").innerHTML =
 "Reading Excel File...";
@@ -181,15 +201,25 @@ document.getElementById("status").innerHTML =
 "Uploading New Records...";
 // --- డిలీట్ చేసే కోడ్ ముగింపు ---
 
-// --- మీరు ఇచ్చిన కొత్త బ్యాచ్ అప్లోడ్ కోడ్ ---
-const batchSize = 1000;
+// --- బ్యాచ్ (500) అప్లోడ్ & ప్రోగ్రెస్ బార్ కోడ్ ---
+const batchSize = 500;
 
 for(let i = 0; i < records.length; i += batchSize){
 
   const batch = records.slice(i, i + batchSize);
 
+  const percent = Math.round(
+    ((i + batch.length) / records.length) * 100
+  );
+
   document.getElementById("status").innerHTML =
     `Uploading ${Math.min(i + batch.length, records.length)} / ${records.length}`;
+
+  document.getElementById("progressBar").style.width =
+    percent + "%";
+
+  document.getElementById("progressBar").innerHTML =
+    percent + "%";
 
   const { error } = await supabaseClient
     .from("records")
@@ -201,11 +231,14 @@ for(let i = 0; i < records.length; i += batchSize){
     return;
   }
 
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 }
 
 document.getElementById("status").innerHTML =
   "Upload Success : " + records.length + " Records";
+
+document.getElementById("progressBar").style.width = "100%";
+document.getElementById("progressBar").innerHTML = "100%";
 
 /* NEXT STEP:
 Excel → Supabase Insert
