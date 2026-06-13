@@ -18,8 +18,7 @@ th,td{border:1px solid #ccc;padding:8px}
 <h2>TGNPDCL USER DASHBOARD</h2>
 
 <div class="card">
-Total Records: <span id="totalRecords">0</span><br><br>
-Total Amount: <span id="totalAmount">0</span>
+Selected Services: <span id="totalRecords">0</span>
 </div>
 
 <input type="text" id="searchBox" placeholder="Search">
@@ -65,7 +64,7 @@ if(masterData.length===0){
  if(error){alert(error.message);return;}
  masterData=data||[];
 
- const areas=[...new Set(masterData.map(r=>String(r.area||'').trim()).filter(a=>/^\d+$/.test(a)))];
+ const areas=[...new Set(masterData.map(r=>r.area).filter(Boolean))];
  const area=document.getElementById("areaFilter");
  areas.forEach(a=>area.innerHTML+=`<option value="${a}">${a}</option>`);
 
@@ -76,8 +75,7 @@ if(masterData.length===0){
 
 const area=document.getElementById("areaFilter").value;
 const pole=document.getElementById("poleFilter").value;
-const minAmt=Number(document.getElementById("minAmount")?.value||0);
-const maxAmt=Number(document.getElementById("maxAmount")?.value||999999999);
+const amount=document.getElementById("amountFilter").value;
 const search=document.getElementById("searchBox").value.toLowerCase();
 
 let filtered=[...masterData];
@@ -85,10 +83,16 @@ let filtered=[...masterData];
 if(area) filtered=filtered.filter(r=>r.area===area);
 if(pole) filtered=filtered.filter(r=>(r.pole_no||'').startsWith(pole));
 
-filtered=filtered.filter(r=>{
- const v=Number(r.total_amt||0);
- return v>=minAmt && v<=maxAmt;
-});
+if(amount){
+ filtered=filtered.filter(r=>{
+   const v=Number(r.total_amt||0);
+   if(amount==="0-500") return v<=500;
+   if(amount==="501-1000") return v>=501 && v<=1000;
+   if(amount==="1001-5000") return v>=1001 && v<=5000;
+   if(amount==="5000+") return v>5000;
+   return true;
+ });
+}
 
 if(search){
  filtered=filtered.filter(r=>
@@ -146,8 +150,7 @@ loadData = async function(){
 
  const area=document.getElementById("areaFilter").value;
  const pole=document.getElementById("poleFilter").value;
- const minAmt=Number(document.getElementById("minAmount")?.value||0);
-const maxAmt=Number(document.getElementById("maxAmount")?.value||999999999);
+ const amount=document.getElementById("amountFilter").value;
  const search=document.getElementById("searchBox").value.toLowerCase();
 
  let filtered=[...masterData];
