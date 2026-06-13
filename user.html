@@ -10,7 +10,8 @@ input,select,button{width:100%;padding:12px;margin-top:8px;box-sizing:border-box
 .card{border:1px solid #ddd;padding:10px;margin-bottom:10px}
 table{width:100%;border-collapse:collapse;display:block;overflow:auto}
 th,td{border:1px solid #ccc;padding:8px}
-#map{height:500px;border:1px solid #ccc;margin-top:10px}
+#map{height:300px;border:1px solid #ccc;margin-top:10px}
+.amount-inputs {display: flex; gap: 10px;}
 </style>
 </head>
 <body>
@@ -31,8 +32,10 @@ Selected Services: <span id="totalRecords">0</span>
 <option value="">ALL POLES</option>
 </select>
 
-<input type="number" id="minAmount" placeholder="Min Amount">
-<input type="number" id="maxAmount" placeholder="Max Amount">
+<div class="amount-inputs">
+  <input type="number" id="minAmount" placeholder="Min Amount" value="0">
+  <input type="number" id="maxAmount" placeholder="Max Amount" value="1000000">
+</div>
 
 <button onclick="loadData()">Apply Filters</button>
 
@@ -64,7 +67,11 @@ if(masterData.length===0){
  if(error){alert(error.message);return;}
  masterData=data||[];
 
- const areas=[...new Set(masterData.map(r=>r.area).filter(Boolean))];
+ const areas=[...new Set(
+ masterData
+ .map(r=>String(r.area||'').trim())
+ .filter(Boolean)
+ )];
  const area=document.getElementById("areaFilter");
  areas.forEach(a=>area.innerHTML+=`<option value="${a}">${a}</option>`);
 
@@ -75,7 +82,8 @@ if(masterData.length===0){
 
 const area=document.getElementById("areaFilter").value;
 const pole=document.getElementById("poleFilter").value;
-const amount=document.getElementById("amountFilter").value;
+const minAmt = Number(document.getElementById("minAmount").value||0);
+const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
 const search=document.getElementById("searchBox").value.toLowerCase();
 
 let filtered=[...masterData];
@@ -83,16 +91,10 @@ let filtered=[...masterData];
 if(area) filtered=filtered.filter(r=>r.area===area);
 if(pole) filtered=filtered.filter(r=>(r.pole_no||'').startsWith(pole));
 
-if(amount){
- filtered=filtered.filter(r=>{
-   const v=Number(r.total_amt||0);
-   if(amount==="0-500") return v<=500;
-   if(amount==="501-1000") return v>=501 && v<=1000;
-   if(amount==="1001-5000") return v>=1001 && v<=5000;
-   if(amount==="5000+") return v>5000;
-   return true;
- });
-}
+filtered = filtered.filter(r=>{
+ const amt = Number(r.total_amt||0);
+ return amt >= minAmt && amt <= maxAmt;
+});
 
 if(search){
  filtered=filtered.filter(r=>
@@ -101,10 +103,6 @@ if(search){
 }
 
 document.getElementById("totalRecords").innerText=filtered.length;
-
-let total=0;
-filtered.forEach(r=>total+=Number(r.total_amt||0));
-document.getElementById("totalAmount").innerText=total;
 
 let html='';
 filtered.forEach(r=>{
@@ -119,8 +117,6 @@ filtered.forEach(r=>{
 
 document.getElementById("tableBody").innerHTML=html;
 }
-
-// loadData();
 </script>
 
 
@@ -150,7 +146,8 @@ loadData = async function(){
 
  const area=document.getElementById("areaFilter").value;
  const pole=document.getElementById("poleFilter").value;
- const amount=document.getElementById("amountFilter").value;
+ const minAmt = Number(document.getElementById("minAmount").value||0);
+ const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
  const search=document.getElementById("searchBox").value.toLowerCase();
 
  let filtered=[...masterData];
@@ -158,16 +155,10 @@ loadData = async function(){
  if(area) filtered=filtered.filter(r=>r.area===area);
  if(pole) filtered=filtered.filter(r=>(r.pole_no||'').startsWith(pole));
 
- if(amount){
-  filtered=filtered.filter(r=>{
-   const v=Number(r.total_amt||0);
-   if(amount==="0-500") return v<=500;
-   if(amount==="501-1000") return v>=501 && v<=1000;
-   if(amount==="1001-5000") return v>=1001 && v<=5000;
-   if(amount==="5000+") return v>5000;
-   return true;
-  });
- }
+ filtered = filtered.filter(r=>{
+  const amt = Number(r.total_amt||0);
+  return amt >= minAmt && amt <= maxAmt;
+ });
 
  if(search){
   filtered=filtered.filter(r=>JSON.stringify(r).toLowerCase().includes(search));
@@ -179,33 +170,40 @@ loadData = async function(){
   if(lat && lng){
    const m=L.marker([lat,lng]).addTo(map);
    m.bindPopup(
-"⚡ Current Demand : ₹"+(r.current_demand||0)+"<br>"+
-"🔴 Arrears : ₹"+(r.arrears||0)+"<br>"+
-"💰 Total AMT : ₹"+(r.total_amt||0)+"<br><hr>"+
-
-"👤 "+(r.name||"")+"<br>"+
-"🔢 SCNO : "+(r.scno||"")+"<br>"+
-"📍 Area : "+(r.area||"")+"<br>"+
-"⚡ Pole : "+(r.pole_no||"")+"<br>"+
-"📞 Mobile : "+(r.mobile_no||"")+"<br><br>"+
-
-"<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a> | "+
-
-"<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>💬 WhatsApp</a> | "+
-
-"<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>🧭 Navigate</a>"
-);
+   "<b>"+(r.name||"")+"</b><br>"+
+   "SCNO: "+(r.scno||"")+"<br>"+
+   "Mobile: "+(r.mobile_no||"")+"<br>"+
+   "Amount: "+(r.total_amt||0)+"<br><br>"+
+   "<a href='tel:"+(r.mobile_no||"")+"'>Call</a> | "+
+   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>Navigate</a>"
+   );
    markers.push(m);
   }
  });
 }
 
-document.getElementById("areaFilter").onchange=()=>// loadData();
-document.getElementById("poleFilter").onchange=()=>// loadData();
-document.getElementById("amountFilter").onchange=()=>// loadData();
-document.getElementById("searchBox").oninput=()=>// loadData();
+document.getElementById("areaFilter").onchange=()=>{
+ clearMarkers();
+ document.getElementById("tableBody").innerHTML="";
+ document.getElementById("totalRecords").innerText="0";
+ document.getElementById("poleFilter").selectedIndex=0;
+};
 
-// setTimeout(()=>loadData(),1000);
+document.getElementById("poleFilter").onchange=()=>{
+ clearMarkers();
+ document.getElementById("tableBody").innerHTML="";
+};
+
+document.getElementById("searchBox").oninput=()=>{};
+document.getElementById("minAmount").oninput=()=>{};
+document.getElementById("maxAmount").oninput=()=>{};
+
+window.onload = async () => {
+ await loadData();
+ clearMarkers();
+ document.getElementById("tableBody").innerHTML = "";
+ document.getElementById("totalRecords").innerText = "0";
+};
 </script>
 
 </body>
