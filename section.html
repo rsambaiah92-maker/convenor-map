@@ -129,6 +129,26 @@ String(row["LONGITUDE"] || "").replace("E","")
   uploaded_by: "section"
 }));
 
+// --- పాత రికార్డ్స్ డిలీట్ చేసే కోడ్ ప్రారంభం ---
+document.getElementById("status").innerHTML =
+"Deleting Old Records...";
+
+const { error: deleteError } = await supabaseClient
+.from("records")
+.delete()
+.neq("id",0);
+
+if(deleteError){
+ document.getElementById("status").innerHTML =
+ "Delete Error : " + deleteError.message;
+ return;
+}
+
+document.getElementById("status").innerHTML =
+"Uploading New Records...";
+// --- డిలీట్ చేసే కోడ్ ముగింపు ---
+
+// కొత్త రికార్డ్స్ ఇన్సర్ట్ (Upload) చేసే కోడ్
 const { error } = await supabaseClient
   .from("records")
   .insert(records);
@@ -142,9 +162,6 @@ if (error) {
 document.getElementById("status").innerHTML =
   "Upload Success : " + records.length + " Records";
 
-document.getElementById("status").innerHTML =
-"Rows Found : " + rows.length;
-
 /* NEXT STEP:
 Excel → Supabase Insert
 */
@@ -153,7 +170,7 @@ console.log(rows);
 
 alert(
 rows.length +
-" Records Ready"
+" Records Ready and Uploaded successfully!"
 );
 
 }
