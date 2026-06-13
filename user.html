@@ -77,7 +77,11 @@ if(masterData.length===0){
 
  const poles=[...new Set(
   masterData
-  .map(r=>String(r.pole_no||'').trim())
+  .map(r=>{
+    const pole = String(r.pole_no||'').trim();
+    const match = pole.match(/^[A-Za-z]+/);
+    return match ? match[0].toUpperCase() : null;
+  })
   .filter(Boolean)
  )];
 
@@ -99,7 +103,12 @@ const search=document.getElementById("searchBox").value.toLowerCase();
 let filtered=[...masterData];
 
 if(area) filtered=filtered.filter(r=>r.area===area);
-if(pole) filtered=filtered.filter(r=>(r.pole_no||'').startsWith(pole));
+if(pole){
+ filtered=filtered.filter(r=>{
+   const p = String(r.pole_no||'').toUpperCase();
+   return p.startsWith(pole.toUpperCase());
+ });
+}
 
 filtered = filtered.filter(r=>{
  const amt = Number(r.total_amt||0);
@@ -163,7 +172,12 @@ loadData = async function(){
  let filtered=[...masterData];
 
  if(area) filtered=filtered.filter(r=>r.area===area);
- if(pole) filtered=filtered.filter(r=>(r.pole_no||'').startsWith(pole));
+ if(pole){
+  filtered=filtered.filter(r=>{
+    const p = String(r.pole_no||'').toUpperCase();
+    return p.startsWith(pole.toUpperCase());
+  });
+ }
 
  filtered = filtered.filter(r=>{
   const amt = Number(r.total_amt||0);
