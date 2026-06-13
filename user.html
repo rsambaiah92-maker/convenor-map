@@ -29,6 +29,17 @@ th,td{border:1px solid #ccc;padding:8px}
   background:#fff;
   cursor:pointer;
 }
+
+/* Tooltip CSS */
+.scno-label{
+  background:white;
+  border:1px solid #333;
+  border-radius:4px;
+  padding:2px 4px;
+  font-size:10px;
+  font-weight:bold;
+  color:#000;
+}
 </style>
 </head>
 <body>
@@ -247,6 +258,16 @@ loadData = async function(){
 
    const m = L.marker([lat,lng], {icon}).addTo(map);
    
+   const t = L.tooltip({
+     permanent: true,
+     direction: "top",
+     offset: [0, -10],
+     className: "scno-label"
+   })
+   .setContent(String(r.scno || "").slice(-5))
+   .setLatLng([lat,lng])
+   .addTo(map);
+   
    m.bindPopup(
    "<b>"+(r.name||"")+"</b><br>"+
    "SCNO: "+(r.scno||"")+"<br>"+
@@ -259,7 +280,10 @@ loadData = async function(){
    "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>📍 Navigate</a><br><br>"+
    "<button onclick='showRoute("+lat+","+lng+")'>🛣 Route</button>"
    );
+   
+   // పుష్ చేయడం వలన పాత మార్కర్స్ తో పాటు టూల్ టిప్స్ కూడా క్లియర్ అవుతాయి
    markers.push(m);
+   markers.push(t);
   }
  });
 }
