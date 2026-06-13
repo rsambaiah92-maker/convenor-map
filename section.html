@@ -101,6 +101,9 @@ function excelDateToJSDate(serial) {
   return date.toISOString().split("T")[0];
 }
 
+// UI అప్‌డేట్ అవ్వడానికి చిన్న గ్యాప్ ఇచ్చే ఫంక్షన్
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 async function uploadExcel(){
 
 const file =
@@ -117,33 +120,36 @@ return;
 document.getElementById("progressBar").style.width = "0%";
 document.getElementById("progressBar").innerHTML = "0%";
 
-// --- మీరు మార్చమన్న కొత్త స్టెప్-బై-స్టెప్ స్టేటస్ కోడ్ ---
-document.getElementById("status").innerHTML =
-"Reading Excel File...";
+// --- స్టెప్-బై-స్టెప్ స్టేటస్ విత్ డిలే (Delay) ---
+document.getElementById("status").innerHTML = "Reading Excel File...";
+await delay(50); // స్క్రీన్ అప్‌డేట్ అవ్వడానికి బ్రేక్
 
 const data = await file.arrayBuffer();
 
-document.getElementById("status").innerHTML =
-"Opening Workbook...";
+document.getElementById("status").innerHTML = "Opening Workbook...";
+await delay(50); 
 
 const workbook = XLSX.read(data,{type:"array"});
 
-document.getElementById("status").innerHTML =
-"Reading Sheet...";
+document.getElementById("status").innerHTML = "Reading Sheet...";
+await delay(50); 
 
 const sheet =
 workbook.Sheets[
 workbook.SheetNames[0]
 ];
 
-document.getElementById("status").innerHTML =
-"Converting To JSON...";
+document.getElementById("status").innerHTML = "Converting To JSON...";
+await delay(50); 
 
 const rows =
 XLSX.utils.sheet_to_json(sheet);
 
+// మీరు అప్‌డేట్ చేయమన్న 1 సెకను బ్రేక్ కోడ్
 document.getElementById("status").innerHTML =
 "Rows Found : " + rows.length;
+
+await new Promise(resolve => setTimeout(resolve, 1000));
 // --- ఇక్కడి వరకు కొత్త స్టేటస్ కోడ్ ముగింపు ---
 
 const records = rows.map(row => ({
@@ -198,6 +204,7 @@ String(row["LONGITUDE"] || "").replace("E","")
 // --- పాత రికార్డ్స్ డిలీట్ చేసే కోడ్ ప్రారంభం ---
 document.getElementById("status").innerHTML =
 "Deleting Old Records...";
+await delay(50); 
 
 const { error: deleteError } = await supabaseClient
 .from("records")
@@ -210,12 +217,16 @@ if(deleteError){
  return;
 }
 
-document.getElementById("status").innerHTML =
-"Uploading New Records...";
+// --- మీరు మార్చమన్న కొత్త మెసేజ్ లు ---
+document.getElementById("status").innerHTML = "Old Records Deleted";
+await delay(500); // ఈ మెసేజ్ చదవడానికి ఒక అర సెకను సమయం ఇచ్చాము
+
+document.getElementById("status").innerHTML = "Starting Upload...";
+await delay(50); 
 // --- డిలీట్ చేసే కోడ్ ముగింపు ---
 
-// --- బ్యాచ్ (500) అప్లోడ్ & ప్రోగ్రెస్ బార్ కోడ్ ---
-const batchSize = 500;
+// --- బ్యాచ్ (200) అప్లోడ్ & ప్రోగ్రెస్ బార్ కోడ్ ---
+const batchSize = 200;
 
 for(let i = 0; i < records.length; i += batchSize){
 
@@ -244,7 +255,8 @@ for(let i = 0; i < records.length; i += batchSize){
     return;
   }
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  // అప్లోడ్ స్పీడ్ పెంచడానికి గ్యాప్ ని 50ms కి మార్చబడింది
+  await new Promise(resolve => setTimeout(resolve, 50));
 }
 
 document.getElementById("status").innerHTML =
