@@ -117,22 +117,35 @@ return;
 document.getElementById("progressBar").style.width = "0%";
 document.getElementById("progressBar").innerHTML = "0%";
 
+// --- మీరు మార్చమన్న కొత్త స్టెప్-బై-స్టెప్ స్టేటస్ కోడ్ ---
 document.getElementById("status").innerHTML =
 "Reading Excel File...";
 
-const data =
-await file.arrayBuffer();
+const data = await file.arrayBuffer();
 
-const workbook =
-XLSX.read(data);
+document.getElementById("status").innerHTML =
+"Opening Workbook...";
+
+const workbook = XLSX.read(data,{type:"array"});
+
+document.getElementById("status").innerHTML =
+"Reading Sheet...";
 
 const sheet =
 workbook.Sheets[
 workbook.SheetNames[0]
 ];
 
+document.getElementById("status").innerHTML =
+"Converting To JSON...";
+
 const rows =
 XLSX.utils.sheet_to_json(sheet);
+
+document.getElementById("status").innerHTML =
+"Rows Found : " + rows.length;
+// --- ఇక్కడి వరకు కొత్త స్టేటస్ కోడ్ ముగింపు ---
+
 const records = rows.map(row => ({
   section: row["SECTION"] || "",
   area: row["AREA"] || "",
