@@ -113,8 +113,18 @@ const records = rows.map(row => ({
   subcat: row["SUBCAT"] || "",
   pole_no: row["POLE NO"] || "",
   due_date: row["DUE DATE"] || "",
-  current_demand: Number(row["CURRENT DEMAND"] || 0),
-  arrears: Number(row["ARREARS"] || 0),
+  
+  current_demand: Number(
+    row["CURRENT DEMAND AMT"] ??
+    row["CURRENT DEMAND"] ??
+    0
+  ),
+  arrears: Number(
+    row["ARREARS AMT"] ??
+    row["ARREARS"] ??
+    0
+  ),
+
   total_amt: Number(row["TOTAL AMT"] || 0),
   mobile_no: row["MOBILE NO"] || "",
   latitude: parseFloat(
@@ -126,6 +136,16 @@ String(row["LONGITUDE"] || "").replace("E","")
 ),
   load: row["LOAD"] || "",
   rmd: row["RMD"] || "",
+  
+  // మీరు యాడ్ చేయమన్న కొత్త ఫీల్డ్స్
+  billing_cycle: row["BILLING CYCLE"] || "",
+  status: row["STATUS"] || "",
+  acd_due_amt: Number(row["ACD DUE AMT"] || 0),
+  last_paid_date: row["LAST PAID DATE"] || "",
+  structure_code: row["STRUCUTRE CODE"] || "",
+  digital_structure_code: row["DIGITAL STRUCUTRE CODE"] || "",
+  machine_id: row["MACHINE ID"] || "",
+
   uploaded_by: "section"
 }));
 
