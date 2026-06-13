@@ -75,9 +75,19 @@ if(masterData.length===0){
  const area=document.getElementById("areaFilter");
  areas.forEach(a=>area.innerHTML+=`<option value="${a}">${a}</option>`);
 
- const poles=[...new Set(masterData.map(r=>(r.pole_no||'').split('-')[0]).filter(Boolean))];
+ const poles=[...new Set(
+  masterData
+  .map(r=>String(r.pole_no||'').trim())
+  .filter(Boolean)
+ )];
+
  const pole=document.getElementById("poleFilter");
- poles.forEach(p=>pole.innerHTML+=`<option value="${p}">${p}</option>`);
+
+ pole.innerHTML='<option value="">ALL POLES</option>';
+
+ poles.forEach(p=>{
+  pole.innerHTML += `<option value="${p}">${p}</option>`;
+ });
 }
 
 const area=document.getElementById("areaFilter").value;
@@ -174,8 +184,9 @@ loadData = async function(){
    "SCNO: "+(r.scno||"")+"<br>"+
    "Mobile: "+(r.mobile_no||"")+"<br>"+
    "Amount: "+(r.total_amt||0)+"<br><br>"+
-   "<a href='tel:"+(r.mobile_no||"")+"'>Call</a> | "+
-   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>Navigate</a>"
+   "<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a><br><br>"+
+   "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>🟢 WhatsApp</a><br><br>"+
+   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>📍 Navigate</a>"
    );
    markers.push(m);
   }
