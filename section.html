@@ -74,6 +74,17 @@ UPLOAD EXCEL
 
 <script>
 
+// --- కొత్తగా యాడ్ చేసిన Excel Date Conversion ఫంక్షన్ ---
+function excelDateToJSDate(serial) {
+  if (!serial) return "";
+  
+  const utc_days = Math.floor(serial - 25569);
+  const utc_value = utc_days * 86400;
+  const date = new Date(utc_value * 1000);
+
+  return date.toISOString().split("T")[0];
+}
+
 async function uploadExcel(){
 
 const file =
@@ -112,7 +123,9 @@ const records = rows.map(row => ({
   cat: row["CAT"] || "",
   subcat: row["SUBCAT"] || "",
   pole_no: row["POLE NO"] || "",
-  due_date: row["DUE DATE"] || "",
+  
+  // అప్‌డేట్ చేయబడిన due_date లైన్
+  due_date: excelDateToJSDate(row["DUE DATE"]),
   
   current_demand: Number(
     row["CURRENT DEMAND AMT"] ??
@@ -137,7 +150,6 @@ String(row["LONGITUDE"] || "").replace("E","")
   load: row["LOAD"] || "",
   rmd: row["RMD"] || "",
   
-  // మీరు యాడ్ చేయమన్న కొత్త ఫీల్డ్స్
   billing_cycle: row["BILLING CYCLE"] || "",
   status: row["STATUS"] || "",
   acd_due_amt: Number(row["ACD DUE AMT"] || 0),
