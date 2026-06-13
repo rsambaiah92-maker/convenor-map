@@ -13,6 +13,22 @@ table{width:100%;border-collapse:collapse;display:block;overflow:auto}
 th,td{border:1px solid #ccc;padding:8px}
 #map{height:500px;border:1px solid #ccc;margin-top:10px}
 .amount-inputs {display: flex; gap: 10px;}
+
+.map-wrapper{
+  position:relative;
+}
+#myLocationBtn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:1000;
+  width:auto;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  background:#fff;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -44,9 +60,10 @@ Total Amount :
 
 <button onclick="loadData()">Apply Filters</button>
 
-<button onclick="showMyLocation()">📍 My Location</button>
-
-<div id="map"></div>
+<div class="map-wrapper">
+  <button id="myLocationBtn" onclick="showMyLocation()">📍 My Location</button>
+  <div id="map"></div>
+</div>
 
 <table>
 <thead>
