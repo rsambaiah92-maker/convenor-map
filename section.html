@@ -8,9 +8,7 @@
 <title>Section Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
 <script src="js/config.js"></script>
 
 <style>
@@ -90,15 +88,25 @@ UPLOAD EXCEL
 
 <script>
 
-// --- Excel Date Conversion ఫంక్షన్ ---
+// --- సురక్షితమైన Excel Date Conversion ఫంక్షన్ ---
 function excelDateToJSDate(serial) {
   if (!serial) return "";
   
-  const utc_days = Math.floor(serial - 25569);
-  const utc_value = utc_days * 86400;
-  const date = new Date(utc_value * 1000);
+  try {
+    // ఒకవేళ అది అప్పటికే స్ట్రింగ్ ఫార్మాట్ లో ఉంటే అలాగే పంపించేయ్
+    if (typeof serial === "string") return serial;
 
-  return date.toISOString().split("T")[0];
+    const utc_days = Math.floor(Number(serial) - 25569);
+    const utc_value = utc_days * 86400;
+    const date = new Date(utc_value * 1000);
+
+    // ఒకవేళ కన్వర్ట్ అయిన డేట్ invalid అయితే ఖాళీగా పంపించు
+    if (isNaN(date.getTime())) return ""; 
+
+    return date.toISOString().split("T")[0];
+  } catch(e) {
+    return String(serial);
+  }
 }
 
 // UI అప్‌డేట్ అవ్వడానికి చిన్న గ్యాప్ ఇచ్చే ఫంక్షన్
@@ -106,179 +114,133 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function uploadExcel(){
 
-const file =
-document.getElementById("excelFile").files[0];
+  // ఏ ఎర్రర్ వచ్చినా పట్టుకోవడానికి try-catch వాడాము
+  try {
+    const file = document.getElementById("excelFile").files[0];
 
-if(!file){
+    if(!file){
+      alert("Select Excel File");
+      return;
+    }
 
-alert("Select Excel File");
+    document.getElementById("progressBar").style.width = "0%";
+    document.getElementById("progressBar").innerHTML = "0%";
 
-return;
-}
+    document.getElementById("status").innerHTML = "Reading Excel File...";
+    await delay(50); 
 
-// అప్లోడ్ స్టార్ట్ అయ్యే ముందు ప్రోగ్రెస్ బార్ ని 0% కి రీసెట్ చేయడం
-document.getElementById("progressBar").style.width = "0%";
-document.getElementById("progressBar").innerHTML = "0%";
+    const data = await file.arrayBuffer();
 
-// --- స్టెప్-బై-స్టెప్ స్టేటస్ విత్ డిలే (Delay) ---
-document.getElementById("status").innerHTML = "Reading Excel File...";
-await delay(50); // స్క్రీన్ అప్‌డేట్ అవ్వడానికి బ్రేక్
+    document.getElementById("status").innerHTML = "Opening Workbook...";
+    await delay(50); 
 
-const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data,{type:"array"});
 
-document.getElementById("status").innerHTML = "Opening Workbook...";
-await delay(50); 
+    document.getElementById("status").innerHTML = "Reading Sheet...";
+    await delay(50); 
 
-const workbook = XLSX.read(data,{type:"array"});
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-document.getElementById("status").innerHTML = "Reading Sheet...";
-await delay(50); 
+    document.getElementById("status").innerHTML = "Converting To JSON...";
+    await delay(50); 
 
-const sheet =
-workbook.Sheets[
-workbook.SheetNames[0]
-];
+    const rows = XLSX.utils.sheet_to_json(sheet);
 
-document.getElementById("status").innerHTML = "Converting To JSON...";
-await delay(50); 
+    document.getElementById("status").innerHTML = "Rows Found : " + rows.length;
+    await delay(1000);
 
-const rows =
-XLSX.utils.sheet_to_json(sheet);
+    document.getElementById("status").innerHTML = "Creating Records...";
+    await delay(50);
 
-// 1 సెకను బ్రేక్ కోడ్
-document.getElementById("status").innerHTML =
-"Rows Found : " + rows.length;
-await new Promise(resolve => setTimeout(resolve, 1000));
+    const records = rows.map(row => ({
+      section: row["SECTION"] || "",
+      area: row["AREA"] || "",
+      scno: row["SCNO"] || "",
+      uan_no: row["UAN NO"] || "",
+      name: row["NAME"] || "",
+      address: row["ADDRESS"] || "",
+      cat: row["CAT"] || "",
+      subcat: row["SUBCAT"] || "",
+      pole_no: row["POLE NO"] || "",
+      
+      due_date: excelDateToJSDate(row["DUE DATE"]),
+      
+      current_demand: Number(row["CURRENT DEMAND AMT"] ?? row["CURRENT DEMAND"] ?? 0),
+      arrears: Number(row["ARREARS AMT"] ?? row["ARREARS"] ?? 0),
+      total_amt: Number(row["TOTAL AMT"] || 0),
+      
+      mobile_no: row["MOBILE NO"] || "",
+      latitude: parseFloat(String(row["LATITUDE"] || "").replace("N","")),
+      longitude: parseFloat(String(row["LONGITUDE"] || "").replace("E","")),
+      load: row["LOAD"] || "",
+      rmd: row["RMD"] || "",
+      
+      billing_cycle: row["BILLING CYCLE"] || "",
+      status: row["STATUS"] || "",
+      acd_due_amt: Number(row["ACD DUE AMT"] || 0),
+      
+      last_paid_date: excelDateToJSDate(row["LAST PAID DATE"]),
+      
+      structure_code: row["STRUCUTRE CODE"] || "",
+      digital_structure_code: row["DIGITAL STRUCUTRE CODE"] || "",
+      machine_id: row["MACHINE ID"] || "",
 
-// --- మీరు అడిగిన కొత్త లైన్ ---
-document.getElementById("status").innerHTML = "Creating Records...";
-await delay(50);
-// --- ఇక్కడి వరకు కొత్త స్టేటస్ కోడ్ ముగింపు ---
+      uploaded_by: "section"
+    }));
 
-const records = rows.map(row => ({
-  section: row["SECTION"] || "",
-  area: row["AREA"] || "",
-  scno: row["SCNO"] || "",
-  uan_no: row["UAN NO"] || "",
-  name: row["NAME"] || "",
-  address: row["ADDRESS"] || "",
-  cat: row["CAT"] || "",
-  subcat: row["SUBCAT"] || "",
-  pole_no: row["POLE NO"] || "",
-  
-  due_date: excelDateToJSDate(row["DUE DATE"]),
-  
-  current_demand: Number(
-    row["CURRENT DEMAND AMT"] ??
-    row["CURRENT DEMAND"] ??
-    0
-  ),
-  arrears: Number(
-    row["ARREARS AMT"] ??
-    row["ARREARS"] ??
-    0
-  ),
+    document.getElementById("status").innerHTML = "Deleting Old Records...";
+    await delay(50); 
 
-  total_amt: Number(row["TOTAL AMT"] || 0),
-  mobile_no: row["MOBILE NO"] || "",
-  latitude: parseFloat(
-String(row["LATITUDE"] || "").replace("N","")
-),
-
-longitude: parseFloat(
-String(row["LONGITUDE"] || "").replace("E","")
-),
-  load: row["LOAD"] || "",
-  rmd: row["RMD"] || "",
-  
-  billing_cycle: row["BILLING CYCLE"] || "",
-  status: row["STATUS"] || "",
-  acd_due_amt: Number(row["ACD DUE AMT"] || 0),
-  
-  last_paid_date: excelDateToJSDate(row["LAST PAID DATE"]),
-  
-  structure_code: row["STRUCUTRE CODE"] || "",
-  digital_structure_code: row["DIGITAL STRUCUTRE CODE"] || "",
-  machine_id: row["MACHINE ID"] || "",
-
-  uploaded_by: "section"
-}));
-
-// --- పాత రికార్డ్స్ డిలీట్ చేసే కోడ్ ప్రారంభం ---
-document.getElementById("status").innerHTML =
-"Deleting Old Records...";
-await delay(50); 
-
-const { error: deleteError } = await supabaseClient
-.from("records")
-.delete()
-.neq("id",0);
-
-if(deleteError){
- document.getElementById("status").innerHTML =
- "Delete Error : " + deleteError.message;
- return;
-}
-
-// --- మీరు మార్చమన్న కొత్త మెసేజ్ లు ---
-document.getElementById("status").innerHTML = "Old Records Deleted";
-await delay(500); // ఈ మెసేజ్ చదవడానికి ఒక అర సెకను సమయం ఇచ్చాము
-
-document.getElementById("status").innerHTML = "Starting Upload...";
-await delay(50); 
-// --- డిలీట్ చేసే కోడ్ ముగింపు ---
-
-// --- బ్యాచ్ (200) అప్లోడ్ & ప్రోగ్రెస్ బార్ కోడ్ ---
-const batchSize = 200;
-
-for(let i = 0; i < records.length; i += batchSize){
-
-  const batch = records.slice(i, i + batchSize);
-
-  const percent = Math.round(
-    ((i + batch.length) / records.length) * 100
-  );
-
-  document.getElementById("status").innerHTML =
-    `Uploading ${Math.min(i + batch.length, records.length)} / ${records.length}`;
-
-  document.getElementById("progressBar").style.width =
-    percent + "%";
-
-  document.getElementById("progressBar").innerHTML =
-    percent + "%";
-
-  const { error } = await supabaseClient
+    const { error: deleteError } = await supabaseClient
     .from("records")
-    .insert(batch);
+    .delete()
+    .neq("id",0);
 
-  if(error){
-    document.getElementById("status").innerHTML =
-      "Upload Error : " + error.message;
-    return;
+    if(deleteError){
+     document.getElementById("status").innerHTML = "<span style='color:red;'>Delete Error : " + deleteError.message + "</span>";
+     return;
+    }
+
+    document.getElementById("status").innerHTML = "Old Records Deleted";
+    await delay(500); 
+
+    document.getElementById("status").innerHTML = "Starting Upload...";
+    await delay(50); 
+
+    const batchSize = 200;
+
+    for(let i = 0; i < records.length; i += batchSize){
+
+      const batch = records.slice(i, i + batchSize);
+      const percent = Math.round(((i + batch.length) / records.length) * 100);
+
+      document.getElementById("status").innerHTML = `Uploading ${Math.min(i + batch.length, records.length)} / ${records.length}`;
+      document.getElementById("progressBar").style.width = percent + "%";
+      document.getElementById("progressBar").innerHTML = percent + "%";
+
+      const { error } = await supabaseClient
+        .from("records")
+        .insert(batch);
+
+      if(error){
+        document.getElementById("status").innerHTML = "<span style='color:red;'>Upload Error : " + error.message + "</span>";
+        return;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
+    document.getElementById("status").innerHTML = "Upload Success : " + records.length + " Records";
+    document.getElementById("progressBar").style.width = "100%";
+    document.getElementById("progressBar").innerHTML = "100%";
+
+    alert(records.length + " Records Ready and Uploaded successfully!");
+
+  } catch (error) {
+    // ఏదైనా ఎర్రర్ వస్తే అది స్క్రీన్ మీద కనిపించేలా రాశాను
+    console.error(error);
+    document.getElementById("status").innerHTML = "<span style='color:red;'>Code Error : " + error.message + "</span>";
   }
-
-  // అప్లోడ్ స్పీడ్ పెంచడానికి గ్యాప్ ని 50ms కి మార్చబడింది
-  await new Promise(resolve => setTimeout(resolve, 50));
-}
-
-document.getElementById("status").innerHTML =
-  "Upload Success : " + records.length + " Records";
-
-document.getElementById("progressBar").style.width = "100%";
-document.getElementById("progressBar").innerHTML = "100%";
-
-/* NEXT STEP:
-Excel → Supabase Insert
-*/
-
-console.log(rows);
-
-alert(
-records.length +
-" Records Ready and Uploaded successfully!"
-);
-
 }
 
 </script>
