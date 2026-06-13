@@ -74,7 +74,7 @@ UPLOAD EXCEL
 
 <script>
 
-// --- కొత్తగా యాడ్ చేసిన Excel Date Conversion ఫంక్షన్ ---
+// --- Excel Date Conversion ఫంక్షన్ ---
 function excelDateToJSDate(serial) {
   if (!serial) return "";
   
@@ -124,7 +124,6 @@ const records = rows.map(row => ({
   subcat: row["SUBCAT"] || "",
   pole_no: row["POLE NO"] || "",
   
-  // అప్‌డేట్ చేయబడిన due_date లైన్
   due_date: excelDateToJSDate(row["DUE DATE"]),
   
   current_demand: Number(
@@ -153,7 +152,9 @@ String(row["LONGITUDE"] || "").replace("E","")
   billing_cycle: row["BILLING CYCLE"] || "",
   status: row["STATUS"] || "",
   acd_due_amt: Number(row["ACD DUE AMT"] || 0),
-  last_paid_date: row["LAST PAID DATE"] || "",
+  
+  last_paid_date: excelDateToJSDate(row["LAST PAID DATE"]),
+  
   structure_code: row["STRUCUTRE CODE"] || "",
   digital_structure_code: row["DIGITAL STRUCUTRE CODE"] || "",
   machine_id: row["MACHINE ID"] || "",
@@ -180,15 +181,27 @@ document.getElementById("status").innerHTML =
 "Uploading New Records...";
 // --- డిలీట్ చేసే కోడ్ ముగింపు ---
 
-// కొత్త రికార్డ్స్ ఇన్సర్ట్ (Upload) చేసే కోడ్
-const { error } = await supabaseClient
-  .from("records")
-  .insert(records);
+// --- మీరు ఇచ్చిన కొత్త బ్యాచ్ అప్లోడ్ కోడ్ ---
+const batchSize = 1000;
 
-if (error) {
+for(let i = 0; i < records.length; i += batchSize){
+
+  const batch = records.slice(i, i + batchSize);
+
   document.getElementById("status").innerHTML =
-    "Upload Error : " + error.message;
-  return;
+    `Uploading ${Math.min(i + batch.length, records.length)} / ${records.length}`;
+
+  const { error } = await supabaseClient
+    .from("records")
+    .insert(batch);
+
+  if(error){
+    document.getElementById("status").innerHTML =
+      "Upload Error : " + error.message;
+    return;
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 2000));
 }
 
 document.getElementById("status").innerHTML =
@@ -201,7 +214,7 @@ Excel → Supabase Insert
 console.log(rows);
 
 alert(
-rows.length +
+records.length +
 " Records Ready and Uploaded successfully!"
 );
 
