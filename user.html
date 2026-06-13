@@ -19,7 +19,11 @@ th,td{border:1px solid #ccc;padding:8px}
 <h2>TGNPDCL USER DASHBOARD</h2>
 
 <div class="card">
-Selected Services: <span id="totalRecords">0</span>
+Selected Services:
+<span id="totalRecords">0</span>
+<br><br>
+Total Amount :
+₹<span id="totalAmount">0</span>
 </div>
 
 <input type="text" id="searchBox" placeholder="Search">
@@ -123,6 +127,13 @@ if(search){
 
 document.getElementById("totalRecords").innerText=filtered.length;
 
+let total=0;
+filtered.forEach(r=>{
+ total += Number(r.total_amt||0);
+});
+
+document.getElementById("totalAmount").innerText = total;
+
 let html='';
 filtered.forEach(r=>{
  html+=`<tr>
@@ -213,6 +224,7 @@ document.getElementById("areaFilter").onchange=()=>{
  clearMarkers();
  document.getElementById("tableBody").innerHTML="";
  document.getElementById("totalRecords").innerText="0";
+ document.getElementById("totalAmount").innerText="0";
  document.getElementById("poleFilter").selectedIndex=0;
 };
 
@@ -230,6 +242,7 @@ window.onload = async () => {
  clearMarkers();
  document.getElementById("tableBody").innerHTML = "";
  document.getElementById("totalRecords").innerText = "0";
+ document.getElementById("totalAmount").innerText = "0";
 };
 </script>
 
