@@ -294,15 +294,44 @@ loadData = async function(){
  });
 }
 
-document.getElementById("areaFilter").onchange=()=>{
+// ఏరియా మార్చినప్పుడు పోల్స్ కూడా డైనమిక్ గా మారడానికి ఇక్కడ కోడ్ అప్డేట్ చేయబడింది
+document.getElementById("areaFilter").onchange = async () => {
  clearMarkers();
  document.getElementById("tableBody").innerHTML="";
  document.getElementById("totalRecords").innerText="0";
  document.getElementById("totalAmount").innerText="0";
- document.getElementById("poleFilter").selectedIndex=0;
+ 
+ const poleDropdown = document.getElementById("poleFilter");
+ poleDropdown.innerHTML = '<option value="">ALL POLES</option>'; // ముందు పోల్స్ డ్రాప్‌డౌన్ ని క్లియర్ చేస్తున్నాం
 
  [...document.getElementById("catFilter").options]
  .forEach(opt => opt.selected = false);
+
+ const selectedArea = document.getElementById("areaFilter").value;
+ if(!selectedArea) return; // ఏరియా ఏమి సెలెక్ట్ చేయకపోతే వదిలేయాలి
+
+ // సెలెక్ట్ చేసిన ఏరియా పోల్స్ ని డేటాబేస్ నుండి తెస్తున్నాం
+ const { data, error } = await supabaseClient
+   .from("records")
+   .select("pole_no")
+   .eq("area", selectedArea);
+
+ if(error){
+   console.error(error.message);
+   return;
+ }
+
+ const poles = [...new Set(
+   data.map(r=>{
+     const pole = String(r.pole_no||"");
+     const match = pole.match(/^[A-Za-z]+/);
+     return match ? match[0].toUpperCase() : null;
+   }).filter(Boolean)
+ )];
+
+ poles.forEach(p=>{
+   poleDropdown.innerHTML += `<option value="${p}">${p}</option>`;
+ });
 };
 
 document.getElementById("poleFilter").onchange=()=>{
@@ -363,11 +392,12 @@ function showRoute(lat,lng){
   });
 }
 
+// పేజీ లోడ్ అయినప్పుడు కేవలం ఏరియాలు మాత్రమే తెస్తున్నాం
 window.onload = async () => {
 
  const { data, error } = await supabaseClient
  .from("records")
- .select("area,pole_no")
+ .select("area")
  .range(0,12000);
 
  if(error){
@@ -379,34 +409,10 @@ window.onload = async () => {
  data.map(r => r.area).filter(Boolean)
  )];
 
- const area =
- document.getElementById("areaFilter");
+ const area = document.getElementById("areaFilter");
 
  areas.forEach(a=>{
-   area.innerHTML +=
-   `<option value="${a}">${a}</option>`;
- });
-
- const poles = [...new Set(
- data.map(r=>{
-   const pole =
-   String(r.pole_no||"");
-
-   const match =
-   pole.match(/^[A-Za-z]+/);
-
-   return match ?
-   match[0].toUpperCase() : null;
-
- }).filter(Boolean)
- )];
-
- const pole =
- document.getElementById("poleFilter");
-
- poles.forEach(p=>{
-   pole.innerHTML +=
-   `<option value="${p}">${p}</option>`;
+   area.innerHTML += `<option value="${a}">${a}</option>`;
  });
 
 };
