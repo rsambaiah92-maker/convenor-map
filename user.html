@@ -97,87 +97,70 @@ let masterData=[];
 
 async function loadData(){
 
-if(masterData.length===0){
- const {data,error}=await supabaseClient.from("records").select("*");
- if(error){alert(error.message);return;}
- masterData=data||[];
- alert("Records Loaded : " + masterData.length);
+ const area=document.getElementById("areaFilter").value;
 
- const areas=[...new Set(
- masterData
- .map(r=>String(r.area||'').trim())
- .filter(Boolean)
- )];
- const area=document.getElementById("areaFilter");
- areas.forEach(a=>area.innerHTML+=`<option value="${a}">${a}</option>`);
+ let query = supabaseClient
+   .from("records")
+   .select("*");
 
- const poles=[...new Set(
-  masterData
-  .map(r=>{
-    const pole = String(r.pole_no||'').trim();
-    const match = pole.match(/^[A-Za-z]+/);
-    return match ? match[0].toUpperCase() : null;
-  })
-  .filter(Boolean)
- )];
+ if(area){
+   query = query.eq("area", area);
+ }
 
- const pole=document.getElementById("poleFilter");
+ const { data, error } = await query;
 
- pole.innerHTML='<option value="">ALL POLES</option>';
+ if(error){
+   alert(error.message);
+   return;
+ }
 
- poles.forEach(p=>{
-  pole.innerHTML += `<option value="${p}">${p}</option>`;
+ let filtered = data || [];
+ masterData = filtered; // మ్యాప్ కోసం డేటాను పాస్ చేయడానికి
+
+ const pole=document.getElementById("poleFilter").value;
+ const minAmt = Number(document.getElementById("minAmount").value||0);
+ const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
+ const search=document.getElementById("searchBox").value.toLowerCase();
+
+ if(pole){
+  filtered=filtered.filter(r=>{
+    const p = String(r.pole_no||'').toUpperCase();
+    return p.startsWith(pole.toUpperCase());
+  });
+ }
+
+ filtered = filtered.filter(r=>{
+  const amt = Number(r.total_amt||0);
+  return amt >= minAmt && amt <= maxAmt;
  });
-}
 
-const area=document.getElementById("areaFilter").value;
-const pole=document.getElementById("poleFilter").value;
-const minAmt = Number(document.getElementById("minAmount").value||0);
-const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
-const search=document.getElementById("searchBox").value.toLowerCase();
+ if(search){
+  filtered=filtered.filter(r=>
+  JSON.stringify(r).toLowerCase().includes(search)
+  );
+ }
 
-let filtered=[...masterData];
+ document.getElementById("totalRecords").innerText=filtered.length;
 
-if(area) filtered=filtered.filter(r=>r.area===area);
-if(pole){
- filtered=filtered.filter(r=>{
-   const p = String(r.pole_no||'').toUpperCase();
-   return p.startsWith(pole.toUpperCase());
+ let total=0;
+ filtered.forEach(r=>{
+  total += Number(r.total_amt||0);
  });
-}
 
-filtered = filtered.filter(r=>{
- const amt = Number(r.total_amt||0);
- return amt >= minAmt && amt <= maxAmt;
-});
+ document.getElementById("totalAmount").innerText = total;
 
-if(search){
- filtered=filtered.filter(r=>
- JSON.stringify(r).toLowerCase().includes(search)
- );
-}
+ let html='';
+ filtered.forEach(r=>{
+  html+=`<tr>
+  <td>${r.scno||''}</td>
+  <td>${r.name||''}</td>
+  <td>${r.mobile_no||''}</td>
+  <td>${r.total_amt||0}</td>
+  <td><a target="_blank" href="https://maps.google.com/?q=${r.latitude},${r.longitude}">MAP</a></td>
+  </tr>`;
+ });
 
-document.getElementById("totalRecords").innerText=filtered.length;
-
-let total=0;
-filtered.forEach(r=>{
- total += Number(r.total_amt||0);
-});
-
-document.getElementById("totalAmount").innerText = total;
-
-let html='';
-filtered.forEach(r=>{
- html+=`<tr>
- <td>${r.scno||''}</td>
- <td>${r.name||''}</td>
- <td>${r.mobile_no||''}</td>
- <td>${r.total_amt||0}</td>
- <td><a target="_blank" href="https://maps.google.com/?q=${r.latitude},${r.longitude}">MAP</a></td>
- </tr>`;
-});
-
-document.getElementById("tableBody").innerHTML=html;
+ document.getElementById("tableBody").innerHTML=html;
 }
 </script>
 
@@ -216,7 +199,7 @@ loadData = async function(){
 
  let filtered=[...masterData];
 
- if(area) filtered=filtered.filter(r=>r.area===area);
+ // Area filter డేటాబేస్ లోనే జరిగిపోతుంది కాబట్టి మళ్ళీ ఇక్కడ అవసరం లేదు
  if(pole){
   filtered=filtered.filter(r=>{
     const p = String(r.pole_no||'').toUpperCase();
@@ -282,7 +265,6 @@ loadData = async function(){
    "<button onclick='showRoute("+lat+","+lng+")'>🛣 Route</button>"
    );
    
-   // పుష్ చేయడం వలన పాత మార్కర్స్ తో పాటు టూల్ టిప్స్ కూడా క్లియర్ అవుతాయి
    markers.push(m);
    markers.push(t);
   }
@@ -356,10 +338,50 @@ function showRoute(lat,lng){
 }
 
 window.onload = async () => {
- clearMarkers();
- document.getElementById("tableBody").innerHTML = "";
- document.getElementById("totalRecords").innerText = "0";
- document.getElementById("totalAmount").innerText = "0";
+
+ const { data, error } = await supabaseClient
+ .from("records")
+ .select("area,pole_no");
+
+ if(error){
+   alert(error.message);
+   return;
+ }
+
+ const areas = [...new Set(
+ data.map(r => r.area).filter(Boolean)
+ )];
+
+ const area =
+ document.getElementById("areaFilter");
+
+ areas.forEach(a=>{
+   area.innerHTML +=
+   `<option value="${a}">${a}</option>`;
+ });
+
+ const poles = [...new Set(
+ data.map(r=>{
+   const pole =
+   String(r.pole_no||"");
+
+   const match =
+   pole.match(/^[A-Za-z]+/);
+
+   return match ?
+   match[0].toUpperCase() : null;
+
+ }).filter(Boolean)
+ )];
+
+ const pole =
+ document.getElementById("poleFilter");
+
+ poles.forEach(p=>{
+   pole.innerHTML +=
+   `<option value="${p}">${p}</option>`;
+ });
+
 };
 </script>
 
