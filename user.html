@@ -60,6 +60,21 @@ Total Amount :
 <option value="">ALL AREAS</option>
 </select>
 
+<div id="catFilterBox" style="margin-top:10px;">
+<b>Category Filter</b><br>
+
+<label><input type="checkbox" class="catCheck" value="1"> 1</label>
+<label><input type="checkbox" class="catCheck" value="2"> 2</label>
+<label><input type="checkbox" class="catCheck" value="3"> 3</label>
+<label><input type="checkbox" class="catCheck" value="4"> 4</label>
+<label><input type="checkbox" class="catCheck" value="5"> 5</label>
+<label><input type="checkbox" class="catCheck" value="6"> 6</label>
+<label><input type="checkbox" class="catCheck" value="7"> 7</label>
+<label><input type="checkbox" class="catCheck" value="8"> 8</label>
+<label><input type="checkbox" class="catCheck" value="9"> 9</label>
+
+</div>
+
 <select id="poleFilter">
 <option value="">ALL POLES</option>
 </select>
@@ -98,6 +113,11 @@ let masterData=[];
 async function loadData(){
 
  const area=document.getElementById("areaFilter").value;
+ 
+ if(!area){
+   alert("Please Select Area");
+   return;
+ }
 
  let query = supabaseClient
    .from("records")
@@ -105,6 +125,20 @@ async function loadData(){
 
  if(area){
    query = query.eq("area", area);
+ }
+
+ const pole=document.getElementById("poleFilter").value;
+ 
+ const selectedCats =
+ [...document.querySelectorAll('.catCheck:checked')]
+ .map(x => x.value);
+
+ if(pole){
+   query = query.ilike("pole_no", pole + "%");
+ }
+ 
+ if(selectedCats.length > 0){
+   query = query.in("cat", selectedCats);
  }
 
  const { data, error } = await query;
@@ -117,17 +151,9 @@ async function loadData(){
  let filtered = data || [];
  masterData = filtered; // మ్యాప్ కోసం డేటాను పాస్ చేయడానికి
 
- const pole=document.getElementById("poleFilter").value;
  const minAmt = Number(document.getElementById("minAmount").value||0);
  const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
  const search=document.getElementById("searchBox").value.toLowerCase();
-
- if(pole){
-  filtered=filtered.filter(r=>{
-    const p = String(r.pole_no||'').toUpperCase();
-    return p.startsWith(pole.toUpperCase());
-  });
- }
 
  filtered = filtered.filter(r=>{
   const amt = Number(r.total_amt||0);
@@ -192,6 +218,11 @@ loadData = async function(){
  clearMarkers();
 
  const area=document.getElementById("areaFilter").value;
+ 
+ if(!area){
+   return; // డబుల్ అలర్ట్ రాకుండా ఇక్కడ కేవలం రిటర్న్ చేయబడింది
+ }
+ 
  const pole=document.getElementById("poleFilter").value;
  const minAmt = Number(document.getElementById("minAmount").value||0);
  const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
@@ -199,13 +230,7 @@ loadData = async function(){
 
  let filtered=[...masterData];
 
- // Area filter డేటాబేస్ లోనే జరిగిపోతుంది కాబట్టి మళ్ళీ ఇక్కడ అవసరం లేదు
- if(pole){
-  filtered=filtered.filter(r=>{
-    const p = String(r.pole_no||'').toUpperCase();
-    return p.startsWith(pole.toUpperCase());
-  });
- }
+ // Area & Pole & Category filters డేటాబేస్ లోనే జరిగిపోతాయి కాబట్టి మళ్ళీ ఇక్కడ అవసరం లేదు
 
  filtered = filtered.filter(r=>{
   const amt = Number(r.total_amt||0);
@@ -341,7 +366,8 @@ window.onload = async () => {
 
  const { data, error } = await supabaseClient
  .from("records")
- .select("area,pole_no");
+ .select("area,pole_no")
+ .range(0,12000);
 
  if(error){
    alert(error.message);
