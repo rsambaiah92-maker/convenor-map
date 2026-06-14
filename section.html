@@ -93,14 +93,12 @@ function excelDateToJSDate(serial) {
   if (!serial) return "";
   
   try {
-    // ఒకవేళ అది అప్పటికే స్ట్రింగ్ ఫార్మాట్ లో ఉంటే అలాగే పంపించేయ్
     if (typeof serial === "string") return serial;
 
     const utc_days = Math.floor(Number(serial) - 25569);
     const utc_value = utc_days * 86400;
     const date = new Date(utc_value * 1000);
 
-    // ఒకవేళ కన్వర్ట్ అయిన డేట్ invalid అయితే ఖాళీగా పంపించు
     if (isNaN(date.getTime())) return ""; 
 
     return date.toISOString().split("T")[0];
@@ -114,7 +112,6 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function uploadExcel(){
 
-  // ఏ ఎర్రర్ వచ్చినా పట్టుకోవడానికి try-catch వాడాము
   try {
     const file = document.getElementById("excelFile").files[0];
 
@@ -191,14 +188,22 @@ async function uploadExcel(){
     document.getElementById("status").innerHTML = "Deleting Old Records...";
     await delay(50); 
 
-    const { error: deleteError } = await supabaseClient
-    .from("records")
-    .delete()
-    .neq("id",0);
+    // --- మీరు చెప్పిన సేఫ్ డిలీట్ కోడ్ ---
+    if (records.length > 0) {
+      const currentSection = records[0].section;
+      
+      const { error: deleteError } = await supabaseClient
+      .from("records")
+      .delete()
+      .eq("section", currentSection); // కేవలం ఈ సెక్షన్ డేటా మాత్రమే డిలీట్ అవుతుంది!
 
-    if(deleteError){
-     document.getElementById("status").innerHTML = "<span style='color:red;'>Delete Error : " + deleteError.message + "</span>";
-     return;
+      if(deleteError){
+       document.getElementById("status").innerHTML = "<span style='color:red;'>Delete Error : " + deleteError.message + "</span>";
+       return;
+      }
+    } else {
+      document.getElementById("status").innerHTML = "<span style='color:red;'>Error: No valid records found in Excel.</span>";
+      return;
     }
 
     document.getElementById("status").innerHTML = "Old Records Deleted";
@@ -237,7 +242,6 @@ async function uploadExcel(){
     alert(records.length + " Records Ready and Uploaded successfully!");
 
   } catch (error) {
-    // ఏదైనా ఎర్రర్ వస్తే అది స్క్రీన్ మీద కనిపించేలా రాశాను
     console.error(error);
     document.getElementById("status").innerHTML = "<span style='color:red;'>Code Error : " + error.message + "</span>";
   }
