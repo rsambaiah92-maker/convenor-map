@@ -302,6 +302,9 @@ document.getElementById("areaFilter").onchange=()=>{
  document.getElementById("totalRecords").innerText="0";
  document.getElementById("totalAmount").innerText="0";
  document.getElementById("poleFilter").selectedIndex=0;
+
+ document.querySelectorAll('.catCheck')
+ .forEach(c => c.checked = false);
 };
 
 document.getElementById("poleFilter").onchange=()=>{
