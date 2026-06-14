@@ -60,20 +60,17 @@ Total Amount :
 <option value="">ALL AREAS</option>
 </select>
 
-<div id="catFilterBox" style="margin-top:10px;">
-<b>Category Filter</b><br>
-
-<label><input type="checkbox" class="catCheck" value="1"> 1</label>
-<label><input type="checkbox" class="catCheck" value="2"> 2</label>
-<label><input type="checkbox" class="catCheck" value="3"> 3</label>
-<label><input type="checkbox" class="catCheck" value="4"> 4</label>
-<label><input type="checkbox" class="catCheck" value="5"> 5</label>
-<label><input type="checkbox" class="catCheck" value="6"> 6</label>
-<label><input type="checkbox" class="catCheck" value="7"> 7</label>
-<label><input type="checkbox" class="catCheck" value="8"> 8</label>
-<label><input type="checkbox" class="catCheck" value="9"> 9</label>
-
-</div>
+<select id="catFilter" multiple size="5">
+<option value="1">Category 1</option>
+<option value="2">Category 2</option>
+<option value="3">Category 3</option>
+<option value="4">Category 4</option>
+<option value="5">Category 5</option>
+<option value="6">Category 6</option>
+<option value="7">Category 7</option>
+<option value="8">Category 8</option>
+<option value="9">Category 9</option>
+</select>
 
 <select id="poleFilter">
 <option value="">ALL POLES</option>
@@ -130,8 +127,9 @@ async function loadData(){
  const pole=document.getElementById("poleFilter").value;
  
  const selectedCats =
- [...document.querySelectorAll('.catCheck:checked')]
- .map(x => x.value);
+ [...document.getElementById("catFilter").options]
+ .filter(opt => opt.selected)
+ .map(opt => opt.value);
 
  if(pole){
    query = query.ilike("pole_no", pole + "%");
@@ -303,8 +301,8 @@ document.getElementById("areaFilter").onchange=()=>{
  document.getElementById("totalAmount").innerText="0";
  document.getElementById("poleFilter").selectedIndex=0;
 
- document.querySelectorAll('.catCheck')
- .forEach(c => c.checked = false);
+ [...document.getElementById("catFilter").options]
+ .forEach(opt => opt.selected = false);
 };
 
 document.getElementById("poleFilter").onchange=()=>{
