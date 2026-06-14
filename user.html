@@ -11,17 +11,33 @@ input,select,button{width:100%;padding:12px;margin-top:8px;box-sizing:border-box
 .card{border:1px solid #ddd;padding:10px;margin-bottom:10px}
 table{width:100%;border-collapse:collapse;display:block;overflow:auto}
 th,td{border:1px solid #ccc;padding:8px}
-#map{height:500px;border:1px solid #ccc;margin-top:10px}
+#map{height:300px;border:1px solid #ccc;margin-top:10px}
 .amount-inputs {display: flex; gap: 10px;}
 
 .map-wrapper{
   position:relative;
 }
-#myLocationBtn{
+
+/* Close button by default hide లో ఉండాలి కాబట్టి display:none పెట్టాను */
+#closeMapBtn{
+  display:none; 
   position:absolute;
   top:10px;
   right:10px;
-  z-index:1000;
+  z-index:9999; /* మీరు చెప్పినట్లు ఇక్కడ మార్చాను */
+  width:auto;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  background:#fff;
+  cursor:pointer;
+}
+
+#myLocationBtn{
+  position:absolute;
+  top:50px;
+  right:10px;
+  z-index:9999; /* మీరు చెప్పినట్లు ఇక్కడ మార్చాను */
   width:auto;
   padding:8px 12px;
   border:none;
@@ -39,6 +55,17 @@ th,td{border:1px solid #ccc;padding:8px}
   font-size:10px;
   font-weight:bold;
   color:#000;
+}
+
+/* Full Map Mode CSS (ఫుల్ స్క్రీన్ కోసం) */
+.fullMapMode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999 !important;
+  margin: 0 !important;
 }
 </style>
 </head>
@@ -81,9 +108,13 @@ Total Amount :
   <input type="number" id="maxAmount" placeholder="Max Amount" value="1000000">
 </div>
 
-<button onclick="loadData()">Apply Filters</button>
+<div style="display: flex; gap: 10px;">
+  <button onclick="loadData()">Apply Filters</button>
+  <button onclick="openFullMap()">🗺 Full Screen Map</button>
+</div>
 
 <div class="map-wrapper">
+  <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
   <button id="myLocationBtn" onclick="showMyLocation()">📍 My Location</button>
   <div id="map"></div>
 </div>
@@ -116,9 +147,11 @@ async function loadData(){
    return;
  }
 
+ // 15000 రికార్డుల వరకు తెచ్చుకోవడానికి ఇక్కడ లిమిట్ పెట్టాను
  let query = supabaseClient
    .from("records")
-   .select("*");
+   .select("*")
+   .range(0, 15000); 
 
  if(area){
    query = query.eq("area", area);
@@ -175,6 +208,7 @@ async function loadData(){
 
  let html='';
  filtered.forEach(r=>{
+  // ఇక్కడ టేబుల్ లోని MAP బటన్ కు ఒరిజినల్ గూగుల్ మ్యాప్స్ లింక్ కరెక్ట్ గా అప్‌డేట్ చేశాను
   html+=`<tr>
   <td>${r.scno||''}</td>
   <td>${r.name||''}</td>
@@ -228,8 +262,6 @@ loadData = async function(){
 
  let filtered=[...masterData];
 
- // Area & Pole & Category filters డేటాబేస్ లోనే జరిగిపోతాయి కాబట్టి మళ్ళీ ఇక్కడ అవసరం లేదు
-
  filtered = filtered.filter(r=>{
   const amt = Number(r.total_amt||0);
   return amt >= minAmt && amt <= maxAmt;
@@ -275,6 +307,7 @@ loadData = async function(){
    .setLatLng([lat,lng])
    .addTo(map);
    
+   // ఇక్కడ పాపప్ లోని Navigate కు కూడా ఒరిజినల్ గూగుల్ మ్యాప్స్ రూట్ లింక్ కరెక్ట్ గా అప్‌డేట్ చేశాను
    m.bindPopup(
    "<b>"+(r.name||"")+"</b><br>"+
    "SCNO: "+(r.scno||"")+"<br>"+
@@ -284,7 +317,7 @@ loadData = async function(){
    "Amount: "+(r.total_amt||0)+"<br><br>"+
    "<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a><br><br>"+
    "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>🟢 WhatsApp</a><br><br>"+
-   "<a target='_blank' href='https://maps.google.com/?q="+lat+","+lng+"'>📍 Navigate</a><br><br>"+
+   "<a target='_blank' href='https://www.google.com/maps/dir/?api=1&destination="+lat+","+lng+"'>📍 Navigate</a><br><br>"+
    "<button onclick='showRoute("+lat+","+lng+")'>🛣 Route</button>"
    );
    
@@ -294,7 +327,6 @@ loadData = async function(){
  });
 }
 
-// ఏరియా మార్చినప్పుడు పోల్స్ కూడా డైనమిక్ గా మారడానికి ఇక్కడ కోడ్ అప్డేట్ చేయబడింది
 document.getElementById("areaFilter").onchange = async () => {
  clearMarkers();
  document.getElementById("tableBody").innerHTML="";
@@ -302,15 +334,14 @@ document.getElementById("areaFilter").onchange = async () => {
  document.getElementById("totalAmount").innerText="0";
  
  const poleDropdown = document.getElementById("poleFilter");
- poleDropdown.innerHTML = '<option value="">ALL POLES</option>'; // ముందు పోల్స్ డ్రాప్‌డౌన్ ని క్లియర్ చేస్తున్నాం
+ poleDropdown.innerHTML = '<option value="">ALL POLES</option>'; 
 
  [...document.getElementById("catFilter").options]
  .forEach(opt => opt.selected = false);
 
  const selectedArea = document.getElementById("areaFilter").value;
- if(!selectedArea) return; // ఏరియా ఏమి సెలెక్ట్ చేయకపోతే వదిలేయాలి
+ if(!selectedArea) return; 
 
- // సెలెక్ట్ చేసిన ఏరియా పోల్స్ ని డేటాబేస్ నుండి తెస్తున్నాం
  const { data, error } = await supabaseClient
    .from("records")
    .select("pole_no")
@@ -392,7 +423,6 @@ function showRoute(lat,lng){
   });
 }
 
-// పేజీ లోడ్ అయినప్పుడు కేవలం ఏరియాలు మాత్రమే తెస్తున్నాం
 window.onload = async () => {
 
  const { data, error } = await supabaseClient
@@ -416,6 +446,32 @@ window.onload = async () => {
  });
 
 };
+
+function openFullMap(){
+
+ document.getElementById("map")
+ .classList.add("fullMapMode");
+
+ document.getElementById("closeMapBtn")
+ .style.display="block";
+
+ setTimeout(()=>{
+   map.invalidateSize();
+ },300);
+}
+
+function closeFullMap(){
+
+ document.getElementById("map")
+ .classList.remove("fullMapMode");
+
+ document.getElementById("closeMapBtn")
+ .style.display="none";
+
+ setTimeout(()=>{
+   map.invalidateSize();
+ },300);
+}
 </script>
 
 </body>
