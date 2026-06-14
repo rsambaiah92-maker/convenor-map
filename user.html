@@ -65,7 +65,28 @@ th,td{border:1px solid #ccc;padding:8px}
   margin: 0 !important;
 }
 
-/* మీరు ఇచ్చిన Print CSS ఇక్కడ యాడ్ చేశాను */
+/* కొత్త హెడర్ కోసం మీరు ఇచ్చిన CSS */
+.header-box{
+  background:linear-gradient(135deg,#3b82f6,#60a5fa);
+  color:white;
+  text-align:center;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+.title{
+  font-size:24px;
+  font-weight:bold;
+}
+
+.subtitle{
+  font-size:14px;
+  margin-top:4px;
+  opacity:0.95;
+}
+
 @media print {
 
   #map,
@@ -90,7 +111,10 @@ th,td{border:1px solid #ccc;padding:8px}
 </head>
 <body>
 
-<h2>TGNPDCL USER DASHBOARD</h2>
+<div class="header-box">
+  <div class="title">⚡ TGNPDCL</div>
+  <div class="subtitle">Collection Services Dashboard</div>
+</div>
 
 <div class="card">
 Selected Services:
