@@ -45,7 +45,6 @@ th,td{border:1px solid #ccc;padding:8px}
   cursor:pointer;
 }
 
-/* మీరు ఇచ్చిన కంపాస్ బటన్ CSS ఇక్కడ యాడ్ చేశాను */
 #compassBtn{
   position:absolute;
   top:90px;
@@ -100,8 +99,32 @@ th,td{border:1px solid #ccc;padding:8px}
   opacity:0.95;
 }
 
+/* Category Box CSS */
+#catBox {
+  margin-top: 8px;
+}
+#catBox summary {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #fff;
+  font-weight: bold;
+}
+.cat-list {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background: #f9f9f9;
+}
+.cat-list label {
+  display: block;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
 @media print {
-  /* ప్రింట్ లో కంపాస్ బటన్ కూడా రాకుండా ఇక్కడ యాడ్ చేశాను */
   #map,
   #myLocationBtn,
   #compassBtn,
@@ -143,27 +166,18 @@ Total Amount :
 <option value="">ALL AREAS</option>
 </select>
 
-<details id="catBox" style="margin-top:8px;">
-  <summary style="
-    border:1px solid #ccc;
-    padding:12px;
-    border-radius:4px;
-    cursor:pointer;
-    background:#fff;
-  ">
-    ALL CATEGORIES
-  </summary>
-
-  <div style="padding:10px;border:1px solid #ccc;">
-    <label><input type="checkbox" class="catCheck" value="1"> Category 1</label><br>
-    <label><input type="checkbox" class="catCheck" value="2"> Category 2</label><br>
-    <label><input type="checkbox" class="catCheck" value="3"> Category 3</label><br>
-    <label><input type="checkbox" class="catCheck" value="4"> Category 4</label><br>
-    <label><input type="checkbox" class="catCheck" value="5"> Category 5</label><br>
-    <label><input type="checkbox" class="catCheck" value="6"> Category 6</label><br>
-    <label><input type="checkbox" class="catCheck" value="7"> Category 7</label><br>
-    <label><input type="checkbox" class="catCheck" value="8"> Category 8</label><br>
-    <label><input type="checkbox" class="catCheck" value="9"> Category 9</label>
+<details id="catBox">
+  <summary>📂 ALL CATEGORIES</summary>
+  <div class="cat-list">
+    <label><input type="checkbox" value="1"> Category 1</label>
+    <label><input type="checkbox" value="2"> Category 2</label>
+    <label><input type="checkbox" value="3"> Category 3</label>
+    <label><input type="checkbox" value="4"> Category 4</label>
+    <label><input type="checkbox" value="5"> Category 5</label>
+    <label><input type="checkbox" value="6"> Category 6</label>
+    <label><input type="checkbox" value="7"> Category 7</label>
+    <label><input type="checkbox" value="8"> Category 8</label>
+    <label><input type="checkbox" value="9"> Category 9</label>
   </div>
 </details>
 
@@ -238,8 +252,9 @@ async function loadData(){
 
  const pole=document.getElementById("poleFilter").value;
  
+ // ఇక్కడ మీరు క్లాస్ తీసేసినందువల్ల JS సెలెక్టర్ అప్‌డేట్ చేశాను
  const selectedCats =
-  [...document.querySelectorAll('.catCheck:checked')]
+  [...document.querySelectorAll('#catBox input[type="checkbox"]:checked')]
   .map(x => x.value);
 
  if(pole){
@@ -412,8 +427,9 @@ document.getElementById("areaFilter").onchange = async () => {
  const poleDropdown = document.getElementById("poleFilter");
  poleDropdown.innerHTML = '<option value="">ALL POLES</option>'; 
 
+ // ఏరియా మారినప్పుడు చెక్ బాక్స్ లు క్లియర్ అవ్వడానికి అప్‌డేట్ చేసిన కోడ్
  document
- .querySelectorAll('.catCheck')
+ .querySelectorAll('#catBox input[type="checkbox"]')
  .forEach(x => x.checked = false);
 
  const selectedArea = document.getElementById("areaFilter").value;
@@ -473,7 +489,6 @@ function showMyLocation(){
   });
 }
 
-// మీరు అడిగిన కంపాస్ ఫంక్షన్ ఇక్కడ కరెక్ట్ గా యాడ్ చేశాను
 function showCompass(){
 
   if(!navigator.geolocation){
