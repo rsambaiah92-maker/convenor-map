@@ -45,19 +45,6 @@ th,td{border:1px solid #ccc;padding:8px}
   cursor:pointer;
 }
 
-#compassBtn{
-  position:absolute;
-  top:90px;
-  right:10px;
-  z-index:9999;
-  width:auto;
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  background:#fff;
-  cursor:pointer;
-}
-
 .scno-label{
   background:white;
   border:1px solid #333;
@@ -99,7 +86,6 @@ th,td{border:1px solid #ccc;padding:8px}
   opacity:0.95;
 }
 
-/* మీరు ఇచ్చిన కొత్త Category Box CSS ఇక్కడ అప్‌డేట్ చేశాను */
 #catBox{
   margin-top:8px;
   border:1px solid #ccc;
@@ -128,7 +114,6 @@ th,td{border:1px solid #ccc;padding:8px}
 @media print {
   #map,
   #myLocationBtn,
-  #compassBtn,
   #closeMapBtn,
   #searchBox,
   #areaFilter,
@@ -161,7 +146,7 @@ Total Amount :
 ₹<span id="totalAmount">0</span>
 </div>
 
-<input type="text" id="searchBox" placeholder="Search">
+<input type="text" id="searchBox" placeholder="Search SCNO / Name / Mobile">
 
 <select id="areaFilter">
 <option value="">ALL AREAS</option>
@@ -210,7 +195,6 @@ Total Amount :
 <div class="map-wrapper">
   <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
   <button id="myLocationBtn" onclick="showMyLocation()">📍 My Location</button>
-  <button id="compassBtn" onclick="showCompass()">🧭 Compass</button>
   <div id="map"></div>
 </div>
 
@@ -253,7 +237,6 @@ async function loadData(){
 
  const pole=document.getElementById("poleFilter").value;
  
- // మీరు అడిగిన అప్‌డేటెడ్ జావాస్క్రిప్ట్ కోడ్ ఇక్కడ యాడ్ చేశాను
  const selectedCats =
   [...document.querySelectorAll('#catBox input[type="checkbox"]:checked')]
   .map(cb => cb.value);
@@ -298,7 +281,7 @@ async function loadData(){
   total += Number(r.total_amt||0);
  });
 
- document.getElementById("totalAmount").innerText = total;
+ document.getElementById("totalAmount").innerText = Number(total).toLocaleString("en-IN");
 
  let html='';
  filtered.forEach(r=>{
@@ -323,6 +306,7 @@ let map=L.map('map').setView([17.95,80.82],11);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
 let markers=[];
 let routingControl = null;
+let myLocationMarker = null;
 
 function clearMarkers(){
  markers.forEach(m=>map.removeLayer(m));
@@ -479,7 +463,11 @@ function showMyLocation(){
 
     map.setView([lat,lng],16);
 
-    L.marker([lat,lng])
+    if(myLocationMarker){
+      map.removeLayer(myLocationMarker);
+    }
+
+    myLocationMarker = L.marker([lat,lng])
       .addTo(map)
       .bindPopup("📍 My Location")
       .openPopup();
@@ -487,31 +475,6 @@ function showMyLocation(){
   },()=>{
     alert("Location permission denied");
   });
-}
-
-function showCompass(){
-
-  if(!navigator.geolocation){
-    alert("Location not supported");
-    return;
-  }
-
-  if(typeof DeviceOrientationEvent === "undefined"){
-    alert("Compass not supported");
-    return;
-  }
-
-  window.addEventListener("deviceorientation", function(event){
-
-    let heading = event.alpha;
-
-    if(heading !== null){
-      document.getElementById("compassBtn").innerHTML =
-      "🧭 " + Math.round(heading) + "°";
-    }
-
-  }, {once:true});
-
 }
 
 function showRoute(lat,lng){
