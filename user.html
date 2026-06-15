@@ -45,6 +45,20 @@ th,td{border:1px solid #ccc;padding:8px}
   cursor:pointer;
 }
 
+/* మీరు ఇచ్చిన కంపాస్ బటన్ CSS ఇక్కడ యాడ్ చేశాను */
+#compassBtn{
+  position:absolute;
+  top:90px;
+  right:10px;
+  z-index:9999;
+  width:auto;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  background:#fff;
+  cursor:pointer;
+}
+
 .scno-label{
   background:white;
   border:1px solid #333;
@@ -65,7 +79,6 @@ th,td{border:1px solid #ccc;padding:8px}
   margin: 0 !important;
 }
 
-/* కొత్త హెడర్ కోసం మీరు ఇచ్చిన CSS */
 .header-box{
   background:linear-gradient(135deg,#3b82f6,#60a5fa);
   color:white;
@@ -84,13 +97,14 @@ th,td{border:1px solid #ccc;padding:8px}
 .subtitle{
   font-size:15px;
   margin-top:6px;
-  opacity:0.95; /* ఇది అందంగా ఉండటానికి ఉంచాను */
+  opacity:0.95;
 }
 
 @media print {
-
+  /* ప్రింట్ లో కంపాస్ బటన్ కూడా రాకుండా ఇక్కడ యాడ్ చేశాను */
   #map,
   #myLocationBtn,
+  #compassBtn,
   #closeMapBtn,
   #searchBox,
   #areaFilter,
@@ -105,7 +119,6 @@ th,td{border:1px solid #ccc;padding:8px}
       width:100%;
       display:table;
   }
-
 }
 </style>
 </head>
@@ -182,6 +195,7 @@ Total Amount :
 <div class="map-wrapper">
   <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
   <button id="myLocationBtn" onclick="showMyLocation()">📍 My Location</button>
+  <button id="compassBtn" onclick="showCompass()">🧭 Compass</button>
   <div id="map"></div>
 </div>
 
@@ -457,6 +471,32 @@ function showMyLocation(){
   },()=>{
     alert("Location permission denied");
   });
+}
+
+// మీరు అడిగిన కంపాస్ ఫంక్షన్ ఇక్కడ కరెక్ట్ గా యాడ్ చేశాను
+function showCompass(){
+
+  if(!navigator.geolocation){
+    alert("Location not supported");
+    return;
+  }
+
+  if(typeof DeviceOrientationEvent === "undefined"){
+    alert("Compass not supported");
+    return;
+  }
+
+  window.addEventListener("deviceorientation", function(event){
+
+    let heading = event.alpha;
+
+    if(heading !== null){
+      document.getElementById("compassBtn").innerHTML =
+      "🧭 " + Math.round(heading) + "°";
+    }
+
+  }, {once:true});
+
 }
 
 function showRoute(lat,lng){
