@@ -99,25 +99,26 @@ th,td{border:1px solid #ccc;padding:8px}
   opacity:0.95;
 }
 
-/* Category Box CSS */
-#catBox {
-  margin-top: 8px;
+/* మీరు ఇచ్చిన కొత్త Category Box CSS ఇక్కడ అప్‌డేట్ చేశాను */
+#catBox{
+  margin-top:8px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
 }
-#catBox summary {
-  border: 1px solid #ccc;
-  padding: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  background: #fff;
-  font-weight: bold;
+
+#catBox summary{
+  cursor:pointer;
+  font-weight:bold;
 }
-.cat-list {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  background: #f9f9f9;
+
+.cat-list{
+  margin-top:8px;
+  max-height:180px;
+  overflow-y:auto;
 }
+
 .cat-list label {
   display: block;
   margin-bottom: 6px;
@@ -252,10 +253,10 @@ async function loadData(){
 
  const pole=document.getElementById("poleFilter").value;
  
- // ఇక్కడ మీరు క్లాస్ తీసేసినందువల్ల JS సెలెక్టర్ అప్‌డేట్ చేశాను
+ // మీరు అడిగిన అప్‌డేటెడ్ జావాస్క్రిప్ట్ కోడ్ ఇక్కడ యాడ్ చేశాను
  const selectedCats =
   [...document.querySelectorAll('#catBox input[type="checkbox"]:checked')]
-  .map(x => x.value);
+  .map(cb => cb.value);
 
  if(pole){
    query = query.ilike("pole_no", pole + "%");
@@ -427,7 +428,6 @@ document.getElementById("areaFilter").onchange = async () => {
  const poleDropdown = document.getElementById("poleFilter");
  poleDropdown.innerHTML = '<option value="">ALL POLES</option>'; 
 
- // ఏరియా మారినప్పుడు చెక్ బాక్స్ లు క్లియర్ అవ్వడానికి అప్‌డేట్ చేసిన కోడ్
  document
  .querySelectorAll('#catBox input[type="checkbox"]')
  .forEach(x => x.checked = false);
