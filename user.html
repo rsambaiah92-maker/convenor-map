@@ -68,7 +68,6 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   margin: 0 !important;
 }
 
-/* మీరు ఇచ్చిన కొత్త CSS ఇక్కడ అప్‌డేట్ చేశాను */
 .header-box{
   position:relative;
   background:linear-gradient(135deg,#3b82f6,#60a5fa);
@@ -154,6 +153,7 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   #catBox,
   #detailsModal,
   #remarkModal,
+  #employeeModal,
   .header-box,
   .card,
   .amount-inputs,
@@ -181,7 +181,8 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
 <div class="header-box">
   <div class="title">⚡ TGNPDCL</div>
   <div class="subtitle">Collection Services Dashboard</div>
-  <div class="profile-btn" onclick="openEmployeeModal()" id="profileIconBtn">
+  
+  <div class="profile-btn" id="profileBtn" onclick="openEmployeeModal()">
     U
   </div>
 </div>
@@ -375,6 +376,40 @@ Save Remark
 </button>
 
 <button onclick="closeRemark()">
+Close
+</button>
+
+</div>
+</div>
+
+<div id="employeeModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;">
+
+<div style="
+background:#fff;
+margin:60px auto;
+padding:15px;
+width:90%;
+max-width:400px;
+border-radius:10px;">
+
+<h3>👤 Employee Profile</h3>
+
+<p><b>Name :</b> <span id="empModalName"></span></p>
+
+<button onclick="setEmployeeName()">
+Change Name
+</button>
+
+<button onclick="closeEmployeeModal()">
 Close
 </button>
 
@@ -695,10 +730,7 @@ window.onload = async () => {
    }
  }
 
- // ఎంప్లాయ్ పేరులోని మొదటి అక్షరాన్ని ప్రొఫైల్ బటన్ మీద చూపించే లాజిక్
- if(emp) {
-   document.getElementById("profileIconBtn").innerText = emp.charAt(0).toUpperCase();
- }
+ document.getElementById("profileBtn").innerText = (emp || "U").charAt(0).toUpperCase();
 
  const { data, error } = await supabaseClient
  .from("records")
@@ -736,7 +768,6 @@ function openFullMap(){
 
 function printReport(){
 
- // ప్రింట్ లో పేరు ఎర్రర్ రాకుండా డైరెక్ట్ గా లోకల్ స్టోరేజ్ నుండి తీసుకునేలా మార్చాను
  document.getElementById("printEmployee").innerText =
  localStorage.getItem("employeeName") || "Not Set";
 
@@ -772,16 +803,33 @@ function closeFullMap(){
  },300);
 }
 
-// పాత setEmployeeName బదులు మీరు అడిగిన openEmployeeModal ఫంక్షన్
-function openEmployeeModal(){
+// మీరు అడిగినట్లుగా closeEmployeeModal() ఫంక్షన్ ఇక్కడ యాడ్ చేశాను
+function setEmployeeName(){
  let name = prompt("Enter Employee Name");
 
  if(!name) return;
 
  localStorage.setItem("employeeName", name);
 
- // పేరు మార్చగానే ప్రొఫైల్ బటన్ అక్షరం కూడా మారేలా సెట్ చేశాను
- document.getElementById("profileIconBtn").innerText = name.charAt(0).toUpperCase();
+ document.getElementById("profileBtn").innerText = name.charAt(0).toUpperCase();
+ document.getElementById("empModalName").innerText = name;
+ 
+ closeEmployeeModal();
+}
+
+function openEmployeeModal(){
+
+ const emp =
+ localStorage.getItem("employeeName") || "Not Set";
+
+ document.getElementById("empModalName").innerText = emp;
+
+ document.getElementById("employeeModal").style.display="block";
+}
+
+function closeEmployeeModal(){
+
+ document.getElementById("employeeModal").style.display="none";
 }
 
 function searchServices(){
@@ -962,8 +1010,7 @@ function saveRemark(){
 
  }
 
- alert("SCNO = " + selectedRemarkScno + "\nRemark = " + remark);
-
+ // మీరు అడిగినట్లుగా టెస్టింగ్ కోసమే పెట్టిన పాత alert ని తీసేశాను
  remarksData[String(selectedRemarkScno)] = remark;
 
  localStorage.setItem("remarksData", JSON.stringify(remarksData));
