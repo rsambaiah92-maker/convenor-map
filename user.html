@@ -156,6 +156,42 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
       display:table;
   }
 }
+
+/* మీరు ఇచ్చిన కొత్త రెస్పాన్సివ్ CSS ఇక్కడ యాడ్ చేశాను */
+html,body{
+  margin:0;
+  padding:10px;
+  overflow-x:hidden;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+#employeeBox{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.header-box{
+  width:100%;
+  max-width:100%;
+}
+
+@media(max-width:768px){
+
+  .amount-inputs{
+    flex-direction:column;
+  }
+
+  .btn-row{
+    flex-direction:column;
+  }
+
+}
 </style>
 </head>
 <body>
@@ -222,7 +258,7 @@ display:none;">
   <input type="number" id="maxAmount" placeholder="Max Amount" value="1000000">
 </div>
 
-<div style="display:flex;gap:10px;">
+<div class="btn-row" style="display:flex;gap:10px;">
 
   <button onclick="loadData()" style="background: linear-gradient(135deg, #3b82f6, #60a5fa); color: white; font-weight: bold; border: none;">
     Apply Filters
@@ -468,7 +504,6 @@ let myLocationMarker = null;
 
 let selectedRemarkScno = "";
 let remarksData = {};
-// మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ నుండి డేటా తీసుకునేలా యాడ్ చేశాను
 remarksData = JSON.parse(localStorage.getItem("remarksData") || "{}");
 
 function clearMarkers(){
@@ -944,7 +979,6 @@ function saveRemark(){
 
  alert("Remark Saved");
 
- // మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ లో సేవ్ అయ్యేలా ఇక్కడ యాడ్ చేశాను
  localStorage.setItem("remarksData", JSON.stringify(remarksData));
 
  closeRemark();
