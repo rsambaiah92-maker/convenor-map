@@ -11,7 +11,6 @@ input,select,button{width:100%;padding:12px;margin-top:8px;box-sizing:border-box
 .card{border:1px solid #ddd;padding:10px;margin-bottom:10px}
 table{width:100%;border-collapse:collapse;display:block;overflow:auto}
 
-/* మీరు అడిగిన మోడ్రన్ టేబుల్ డిజైన్ ఇక్కడ అప్‌డేట్ చేశాను */
 th { background: #f3f4f6; color: #333; border: none; border-bottom: 2px solid #ddd; padding: 10px; text-align: left; }
 td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
 
@@ -126,9 +125,12 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   #myLocationBtn,
   #closeMapBtn,
   #searchBox,
+  #searchResults,
   #areaFilter,
   #poleFilter,
   #catBox,
+  #detailsModal,
+  #remarkModal, /* ఇక్కడ కూడా యాడ్ చేశాను */
   .amount-inputs,
   button{
       display:none !important;
@@ -148,6 +150,14 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   <div class="subtitle">Collection Services Dashboard</div>
 </div>
 
+<div id="employeeBox" class="card">
+  👤 Employee :
+  <span id="employeeName">Not Set</span>
+  <button onclick="setEmployeeName()" style="width:auto;margin-left:10px;padding:6px 12px;">
+    Change
+  </button>
+</div>
+
 <div class="card">
 Selected Services:
 <span id="totalRecords">0</span>
@@ -157,6 +167,17 @@ Total Amount :
 </div>
 
 <input type="text" id="searchBox" placeholder="Search SCNO / Name / Mobile">
+
+<div id="searchResults"
+style="
+max-height:250px;
+overflow-y:auto;
+margin-top:5px;
+background:#fff;
+border:1px solid #ddd;
+border-radius:8px;
+display:none;">
+</div>
 
 <select id="areaFilter">
 <option value="">ALL AREAS</option>
@@ -220,6 +241,104 @@ Total Amount :
 </thead>
 <tbody id="tableBody"></tbody>
 </table>
+
+<div id="detailsModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;">
+
+<div style="
+background:#fff;
+margin:40px auto;
+padding:15px;
+width:95%;
+max-width:500px;
+border-radius:10px;">
+
+<div id="detailsContent"></div>
+
+<button onclick="closeDetails()">
+Close
+</button>
+
+</div>
+</div>
+
+<div id="remarkModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;">
+
+<div style="
+background:#fff;
+margin:40px auto;
+padding:15px;
+width:95%;
+max-width:500px;
+border-radius:10px;">
+
+<h3>Remark Entry</h3>
+
+<div id="remarkScno"></div>
+
+<br>
+
+<select id="remarkSelect">
+
+<option value="">Select Remark</option>
+
+<option>Collected</option>
+<option>Part Payment</option>
+<option>Promise To Pay</option>
+<option>Disconnected</option>
+<option>Locked</option>
+<option>Door Locked</option>
+<option>Not Available</option>
+<option>Out Of Station</option>
+<option>Shifted</option>
+<option>Wrong Address</option>
+<option>Consumer Refused</option>
+<option>Meter Not Found</option>
+<option>No Response</option>
+<option>Will Pay Tomorrow</option>
+<option>Will Pay Later</option>
+<option>Phone Switched Off</option>
+<option>Phone Not Reachable</option>
+<option>Other Remark</option>
+
+</select>
+
+<br>
+
+<input
+id="customRemark"
+placeholder="Enter Custom Remark"
+style="display:none;">
+
+<br>
+
+<button onclick="saveRemark()">
+Save Remark
+</button>
+
+<button onclick="closeRemark()">
+Close
+</button>
+
+</div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
@@ -291,7 +410,6 @@ async function loadData(){
   total += Number(r.total_amt||0);
  });
 
- // టోటల్ అమౌంట్ 2 డెసిమల్స్ (.00) తో వచ్చేలా ఇక్కడ అప్‌డేట్ చేశాను
  document.getElementById("totalAmount").innerText = Number(total).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
  let html='';
@@ -318,6 +436,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).a
 let markers=[];
 let routingControl = null;
 let myLocationMarker = null;
+
+// మీరు అడిగిన రిమార్క్ వేరియబుల్స్ ఇక్కడ యాడ్ చేశాను
+let selectedRemarkScno = "";
+let remarksData = {};
 
 function clearMarkers(){
  markers.forEach(m=>map.removeLayer(m));
@@ -458,7 +580,8 @@ document.getElementById("poleFilter").onchange=()=>{
  document.getElementById("tableBody").innerHTML="";
 };
 
-document.getElementById("searchBox").oninput=()=>{};
+document.getElementById("searchBox").oninput = searchServices;
+
 document.getElementById("minAmount").oninput=()=>{};
 document.getElementById("maxAmount").oninput=()=>{};
 
@@ -517,6 +640,17 @@ function showRoute(lat,lng){
 
 window.onload = async () => {
 
+ let emp = localStorage.getItem("employeeName");
+
+ if(!emp){
+   emp = prompt("Enter Employee Name");
+   if(emp){
+     localStorage.setItem("employeeName", emp);
+   }
+ }
+
+ document.getElementById("employeeName").innerText = emp || "Not Set";
+
  const { data, error } = await supabaseClient
  .from("records")
  .select("area")
@@ -540,7 +674,6 @@ window.onload = async () => {
 };
 
 function openFullMap(){
-
  document.getElementById("map")
  .classList.add("fullMapMode");
 
@@ -557,7 +690,6 @@ function printReport(){
 }
 
 function closeFullMap(){
-
  document.getElementById("map")
  .classList.remove("fullMapMode");
 
@@ -567,6 +699,221 @@ function closeFullMap(){
  setTimeout(()=>{
    map.invalidateSize();
  },300);
+}
+
+function setEmployeeName(){
+ let name = prompt("Enter Employee Name");
+
+ if(!name) return;
+
+ localStorage.setItem("employeeName", name);
+
+ document.getElementById("employeeName").innerText = name;
+}
+
+function searchServices(){
+
+ const keyword =
+ document.getElementById("searchBox")
+ .value
+ .trim()
+ .toLowerCase();
+
+ const box =
+ document.getElementById("searchResults");
+
+ if(keyword.length < 3){
+   box.style.display="none";
+   box.innerHTML="";
+   return;
+ }
+
+ const results = masterData.filter(r =>
+
+   String(r.scno||"")
+   .toLowerCase()
+   .includes(keyword)
+
+   ||
+
+   String(r.name||"")
+   .toLowerCase()
+   .includes(keyword)
+
+   ||
+
+   String(r.mobile_no||"")
+   .toLowerCase()
+   .includes(keyword)
+
+ );
+
+ let html="";
+
+ results.slice(0,20).forEach(r=>{
+
+   html += `
+   <div style="
+   padding:10px;
+   border-bottom:1px solid #eee;
+   display:flex;
+   justify-content:space-between;
+   align-items:center;">
+
+     <div>
+       <b>${r.scno}</b>
+     </div>
+
+     <div>
+       <button onclick="showDetails('${r.scno}')" style="width:auto; padding:6px 10px;">
+         Details
+       </button>
+
+       <button onclick="showRemark('${r.scno}')" style="width:auto; padding:6px 10px;">
+         Remark
+       </button>
+     </div>
+
+   </div>`;
+ });
+
+ box.innerHTML = html;
+
+ box.style.display =
+ results.length ? "block" : "none";
+}
+
+function showDetails(scno){
+
+ const row =
+ masterData.find(
+ r => String(r.scno) === String(scno)
+ );
+
+ if(!row) return;
+
+ document.getElementById(
+ "detailsContent"
+ ).innerHTML = `
+
+ <h3>Consumer Details</h3>
+
+ <b>SCNO :</b> ${row.scno}<br><br>
+
+ <b>Name :</b> ${row.name||''}<br><br>
+
+ <b>Mobile :</b> ${row.mobile_no||''}<br><br>
+
+ <b>Area :</b> ${row.area||''}<br><br>
+
+ <b>Category :</b> ${row.cat||''}<br><br>
+
+ <b>Pole :</b> ${row.pole_no||''}<br><br>
+
+ <b>Current Demand :</b>
+ ₹${row.current_demand||0}<br><br>
+
+ <b>Arrears :</b>
+ ₹${row.arrears||0}<br><br>
+
+ <b>Total Amount :</b>
+ ₹${row.total_amt||0}
+
+ `;
+
+ document.getElementById(
+ "detailsModal"
+ ).style.display="block";
+}
+
+function closeDetails(){
+
+ document.getElementById(
+ "detailsModal"
+ ).style.display="none";
+
+}
+
+// మీరు అడిగిన రిమార్క్ ఫంక్షన్స్ ఇక్కడ యాడ్ చేశాను
+function showRemark(scno){
+
+ selectedRemarkScno = scno;
+
+ document.getElementById(
+ "remarkScno"
+ ).innerHTML =
+ "<b>SCNO :</b> " + scno;
+
+ document.getElementById(
+ "remarkModal"
+ ).style.display="block";
+}
+
+document.addEventListener("change",function(e){
+
+ if(e.target.id==="remarkSelect"){
+
+   document.getElementById(
+   "customRemark"
+   ).style.display =
+
+   e.target.value==="Other Remark"
+   ? "block"
+   : "none";
+
+ }
+
+});
+
+function saveRemark(){
+
+ let remark =
+ document.getElementById(
+ "remarkSelect"
+ ).value;
+
+ if(!remark){
+
+   alert("Select Remark");
+
+   return;
+ }
+
+ if(remark==="Other Remark"){
+
+   remark =
+   document.getElementById(
+   "customRemark"
+   ).value;
+
+ }
+
+ remarksData[
+ selectedRemarkScno
+ ] = remark;
+
+ alert("Remark Saved");
+
+ closeRemark();
+}
+
+function closeRemark(){
+
+ document.getElementById(
+ "remarkModal"
+ ).style.display="none";
+
+ document.getElementById(
+ "remarkSelect"
+ ).value="";
+
+ document.getElementById(
+ "customRemark"
+ ).value="";
+
+ document.getElementById(
+ "customRemark"
+ ).style.display="none";
 }
 </script>
 
