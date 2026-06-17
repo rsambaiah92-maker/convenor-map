@@ -803,7 +803,6 @@ function closeFullMap(){
  },300);
 }
 
-// మీరు అడిగినట్లుగా closeEmployeeModal() ఫంక్షన్ ఇక్కడ యాడ్ చేశాను
 function setEmployeeName(){
  let name = prompt("Enter Employee Name");
 
@@ -1010,13 +1009,17 @@ function saveRemark(){
 
  }
 
- // మీరు అడిగినట్లుగా టెస్టింగ్ కోసమే పెట్టిన పాత alert ని తీసేశాను
  remarksData[String(selectedRemarkScno)] = remark;
 
  localStorage.setItem("remarksData", JSON.stringify(remarksData));
 
  closeRemark();
  
+ // మీరు ఇచ్చిన ఆ 3 సెర్చ్ బాక్స్ క్లియర్ లైన్స్ ఇక్కడ యాడ్ చేశాను
+ document.getElementById("searchBox").value="";
+ document.getElementById("searchResults").innerHTML="";
+ document.getElementById("searchResults").style.display="none";
+
  loadData();
 }
 
