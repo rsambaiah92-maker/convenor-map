@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TGNPDCL User Dashboard</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
+<style>
+body{font-family:Arial,sans-serif;padding:10px}
+input,select,button{width:100%;padding:12px;margin-top:8px;box-sizing:border-box}
+.card{border:1px solid #ddd;padding:10px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;display:block;overflow:auto}
+
+th { background: #f3f4f6; color: #333; border: none; border-bottom: 2px solid #ddd; padding: 10px; text-align: left; }
+td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
+
+#map{height:300px;border:1px solid #ccc;margin-top:10px}
+.amount-inputs {display: flex; gap: 10px;}
+
+.map-wrapper{
+  position:relative;
+}
+
+#closeMapBtn{
+  display:none; 
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:9999;
+  width:auto;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  background:#fff;
+  cursor:pointer;
+}
+
+#myLocationBtn{
+  position:absolute;
+  top:50px;
+  right:10px;
+  z-index:9999;
+  width:auto;
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  background:#fff;
+  cursor:pointer;
+}
+
+.scno-label{
+  background:white;
+  border:1px solid #333;
+  border-radius:4px;
+  padding:2px 4px;
+  font-size:10px;
+  font-weight:bold;
+  color:#000;
+}
+
+.fullMapMode {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999 !important;
+  margin: 0 !important;
+}
+
+.header-box{
+  background:linear-gradient(135deg,#3b82f6,#60a5fa);
+  color:white;
+  text-align:center;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+.title{
+  font-size:26px;
+  font-weight:bold;
+}
+
+.subtitle{
+  font-size:15px;
+  margin-top:6px;
+  opacity:0.95;
+}
+
+#catBox{
+  margin-top:8px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
+}
+
+#catBox summary{
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.cat-list{
+  margin-top:8px;
+  max-height:180px;
+  overflow-y:auto;
+}
+
+.cat-list label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.cat-list input[type="checkbox"]{
+  width:auto;
+  margin:0;
+}
+
+#printHeader {
+  display: none;
+}
+
+@media print {
+  #map,
+  #myLocationBtn,
+  #closeMapBtn,
+  #searchBox,
+  #searchResults,
+  #areaFilter,
+  #poleFilter,
+  #catBox,
+  #detailsModal,
+  #remarkModal,
+  #employeeBox,
+  .header-box,
+  .card,
+  .amount-inputs,
+  button{
+      display:none !important;
+  }
+
+  #printHeader {
+      display: block !important;
+      text-align: center;
+      margin-bottom: 20px;
+  }
+  #printHeader h2 { margin-bottom: 5px; }
+  #printHeader p { margin: 5px 0; font-size: 14px; }
+
+  table{
+      width:100%;
+      display:table;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header-box">
+  <div class="title">⚡ TGNPDCL</div>
+  <div class="subtitle">Collection Services Dashboard</div>
+</div>
+
+<div id="employeeBox" class="card">
+  👤 Employee :
+  <span id="employeeName">Not Set</span>
+  <button onclick="setEmployeeName()" style="width:auto;margin-left:10px;padding:6px 12px;">
+    Change
+  </button>
+</div>
+
+<div class="card">
+Selected Services:
+<span id="totalRecords">0</span>
+<br><br>
+Total Amount :
+₹<span id="totalAmount">0.00</span>
+</div>
+
+<input type="text" id="searchBox" placeholder="Search SCNO / Name / Mobile">
+
+<div id="searchResults"
+style="
+max-height:250px;
+overflow-y:auto;
+margin-top:5px;
+background:#fff;
+border:1px solid #ddd;
+border-radius:8px;
+display:none;">
+</div>
+
+<select id="areaFilter">
+<option value="">ALL AREAS</option>
+</select>
+
+<details id="catBox">
+  <summary>📂 ALL CATEGORIES</summary>
+  <div class="cat-list">
+    <label><input type="checkbox" value="1"> Category 1</label>
+    <label><input type="checkbox" value="2"> Category 2</label>
+    <label><input type="checkbox" value="3"> Category 3</label>
+    <label><input type="checkbox" value="4"> Category 4</label>
+    <label><input type="checkbox" value="5"> Category 5</label>
+    <label><input type="checkbox" value="6"> Category 6</label>
+    <label><input type="checkbox" value="7"> Category 7</label>
+    <label><input type="checkbox" value="8"> Category 8</label>
+    <label><input type="checkbox" value="9"> Category 9</label>
+  </div>
+</details>
+
+<select id="poleFilter">
+<option value="">ALL POLES</option>
+</select>
+
+<div class="amount-inputs">
+  <input type="number" id="minAmount" placeholder="Min Amount" value="0">
+  <input type="number" id="maxAmount" placeholder="Max Amount" value="1000000">
+</div>
+
+<div style="display:flex;gap:10px;">
+
+  <button onclick="loadData()" style="background: linear-gradient(135deg, #3b82f6, #60a5fa); color: white; font-weight: bold; border: none;">
+    Apply Filters
+  </button>
+
+  <button onclick="printReport()">
+    🖨 Print
+  </button>
+
+  <button onclick="openFullMap()">
+    🗺 Full Screen Map
+  </button>
+
+</div>
+
+<div class="map-wrapper">
+  <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
+  <button id="myLocationBtn" onclick="showMyLocation()">📍 My Location</button>
+  <div id="map"></div>
+</div>
+
+<div id="printHeader">
+  <h2>TGNPDCL Collection Report</h2>
+  <p>Employee : <span id="printEmployee"></span></p>
+  <p>Area : <span id="printArea"></span></p>
+  <p>Date : <span id="printDate"></span></p>
+  <p>Time : <span id="printTime"></span></p>
+  <p>Selected Services : <span id="printServices"></span></p>
+  <p>Total Amount : ₹<span id="printTotal"></span></p>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>SCNO</th>
+<th>NAME</th>
+<th>MOBILE</th>
+<th>CURRENT DEMAND</th>
+<th>ARREARS</th>
+<th>TOTAL</th>
+<th>REMARK</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+<div id="detailsModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;">
+
+<div style="
+background:#fff;
+margin:40px auto;
+padding:15px;
+width:95%;
+max-width:500px;
+border-radius:10px;">
+
+<div id="detailsContent"></div>
+
+<button onclick="closeDetails()">
+Close
+</button>
+
+</div>
+</div>
+
+<div id="remarkModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:9999;">
+
+<div style="
+background:#fff;
+margin:40px auto;
+padding:15px;
+width:95%;
+max-width:500px;
+border-radius:10px;">
+
+<h3>Remark Entry</h3>
+
+<div id="remarkScno"></div>
+
+<br>
+
+<select id="remarkSelect">
+
+<option value="">Select Remark</option>
+
+<option>Collected</option>
+<option>Part Payment</option>
+<option>Promise To Pay</option>
+<option>Disconnected</option>
+<option>Locked</option>
+<option>Door Locked</option>
+<option>Not Available</option>
+<option>Out Of Station</option>
+<option>Shifted</option>
+<option>Wrong Address</option>
+<option>Consumer Refused</option>
+<option>Meter Not Found</option>
+<option>No Response</option>
+<option>Will Pay Tomorrow</option>
+<option>Will Pay Later</option>
+<option>Phone Switched Off</option>
+<option>Phone Not Reachable</option>
+<option>Other Remark</option>
+
+</select>
+
+<br>
+
+<input
+id="customRemark"
+placeholder="Enter Custom Remark"
+style="display:none;">
+
+<br>
+
+<button onclick="saveRemark()">
+Save Remark
+</button>
+
+<button onclick="closeRemark()">
+Close
+</button>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+
+<script>
+let masterData=[];
+
+async function loadData(){
+
+ const area=document.getElementById("areaFilter").value;
+ 
+ if(!area){
+   alert("Please Select Area");
+   return;
+ }
+
+ let query = supabaseClient
+   .from("records")
+   .select("*")
+   .range(0, 15000); 
+
+ if(area){
+   query = query.eq("area", area);
+ }
+
+ const pole=document.getElementById("poleFilter").value;
+ 
+ const selectedCats =
+  [...document.querySelectorAll('#catBox input[type="checkbox"]:checked')]
+  .map(cb => cb.value);
+
+ if(pole){
+   query = query.ilike("pole_no", pole + "%");
+ }
+ 
+ if(selectedCats.length > 0){
+   query = query.in("cat", selectedCats);
+ }
+
+ const { data, error } = await query;
+
+ if(error){
+   alert(error.message);
+   return;
+ }
+
+ let filtered = data || [];
+ masterData = filtered; 
+
+ const minAmt = Number(document.getElementById("minAmount").value||0);
+ const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
+ const search=document.getElementById("searchBox").value.toLowerCase();
+
+ filtered = filtered.filter(r=>{
+  const amt = Number(r.total_amt||0);
+  return amt >= minAmt && amt <= maxAmt;
+ });
+
+ if(search){
+  filtered=filtered.filter(r=>
+  JSON.stringify(r).toLowerCase().includes(search)
+  );
+ }
+
+ document.getElementById("totalRecords").innerText=filtered.length;
+
+ let total=0;
+ filtered.forEach(r=>{
+  total += Number(r.total_amt||0);
+ });
+
+ document.getElementById("totalAmount").innerText = Number(total).toLocaleString("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+ let html='';
+ filtered.forEach(r=>{
+  html+=`<tr>
+  <td>${r.scno||''}</td>
+  <td>${r.name||''}</td>
+  <td>${r.mobile_no||''}</td>
+  <td>${r.current_demand||0}</td>
+  <td>${r.arrears||0}</td>
+  <td>${r.total_amt||0}</td>
+  <td>${remarksData[r.scno] || ''}</td>
+  </tr>`;
+ });
+
+ document.getElementById("tableBody").innerHTML=html;
+}
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+<script>
+let map=L.map('map').setView([17.95,80.82],11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+let markers=[];
+let routingControl = null;
+let myLocationMarker = null;
+
+let selectedRemarkScno = "";
+let remarksData = {};
+// మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ నుండి డేటా తీసుకునేలా యాడ్ చేశాను
+remarksData = JSON.parse(localStorage.getItem("remarksData") || "{}");
+
+function clearMarkers(){
+ markers.forEach(m=>map.removeLayer(m));
+ markers=[];
+}
+
+function cleanCoord(v){
+ if(!v) return null;
+ return parseFloat(String(v).replace(/[NSEW]/gi,''));
+}
+
+const oldLoadData = loadData;
+loadData = async function(){
+ await oldLoadData();
+
+ if(typeof masterData==="undefined") return;
+
+ clearMarkers();
+
+ const area=document.getElementById("areaFilter").value;
+ 
+ if(!area){
+   return; 
+ }
+ 
+ const pole=document.getElementById("poleFilter").value;
+ const minAmt = Number(document.getElementById("minAmount").value||0);
+ const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
+ const search=document.getElementById("searchBox").value.toLowerCase();
+
+ let filtered=[...masterData];
+
+ filtered = filtered.filter(r=>{
+  const amt = Number(r.total_amt||0);
+  return amt >= minAmt && amt <= maxAmt;
+ });
+
+ if(search){
+  filtered=filtered.filter(r=>JSON.stringify(r).toLowerCase().includes(search));
+ }
+
+ filtered.forEach(r=>{
+  const lat=cleanCoord(r.latitude);
+  const lng=cleanCoord(r.longitude);
+  if(lat && lng){
+   
+   let pinColor = "blue";
+   const arrears = Number(r.arrears || 0);
+
+   if (arrears === 0) {
+     pinColor = "green";
+   } else if (arrears <= 5000) {
+     pinColor = "orange";
+   } else {
+     pinColor = "red";
+   }
+
+   const icon = L.icon({
+     iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${pinColor}.png`,
+     shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+     iconSize: [25, 41],
+     iconAnchor: [12, 41],
+     popupAnchor: [1, -34]
+   });
+
+   const m = L.marker([lat,lng], {icon}).addTo(map);
+   
+   const t = L.tooltip({
+     permanent: true,
+     direction: "top",
+     offset: [0, -10],
+     className: "scno-label"
+   })
+   .setContent(String(r.scno || "").slice(-5))
+   .setLatLng([lat,lng])
+   .addTo(map);
+   
+   m.bindPopup(
+   "<b>"+(r.name||"")+"</b><br>"+
+   "SCNO: "+(r.scno||"")+"<br>"+
+   "Mobile: "+(r.mobile_no||"")+"<br>"+
+   "Current Demand: "+(r.current_demand||0)+"<br>"+
+   "Arrears: "+(r.arrears||0)+"<br>"+
+   "Amount: "+(r.total_amt||0)+"<br><br>"+
+   "<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a><br><br>"+
+   "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>🟢 WhatsApp</a><br><br>"+
+   "<a target='_blank' href='https://www.google.com/maps/dir/?api=1&destination="+lat+","+lng+"'>📍 Navigate</a><br><br>"+
+   "<button onclick='showRoute("+lat+","+lng+")'>🛣 Route</button>"
+   );
+   
+   markers.push(m);
+   markers.push(t);
+  }
+ });
+}
+
+document.getElementById("areaFilter").onchange = async () => {
+ clearMarkers();
+ document.getElementById("tableBody").innerHTML="";
+ document.getElementById("totalRecords").innerText="0";
+ document.getElementById("totalAmount").innerText="0";
+ 
+ const poleDropdown = document.getElementById("poleFilter");
+ poleDropdown.innerHTML = '<option value="">ALL POLES</option>'; 
+
+ document
+ .querySelectorAll('#catBox input[type="checkbox"]')
+ .forEach(x => x.checked = false);
+
+ const selectedArea = document.getElementById("areaFilter").value;
+ if(!selectedArea) return; 
+
+ const { data, error } = await supabaseClient
+   .from("records")
+   .select("pole_no")
+   .eq("area", selectedArea);
+
+ if(error){
+   console.error(error.message);
+   return;
+ }
+
+ const poles = [...new Set(
+   data.map(r=>{
+     const pole = String(r.pole_no||"");
+     const match = pole.match(/^[A-Za-z]+/);
+     return match ? match[0].toUpperCase() : null;
+   }).filter(Boolean)
+ )];
+
+ poles.forEach(p=>{
+   poleDropdown.innerHTML += `<option value="${p}">${p}</option>`;
+ });
+};
+
+document.getElementById("poleFilter").onchange=()=>{
+ clearMarkers();
+ document.getElementById("tableBody").innerHTML="";
+};
+
+document.getElementById("searchBox").oninput = searchServices;
+
+document.getElementById("minAmount").oninput=()=>{};
+document.getElementById("maxAmount").oninput=()=>{};
+
+function showMyLocation(){
+  if(!navigator.geolocation){
+    alert("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    map.setView([lat,lng],16);
+
+    if(myLocationMarker){
+      map.removeLayer(myLocationMarker);
+    }
+
+    myLocationMarker = L.marker([lat,lng])
+      .addTo(map)
+      .bindPopup("📍 My Location")
+      .openPopup();
+
+  },()=>{
+    alert("Location permission denied");
+  });
+}
+
+function showRoute(lat,lng){
+  if(!navigator.geolocation){
+    alert("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+
+    const myLat = pos.coords.latitude;
+    const myLng = pos.coords.longitude;
+
+    if(routingControl){
+      map.removeControl(routingControl);
+    }
+
+    routingControl = L.Routing.control({
+      waypoints:[
+        L.latLng(myLat,myLng),
+        L.latLng(lat,lng)
+      ],
+      routeWhileDragging:false,
+      show:false
+    }).addTo(map);
+
+  });
+}
+
+window.onload = async () => {
+
+ let emp = localStorage.getItem("employeeName");
+
+ if(!emp){
+   emp = prompt("Enter Employee Name");
+   if(emp){
+     localStorage.setItem("employeeName", emp);
+   }
+ }
+
+ document.getElementById("employeeName").innerText = emp || "Not Set";
+
+ const { data, error } = await supabaseClient
+ .from("records")
+ .select("area")
+ .range(0,12000);
+
+ if(error){
+   alert(error.message);
+   return;
+ }
+
+ const areas = [...new Set(
+ data.map(r => r.area).filter(Boolean)
+ )];
+
+ const area = document.getElementById("areaFilter");
+
+ areas.forEach(a=>{
+   area.innerHTML += `<option value="${a}">${a}</option>`;
+ });
+
+};
+
+function openFullMap(){
+ document.getElementById("map")
+ .classList.add("fullMapMode");
+
+ document.getElementById("closeMapBtn")
+ .style.display="block";
+
+ setTimeout(()=>{
+   map.invalidateSize();
+ },300);
+}
+
+function printReport(){
+
+ document.getElementById("printEmployee").innerText =
+ document.getElementById("employeeName").innerText;
+
+ document.getElementById("printArea").innerText =
+ document.getElementById("areaFilter").value || "ALL AREAS";
+
+ const now = new Date();
+
+ document.getElementById("printDate").innerText =
+ now.toLocaleDateString();
+
+ document.getElementById("printTime").innerText =
+ now.toLocaleTimeString();
+
+ document.getElementById("printServices").innerText =
+ document.getElementById("totalRecords").innerText;
+
+ document.getElementById("printTotal").innerText =
+ document.getElementById("totalAmount").innerText;
+
+ window.print();
+}
+
+function closeFullMap(){
+ document.getElementById("map")
+ .classList.remove("fullMapMode");
+
+ document.getElementById("closeMapBtn")
+ .style.display="none";
+
+ setTimeout(()=>{
+   map.invalidateSize();
+ },300);
+}
+
+function setEmployeeName(){
+ let name = prompt("Enter Employee Name");
+
+ if(!name) return;
+
+ localStorage.setItem("employeeName", name);
+
+ document.getElementById("employeeName").innerText = name;
+}
+
+function searchServices(){
+
+ const keyword =
+ document.getElementById("searchBox")
+ .value
+ .trim()
+ .toLowerCase();
+
+ const box =
+ document.getElementById("searchResults");
+
+ if(keyword.length < 3){
+   box.style.display="none";
+   box.innerHTML="";
+   return;
+ }
+
+ const results = masterData.filter(r =>
+
+   String(r.scno||"")
+   .toLowerCase()
+   .includes(keyword)
+
+   ||
+
+   String(r.name||"")
+   .toLowerCase()
+   .includes(keyword)
+
+   ||
+
+   String(r.mobile_no||"")
+   .toLowerCase()
+   .includes(keyword)
+
+ );
+
+ let html="";
+
+ results.slice(0,20).forEach(r=>{
+
+   html += `
+   <div style="
+   padding:10px;
+   border-bottom:1px solid #eee;
+   display:flex;
+   justify-content:space-between;
+   align-items:center;">
+
+     <div>
+       <b>${r.scno}</b>
+     </div>
+
+     <div>
+       <button onclick="showDetails('${r.scno}')" style="width:auto; padding:6px 10px;">
+         Details
+       </button>
+
+       <button onclick="showRemark('${r.scno}')" style="width:auto; padding:6px 10px;">
+         Remark
+       </button>
+     </div>
+
+   </div>`;
+ });
+
+ box.innerHTML = html;
+
+ box.style.display =
+ results.length ? "block" : "none";
+}
+
+function showDetails(scno){
+
+ const row =
+ masterData.find(
+ r => String(r.scno) === String(scno)
+ );
+
+ if(!row) return;
+
+ document.getElementById(
+ "detailsContent"
+ ).innerHTML = `
+
+ <h3>Consumer Details</h3>
+
+ <b>SCNO :</b> ${row.scno}<br><br>
+
+ <b>Name :</b> ${row.name||''}<br><br>
+
+ <b>Mobile :</b> ${row.mobile_no||''}<br><br>
+
+ <b>Area :</b> ${row.area||''}<br><br>
+
+ <b>Category :</b> ${row.cat||''}<br><br>
+
+ <b>Pole :</b> ${row.pole_no||''}<br><br>
+
+ <b>Current Demand :</b>
+ ₹${row.current_demand||0}<br><br>
+
+ <b>Arrears :</b>
+ ₹${row.arrears||0}<br><br>
+
+ <b>Total Amount :</b>
+ ₹${row.total_amt||0}
+
+ `;
+
+ document.getElementById(
+ "detailsModal"
+ ).style.display="block";
+}
+
+function closeDetails(){
+
+ document.getElementById(
+ "detailsModal"
+ ).style.display="none";
+
+}
+
+function showRemark(scno){
+
+ selectedRemarkScno = scno;
+
+ document.getElementById(
+ "remarkScno"
+ ).innerHTML =
+ "<b>SCNO :</b> " + scno;
+
+ document.getElementById(
+ "remarkModal"
+ ).style.display="block";
+}
+
+document.addEventListener("change",function(e){
+
+ if(e.target.id==="remarkSelect"){
+
+   document.getElementById(
+   "customRemark"
+   ).style.display =
+
+   e.target.value==="Other Remark"
+   ? "block"
+   : "none";
+
+ }
+
+});
+
+function saveRemark(){
+
+ let remark =
+ document.getElementById(
+ "remarkSelect"
+ ).value;
+
+ if(!remark){
+
+   alert("Select Remark");
+
+   return;
+ }
+
+ if(remark==="Other Remark"){
+
+   remark =
+   document.getElementById(
+   "customRemark"
+   ).value;
+
+ }
+
+ remarksData[
+ selectedRemarkScno
+ ] = remark;
+
+ alert("Remark Saved");
+
+ // మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ లో సేవ్ అయ్యేలా ఇక్కడ యాడ్ చేశాను
+ localStorage.setItem("remarksData", JSON.stringify(remarksData));
+
+ closeRemark();
+}
+
+function closeRemark(){
+
+ document.getElementById(
+ "remarkModal"
+ ).style.display="none";
+
+ document.getElementById(
+ "remarkSelect"
+ ).value="";
+
+ document.getElementById(
+ "customRemark"
+ ).value="";
+
+ document.getElementById(
+ "customRemark"
+ ).style.display="none";
+}
+</script>
+
+</body>
+</html>
