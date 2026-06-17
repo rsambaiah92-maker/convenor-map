@@ -259,6 +259,7 @@ display:none;">
 <tr>
 <th>SCNO</th>
 <th>NAME</th>
+<th>STATUS</th>
 <th>MOBILE</th>
 <th>CURRENT DEMAND</th>
 <th>ARREARS</th>
@@ -444,11 +445,12 @@ async function loadData(){
   html+=`<tr>
   <td>${r.scno||''}</td>
   <td>${r.name||''}</td>
+  <td>${r.status||''}</td>
   <td>${r.mobile_no||''}</td>
   <td>${r.current_demand||0}</td>
   <td>${r.arrears||0}</td>
   <td>${r.total_amt||0}</td>
-  <td>${remarksData[r.scno] || ''}</td>
+  <td>${remarksData[String(r.scno)] || ''}</td>
   </tr>`;
  });
 
@@ -468,7 +470,6 @@ let myLocationMarker = null;
 
 let selectedRemarkScno = "";
 let remarksData = {};
-// మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ నుండి డేటా తీసుకునేలా యాడ్ చేశాను
 remarksData = JSON.parse(localStorage.getItem("remarksData") || "{}");
 
 function clearMarkers(){
@@ -550,6 +551,8 @@ loadData = async function(){
    m.bindPopup(
    "<b>"+(r.name||"")+"</b><br>"+
    "SCNO: "+(r.scno||"")+"<br>"+
+   "Pole No: "+(r.pole_no||"")+"<br>"+
+   "Status: "+(r.status||"")+"<br>"+
    "Mobile: "+(r.mobile_no||"")+"<br>"+
    "Current Demand: "+(r.current_demand||0)+"<br>"+
    "Arrears: "+(r.arrears||0)+"<br>"+
@@ -859,7 +862,9 @@ function showDetails(scno){
 
  <b>Category :</b> ${row.cat||''}<br><br>
 
- <b>Pole :</b> ${row.pole_no||''}<br><br>
+ <b>Status :</b> ${row.status||''}<br><br>
+
+ <b>Pole No :</b> ${row.pole_no||''}<br><br>
 
  <b>Current Demand :</b>
  ₹${row.current_demand||0}<br><br>
@@ -938,16 +943,16 @@ function saveRemark(){
 
  }
 
- remarksData[
- selectedRemarkScno
- ] = remark;
+ // మీరు అడిగిన కొత్త అలర్ట్ ఇక్కడ యాడ్ చేశాను
+ alert("SCNO = " + selectedRemarkScno + "\nRemark = " + remark);
 
- alert("Remark Saved");
+ remarksData[String(selectedRemarkScno)] = remark;
 
- // మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ లో సేవ్ అయ్యేలా ఇక్కడ యాడ్ చేశాను
  localStorage.setItem("remarksData", JSON.stringify(remarksData));
 
  closeRemark();
+ 
+ loadData();
 }
 
 function closeRemark(){
