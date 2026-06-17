@@ -1,3 +1,7 @@
+మీరు చెప్పిన ఈ మార్పు **చాలా పవర్‌ఫుల్ ఫీచర్!** ఇంతకుముందు రిమార్క్ సేవ్ చేస్తే, యాప్ (లేదా బ్రౌజర్) క్లోజ్ చేయగానే ఆ డేటా పోయేది. కానీ ఇప్పుడు మీరు చెప్పిన ఈ localStorage లాజిక్ వల్ల, మీరు ఏ సర్వీస్‌కి ఏ రిమార్క్ సేవ్ చేసినా అది మొబైల్‌లోనే పర్మినెంట్‌గా సేవ్ అయి ఉంటుంది. మీరు మరుసటి రోజు యాప్ ఓపెన్ చేసినా పాత రిమార్క్స్ అన్నీ టేబుల్‌లో పర్ఫెక్ట్ గా కనిపిస్తాయి!
+మీరు అడిగినట్లే ఆ రెండు చోట్ల కోడ్‌ను ఎలాంటి తప్పులు లేకుండా యాడ్ చేశాను.
+మార్పులు చేసిన పూర్తి కోడ్ ఇక్కడ ఉంది, కాపీ చేసుకోండి:
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -120,6 +124,10 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   margin:0;
 }
 
+#printHeader {
+  display: none;
+}
+
 @media print {
   #map,
   #myLocationBtn,
@@ -130,11 +138,22 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   #poleFilter,
   #catBox,
   #detailsModal,
-  #remarkModal, /* ఇక్కడ కూడా యాడ్ చేశాను */
+  #remarkModal,
+  #employeeBox,
+  .header-box,
+  .card,
   .amount-inputs,
   button{
       display:none !important;
   }
+
+  #printHeader {
+      display: block !important;
+      text-align: center;
+      margin-bottom: 20px;
+  }
+  #printHeader h2 { margin-bottom: 5px; }
+  #printHeader p { margin: 5px 0; font-size: 14px; }
 
   table{
       width:100%;
@@ -229,14 +248,26 @@ display:none;">
   <div id="map"></div>
 </div>
 
+<div id="printHeader">
+  <h2>TGNPDCL Collection Report</h2>
+  <p>Employee : <span id="printEmployee"></span></p>
+  <p>Area : <span id="printArea"></span></p>
+  <p>Date : <span id="printDate"></span></p>
+  <p>Time : <span id="printTime"></span></p>
+  <p>Selected Services : <span id="printServices"></span></p>
+  <p>Total Amount : ₹<span id="printTotal"></span></p>
+</div>
+
 <table>
 <thead>
 <tr>
 <th>SCNO</th>
 <th>NAME</th>
 <th>MOBILE</th>
+<th>CURRENT DEMAND</th>
+<th>ARREARS</th>
 <th>TOTAL</th>
-<th>MAP</th>
+<th>REMARK</th>
 </tr>
 </thead>
 <tbody id="tableBody"></tbody>
@@ -418,8 +449,10 @@ async function loadData(){
   <td>${r.scno||''}</td>
   <td>${r.name||''}</td>
   <td>${r.mobile_no||''}</td>
+  <td>${r.current_demand||0}</td>
+  <td>${r.arrears||0}</td>
   <td>${r.total_amt||0}</td>
-  <td><a target="_blank" href="https://maps.google.com/?q=${r.latitude},${r.longitude}">MAP</a></td>
+  <td>${remarksData[r.scno] || ''}</td>
   </tr>`;
  });
 
@@ -437,9 +470,10 @@ let markers=[];
 let routingControl = null;
 let myLocationMarker = null;
 
-// మీరు అడిగిన రిమార్క్ వేరియబుల్స్ ఇక్కడ యాడ్ చేశాను
 let selectedRemarkScno = "";
 let remarksData = {};
+// మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ నుండి డేటా తీసుకునేలా యాడ్ చేశాను
+remarksData = JSON.parse(localStorage.getItem("remarksData") || "{}");
 
 function clearMarkers(){
  markers.forEach(m=>map.removeLayer(m));
@@ -686,7 +720,28 @@ function openFullMap(){
 }
 
 function printReport(){
-  window.print();
+
+ document.getElementById("printEmployee").innerText =
+ document.getElementById("employeeName").innerText;
+
+ document.getElementById("printArea").innerText =
+ document.getElementById("areaFilter").value || "ALL AREAS";
+
+ const now = new Date();
+
+ document.getElementById("printDate").innerText =
+ now.toLocaleDateString();
+
+ document.getElementById("printTime").innerText =
+ now.toLocaleTimeString();
+
+ document.getElementById("printServices").innerText =
+ document.getElementById("totalRecords").innerText;
+
+ document.getElementById("printTotal").innerText =
+ document.getElementById("totalAmount").innerText;
+
+ window.print();
 }
 
 function closeFullMap(){
@@ -834,7 +889,6 @@ function closeDetails(){
 
 }
 
-// మీరు అడిగిన రిమార్క్ ఫంక్షన్స్ ఇక్కడ యాడ్ చేశాను
 function showRemark(scno){
 
  selectedRemarkScno = scno;
@@ -894,6 +948,9 @@ function saveRemark(){
 
  alert("Remark Saved");
 
+ // మీరు అడిగినట్లుగా లోకల్ స్టోరేజ్ లో సేవ్ అయ్యేలా ఇక్కడ యాడ్ చేశాను
+ localStorage.setItem("remarksData", JSON.stringify(remarksData));
+
  closeRemark();
 }
 
@@ -919,3 +976,5 @@ function closeRemark(){
 
 </body>
 </html>
+
+```
