@@ -68,7 +68,9 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   margin: 0 !important;
 }
 
+/* మీరు ఇచ్చిన కొత్త CSS ఇక్కడ అప్‌డేట్ చేశాను */
 .header-box{
+  position:relative;
   background:linear-gradient(135deg,#3b82f6,#60a5fa);
   color:white;
   text-align:center;
@@ -76,6 +78,23 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   border-radius:12px;
   margin-bottom:10px;
   box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+.profile-btn{
+  position:absolute;
+  top:12px;
+  right:15px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:white;
+  color:#3b82f6;
+  font-weight:bold;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
 }
 
 .title{
@@ -135,7 +154,6 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
   #catBox,
   #detailsModal,
   #remarkModal,
-  #employeeBox,
   .header-box,
   .card,
   .amount-inputs,
@@ -163,14 +181,9 @@ td { border: none; border-bottom: 1px solid #eee; padding: 10px; }
 <div class="header-box">
   <div class="title">⚡ TGNPDCL</div>
   <div class="subtitle">Collection Services Dashboard</div>
-</div>
-
-<div id="employeeBox" class="card">
-  👤 Employee :
-  <span id="employeeName">Not Set</span>
-  <button onclick="setEmployeeName()" style="width:auto;margin-left:10px;padding:6px 12px;">
-    Change
-  </button>
+  <div class="profile-btn" onclick="openEmployeeModal()" id="profileIconBtn">
+    U
+  </div>
 </div>
 
 <div class="card">
@@ -682,7 +695,10 @@ window.onload = async () => {
    }
  }
 
- document.getElementById("employeeName").innerText = emp || "Not Set";
+ // ఎంప్లాయ్ పేరులోని మొదటి అక్షరాన్ని ప్రొఫైల్ బటన్ మీద చూపించే లాజిక్
+ if(emp) {
+   document.getElementById("profileIconBtn").innerText = emp.charAt(0).toUpperCase();
+ }
 
  const { data, error } = await supabaseClient
  .from("records")
@@ -720,8 +736,9 @@ function openFullMap(){
 
 function printReport(){
 
+ // ప్రింట్ లో పేరు ఎర్రర్ రాకుండా డైరెక్ట్ గా లోకల్ స్టోరేజ్ నుండి తీసుకునేలా మార్చాను
  document.getElementById("printEmployee").innerText =
- document.getElementById("employeeName").innerText;
+ localStorage.getItem("employeeName") || "Not Set";
 
  document.getElementById("printArea").innerText =
  document.getElementById("areaFilter").value || "ALL AREAS";
@@ -755,14 +772,16 @@ function closeFullMap(){
  },300);
 }
 
-function setEmployeeName(){
+// పాత setEmployeeName బదులు మీరు అడిగిన openEmployeeModal ఫంక్షన్
+function openEmployeeModal(){
  let name = prompt("Enter Employee Name");
 
  if(!name) return;
 
  localStorage.setItem("employeeName", name);
 
- document.getElementById("employeeName").innerText = name;
+ // పేరు మార్చగానే ప్రొఫైల్ బటన్ అక్షరం కూడా మారేలా సెట్ చేశాను
+ document.getElementById("profileIconBtn").innerText = name.charAt(0).toUpperCase();
 }
 
 function searchServices(){
@@ -943,7 +962,6 @@ function saveRemark(){
 
  }
 
- // మీరు అడిగిన కొత్త అలర్ట్ ఇక్కడ యాడ్ చేశాను
  alert("SCNO = " + selectedRemarkScno + "\nRemark = " + remark);
 
  remarksData[String(selectedRemarkScno)] = remark;
