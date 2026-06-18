@@ -511,7 +511,27 @@ async function loadData(){
 
 <script>
 let map=L.map('map').setView([17.95,80.82],11);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+
+// మీరు అడిగినట్లు నార్మల్ మరియు సాటిలైట్ లేయర్స్ కోడ్ ఇక్కడ అప్‌డేట్ చేశాను
+const normalLayer = L.tileLayer(
+ 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+ {maxZoom:19}
+);
+
+const satelliteLayer = L.tileLayer(
+ 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+ {maxZoom:19}
+);
+
+normalLayer.addTo(map);
+
+L.control.layers(
+ {
+   "🗺 Normal": normalLayer,
+   "🛰 Satellite": satelliteLayer
+ }
+).addTo(map);
+
 let markers=[];
 let routingControl = null;
 let myLocationMarker = null;
@@ -1015,7 +1035,6 @@ function saveRemark(){
 
  closeRemark();
  
- // మీరు ఇచ్చిన ఆ 3 సెర్చ్ బాక్స్ క్లియర్ లైన్స్ ఇక్కడ యాడ్ చేశాను
  document.getElementById("searchBox").value="";
  document.getElementById("searchResults").innerHTML="";
  document.getElementById("searchResults").style.display="none";
