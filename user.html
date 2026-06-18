@@ -361,7 +361,6 @@ loadData = async function(){
   }
  });
 
- // చేంజ్ 1: మ్యాప్ ఆటోమేటిక్ జూమ్ / ఫిట్ అవ్వడానికి (Markers యాడ్ అయిన తర్వాత)
  if(markers.length > 0){
    const group = L.featureGroup(
       markers.filter(m => m instanceof L.Marker)
@@ -405,30 +404,37 @@ document.getElementById("searchBox").oninput = searchServices;
 
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
-  if(watchId) { navigator.geolocation.clearWatch(watchId); }
 
-  watchId = navigator.geolocation.watchPosition(pos=>{
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
+  // ముందే లొకేషన్ మార్కర్ ఉంటే, బటన్ నొక్కినప్పుడు మ్యాప్ అక్కడికి జూమ్ అవుతుంది
+  if (myLocationMarker) {
+    map.flyTo(myLocationMarker.getLatLng(), 16);
+  }
 
-    if(!myLocationMarker){
-      const dotIcon = L.divIcon({
-        className: 'my-live-location',
-        iconSize: [22, 22],
-        iconAnchor: [11, 11]
-      });
-      myLocationMarker = L.marker([lat,lng], {icon: dotIcon})
-        .addTo(map)
-        .bindPopup("📍 You are here (Live)");
-      map.setView([lat,lng],16);
-    } else {
-      myLocationMarker.setLatLng([lat, lng]);
-      // చేంజ్ 2: లైవ్ లొకేషన్ తో పాటు మ్యాప్ కూడా కదలడానికి
-      map.panTo([lat,lng]); 
-    }
-  }, (err)=>{ 
-    alert("Location error. Please turn on GPS."); 
-  }, { enableHighAccuracy: true });
+  // ట్రాకింగ్ ఇంకా స్టార్ట్ అవ్వకపోతేనే కొత్తగా స్టార్ట్ చేస్తుంది
+  if(!watchId) {
+    watchId = navigator.geolocation.watchPosition(pos=>{
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      if(!myLocationMarker){
+        const dotIcon = L.divIcon({
+          className: 'my-live-location',
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
+        });
+        myLocationMarker = L.marker([lat,lng], {icon: dotIcon})
+          .addTo(map)
+          .bindPopup("📍 You are here (Live)");
+        
+        map.setView([lat,lng],16); // మొదటిసారి మాత్రమే మ్యాప్ సెట్ అవుతుంది
+      } else {
+        // బ్లూ డాట్ మాత్రమే కదులుతుంది, మ్యాప్ కదలదు
+        myLocationMarker.setLatLng([lat, lng]);
+      }
+    }, (err)=>{ 
+      alert("Location error. Please turn on GPS."); 
+    }, { enableHighAccuracy: true });
+  }
 }
 
 function showRoute(lat,lng){
