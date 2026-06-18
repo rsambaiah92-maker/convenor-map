@@ -21,7 +21,7 @@ button { cursor: pointer; font-weight: bold; }
 .stat-card .value-blue { color: #3b82f6; }
 .stat-card .value-green { color: #10b981; }
 
-/* టేబుల్ డిజైన్ (గజిబిజి లేకుండా ఫిక్స్ చేయబడింది) */
+/* టేబుల్ డిజైన్ */
 table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: nowrap; }
 th { background: #f1f5f9; color: #334155; border: none; border-bottom: 2px solid #cbd5e1; padding: 12px 15px; text-align: left; font-size: 14px; }
 td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-size: 14px; color: #334155; }
@@ -257,6 +257,8 @@ async function loadData(){
   </tr>`;
  });
  document.getElementById("tableBody").innerHTML=html;
+
+ document.querySelector(".advanced-filters").open = false;
 }
 </script>
 
@@ -358,6 +360,16 @@ loadData = async function(){
    markers.push(t);
   }
  });
+
+ // చేంజ్ 1: మ్యాప్ ఆటోమేటిక్ జూమ్ / ఫిట్ అవ్వడానికి (Markers యాడ్ అయిన తర్వాత)
+ if(markers.length > 0){
+   const group = L.featureGroup(
+      markers.filter(m => m instanceof L.Marker)
+   );
+   map.fitBounds(group.getBounds(), {
+      padding:[30,30]
+   });
+ }
 }
 
 document.getElementById("areaFilter").onchange = async () => {
@@ -411,6 +423,8 @@ function showMyLocation(){
       map.setView([lat,lng],16);
     } else {
       myLocationMarker.setLatLng([lat, lng]);
+      // చేంజ్ 2: లైవ్ లొకేషన్ తో పాటు మ్యాప్ కూడా కదలడానికి
+      map.panTo([lat,lng]); 
     }
   }, (err)=>{ 
     alert("Location error. Please turn on GPS."); 
