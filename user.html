@@ -3,6 +3,11 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TGNPDCL User Dashboard</title>
+
+<meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="images/icon-192.png">
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
 <style>
@@ -609,6 +614,19 @@ function closeRemark(){
  document.getElementById("remarkSelect").value="";
  document.getElementById("customRemark").value="";
  document.getElementById("customRemark").style.display="none";
+}
+
+// PWA Service Worker Registration (కొత్తగా యాడ్ చేయబడింది)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => {
+        console.log('ServiceWorker registered successfully');
+      })
+      .catch(err => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+  });
 }
 </script>
 
