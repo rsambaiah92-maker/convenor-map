@@ -1,12 +1,11 @@
 {
   "name": "TGNPDCL Collection Dashboard",
   "short_name": "TGNPDCL",
-  "description": "TGNPDCL Collection Services Dashboard",
+  "description": "Collection Services Dashboard for TGNPDCL Employees",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#f8fafc",
   "theme_color": "#2563eb",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "images/icon-192.png",
