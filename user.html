@@ -512,15 +512,22 @@ async function loadData(){
 <script>
 let map=L.map('map').setView([17.95,80.82],11);
 
-// మీరు అడిగినట్లు నార్మల్ మరియు సాటిలైట్ లేయర్స్ కోడ్ ఇక్కడ అప్‌డేట్ చేశాను
+// గూగుల్ నార్మల్ మ్యాప్ (Google Normal Map)
 const normalLayer = L.tileLayer(
- 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
- {maxZoom:19}
+ 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+ {
+   maxZoom: 20,
+   subdomains: ['mt0','mt1','mt2','mt3']
+ }
 );
 
+// గూగుల్ సాటిలైట్ మ్యాప్ (Google Satellite Map)
 const satelliteLayer = L.tileLayer(
- 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
- {maxZoom:19}
+ 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+ {
+   maxZoom: 20,
+   subdomains: ['mt0','mt1','mt2','mt3']
+ }
 );
 
 normalLayer.addTo(map);
@@ -625,10 +632,12 @@ loadData = async function(){
    "Current Demand: "+(r.current_demand||0)+"<br>"+
    "Arrears: "+(r.arrears||0)+"<br>"+
    "Amount: "+(r.total_amt||0)+"<br><br>"+
+   "Remark: "+(remarksData[String(r.scno)] || "")+"<br><br>"+
    "<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a><br><br>"+
    "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>🟢 WhatsApp</a><br><br>"+
    "<a target='_blank' href='https://www.google.com/maps/dir/?api=1&destination="+lat+","+lng+"'>📍 Navigate</a><br><br>"+
-   "<button onclick='showRoute("+lat+","+lng+")'>🛣 Route</button>"
+   "<button onclick='showRoute("+lat+","+lng+")'>🛣 Route</button><br><br>"+
+   "<button onclick='showRemark(\""+(r.scno||"")+"\")'>📝 Remark</button>"
    );
    
    markers.push(m);
