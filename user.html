@@ -44,10 +44,9 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .scno-label { background: white !important; border: 1px solid #333 !important; border-radius: 4px !important; padding: 2px 4px !important; font-size: 10px !important; font-weight: bold !important; color: #000 !important; white-space: nowrap !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; }
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999 !important; margin: 0 !important; border-radius: 0 !important; }
 
-/* 🌟 POPUP 3D MAGIC - ఇక్కడే మొత్తం పాప్-అప్ ని 3D గా మార్చాను 🌟 */
+/* 🌟 POPUP 3D MAGIC 🌟 */
 .leaflet-popup-content-wrapper {
   border-radius: 16px !important;
-  /* మల్టీ లేయర్ 3D షాడో: డబ్బా మొత్తం బయటికి వచ్చినట్లు ఉంటుంది */
   box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.8) !important;
   padding: 0 !important; 
   background: #ffffff !important;
@@ -55,7 +54,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 }
 .leaflet-popup-content {
   margin: 12px !important; 
-  width: 220px !important; /* వెడల్పు పక్కాగా తగ్గించబడింది */
+  width: 220px !important; 
 }
 .leaflet-popup-tip {
   box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
@@ -76,9 +75,14 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 #catBox summary { cursor: pointer; font-weight: bold; color: #475569; }
 .cat-list { margin-top: 8px; max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
+/* ఫిల్టర్ చెక్-బాక్సులు సాగకుండా సెట్ చేసిన కోడ్ (ఇది పక్కాగా ఉంది) */
+.cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #334155; margin: 0; }
+.cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); cursor: pointer; }
+
 /* యాక్షన్ బటన్స్ */
 .action-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
 .btn-print, .btn-map { background: white; color: #475569; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.btn-print:hover, .btn-map:hover { background: #f1f5f9; }
 
 /* మోడల్స్ (Modals) */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 9999; backdrop-filter: blur(2px); }
@@ -86,7 +90,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 #printHeader { display: none; }
 
-/* ప్రింట్ డిజైన్ */
+/* ప్రింట్ డిజైన్ (పర్ఫెక్ట్ ఎక్సెల్ ఫార్మాట్) */
 @media print {
   @page { margin: 10mm; } 
   body { background: white; color: black; margin: 0; padding: 0; }
@@ -383,7 +387,7 @@ loadData = async function(){
        className: "scno-label" 
    });
    
-   // 🌟 3D POPUP CONTENT WITH LARGE ICONS 🌟
+   // 🌟 3D POPUP CONTENT (గూగుల్ మ్యాప్స్ ఒరిజినల్ నావిగేషన్ లింక్ తో ఫిక్స్ చేయబడింది) 🌟
    m.bindPopup(`
    <div style="font-family:sans-serif; text-align:center;">
      <div style="font-size:15px; font-weight:800; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px;">
@@ -408,13 +412,12 @@ loadData = async function(){
      
      <div style="display:flex; gap:12px; margin-bottom:12px;">
        <a href="tel:${r.mobile_no||""}" style="flex:1; display:flex; justify-content:center; align-items:center; background: linear-gradient(145deg, #ffffff, #e6e6e6); text-decoration:none; height:45px; border-radius:12px; font-size:24px; box-shadow: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff; border:1px solid #f1f5f9;">📞</a>
-       
        <a target="_blank" href="https://wa.me/91${r.mobile_no||""}" style="flex:1; display:flex; justify-content:center; align-items:center; background: linear-gradient(145deg, #ffffff, #e6e6e6); text-decoration:none; height:45px; border-radius:12px; font-size:24px; box-shadow: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff; border:1px solid #f1f5f9;">🟢</a>
      </div>
      
      <div style="display:flex; gap:8px; margin-bottom:8px;">
        <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px #5b21b6, 0 5px 10px rgba(0,0,0,0.2);">🛣 Route</button>
-       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px #1e40af, 0 5px 10px rgba(0,0,0,0.2);">🧭 Nav</button>
+       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px #1e40af, 0 5px 10px rgba(0,0,0,0.2);">🧭 Nav</button>
      </div>
      
      <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px #065f46, 0 5px 10px rgba(0,0,0,0.2); margin-bottom:6px;">📝 Remark</button>
