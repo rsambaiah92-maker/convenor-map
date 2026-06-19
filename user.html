@@ -39,9 +39,30 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 #map { height: 350px; border: 1px solid #cbd5e1; border-radius: 12px; margin-top: 5px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 .map-wrapper { position: relative; }
 #closeMapBtn { display: none; position: absolute; top: 10px; right: 10px; z-index: 9999; width: auto; padding: 8px 16px; border: none; border-radius: 8px; background: #ef4444; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-#myLocationBtn { position: absolute; top: 50px; right: 10px; z-index: 9999; width: auto; padding: 8px 12px; border: none; border-radius: 8px; background: white; color: #3b82f6; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-/* SCNO లేబుల్ డిజైన్ (కొత్తది) */
+/* చిన్నగా మారిన మై లొకేషన్ స్క్వేర్ బటన్ డిజైన్ */
+#myLocationBtn { 
+  position: absolute; 
+  top: 52px; 
+  right: 10px; 
+  z-index: 9999; 
+  width: 34px;  
+  height: 34px; 
+  padding: 0; 
+  border: 1px solid #cbd5e1; 
+  border-radius: 4px; 
+  background: white; 
+  color: #3b82f6; 
+  cursor: pointer; 
+  font-size: 18px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+}
+#myLocationBtn:hover { background: #f1f5f9; }
+
+/* SCNO లేబుల్ డిజైన్ */
 .scno-label { background: white !important; border: 1px solid #333 !important; border-radius: 4px !important; padding: 2px 4px !important; font-size: 10px !important; font-weight: bold !important; color: #000 !important; white-space: nowrap !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; }
 
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999 !important; margin: 0 !important; border-radius: 0 !important; }
@@ -144,7 +165,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 <div class="map-wrapper">
   <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
-  <button id="myLocationBtn" onclick="showMyLocation()">📍 My Location</button>
+  <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">🎯</button>
   <div id="map"></div>
 </div>
 <br>
@@ -288,7 +309,7 @@ const satelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}
 normalLayer.addTo(map);
 L.control.layers({ "🗺 Normal": normalLayer, "🛰 Satellite": satelliteLayer }).addTo(map);
 
-let markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); // క్లస్టర్ గ్రూప్ క్రియేట్ చేయడం
+let markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
 let routingControl = null;
 let myLocationMarker = null;
 let watchId = null;
@@ -302,7 +323,7 @@ function clearMarkers(){
    markersGroup.clearLayers();
    map.removeLayer(markersGroup);
  }
- markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); // మళ్ళీ కొత్త గ్రూప్
+ markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
 }
 
 function cleanCoord(v){
@@ -354,7 +375,6 @@ loadData = async function(){
 
    const m = L.marker([lat,lng], {icon});
    
-   // మీరు అడిగినట్లుగా పిన్స్ విడిపోయాక నెంబర్లు కనిపించడానికి టూల్ టిప్ 
    m.bindTooltip(String(r.scno || "").slice(-5), { 
        permanent: true, 
        direction: "top", 
@@ -379,12 +399,10 @@ loadData = async function(){
    "<button onclick='showRemark(\""+(r.scno||"")+"\")' style='background:#10b981; color:white; border:none; padding:8px 12px; border-radius:6px;'>📝 Remark</button>"
    );
    
-   // మార్కర్ ని గ్రూప్ లోకి యాడ్ చేయడం
    markersGroup.addLayer(m);
   }
  });
 
- // చివరిగా ఆ గ్రూప్ మొత్తాన్ని మ్యాప్ పైన వేయడం
  map.addLayer(markersGroup);
 
  if(markersGroup.getLayers().length > 0){
@@ -425,6 +443,7 @@ document.getElementById("poleFilter").onchange=()=>{
 
 document.getElementById("searchBox").oninput = searchServices;
 
+// ఇక్కడ సరిచేసిన పక్కా లైవ్ కంపాస్ దిక్సూచి ఫంక్షన్ (రివర్స్ కాకుండా ఫిక్స్ చేసింది)
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
 
@@ -439,15 +458,44 @@ function showMyLocation(){
 
       if(!myLocationMarker){
         const dotIcon = L.divIcon({
-          className: 'my-live-location',
-          iconSize: [22, 22],
-          iconAnchor: [11, 11]
+          className: 'custom-live-location',
+          html: `<div id="compass-arrow" style="width: 50px; height: 50px; transform-origin: center; transition: transform 0.2s ease-out; display: flex; justify-content: center; align-items: center;">
+                   <svg width="50" height="50" viewBox="0 0 50 50">
+                     <polygon points="25,2 10,25 25,20 40,25" fill="rgba(37, 99, 235, 0.5)"></polygon>
+                     <circle cx="25" cy="25" r="7" fill="#2563eb" stroke="white" stroke-width="2.5"></circle>
+                   </svg>
+                 </div>`,
+          iconSize: [50, 50],
+          iconAnchor: [25, 25]
         });
-        myLocationMarker = L.marker([lat,lng], {icon: dotIcon})
+
+        myLocationMarker = L.marker([lat,lng], {icon: dotIcon, zIndexOffset: 1000})
           .addTo(map)
-          .bindPopup("📍 You are here (Live)");
+          .bindPopup("📍 మీరు ఇక్కడ ఉన్నారు");
         
-        map.setView([lat,lng],16);
+          map.setView([lat,lng], 16);
+
+        // పక్కాగా నార్త్, ఈస్ట్, వెస్ట్ దిక్కులు సింక్ చేసే అడ్వాన్స్‌డ్ సెన్సార్ కోడ్
+        if (window.DeviceOrientationEvent) {
+          window.addEventListener('deviceorientationabsolute', function(event) {
+            let heading = 0;
+            let arrow = document.getElementById('compass-arrow');
+            
+            if (!arrow) return;
+
+            // ఐఫోన్ (Apple) యూజర్ల కోసం
+            if (event.webkitCompassHeading) {
+              heading = event.webkitCompassHeading;
+            } 
+            // ఆండ్రాయిడ్ యూజర్ల కోసం
+            else if (event.alpha !== null) {
+              heading = 360 - event.alpha;
+            }
+            
+            arrow.style.transform = `rotate(${heading}deg)`;
+          }, true);
+        }
+
       } else {
         myLocationMarker.setLatLng([lat, lng]);
       }
