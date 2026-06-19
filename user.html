@@ -9,9 +9,7 @@
 <link rel="apple-touch-icon" href="images/icon-192.png">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<!-- పాత రూటింగ్ CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
-
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
@@ -23,7 +21,7 @@ input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radi
 input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 button { cursor: pointer; font-weight: bold; }
 
-/* స్మార్ట్ కార్డ్స్ డిజైన్ (Services & Amount కోసం) */
+/* స్మార్ట్ కార్డ్స్ డిజైన్ */
 .stats-container { display: flex; gap: 12px; margin-bottom: 15px; }
 .stat-card { flex: 1; background: white; border-radius: 12px; padding: 15px 10px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #e2e8f0; }
 .stat-card h4 { margin: 0 0 5px 0; color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -41,32 +39,27 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .map-wrapper { position: relative; }
 #closeMapBtn { display: none; position: absolute; top: 10px; right: 10px; z-index: 9999; width: auto; padding: 8px 16px; border: none; border-radius: 8px; background: #ef4444; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-/* గూగుల్ మ్యాప్స్ స్టైల్ లో కుడివైపు కిందకు మార్చిన రౌండ్ బటన్ */
-#myLocationBtn { 
-  position: absolute; 
-  bottom: 20px; 
-  right: 10px; 
-  z-index: 9999; 
-  width: 44px;  
-  height: 44px; 
-  padding: 0; 
-  border: none; 
-  border-radius: 50%; 
-  background: white; 
-  color: #3b82f6; 
-  cursor: pointer; 
-  font-size: 24px; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3); 
-}
-#myLocationBtn:hover { background: #f1f5f9; }
+#myLocationBtn { position: absolute; bottom: 20px; right: 10px; z-index: 9999; width: 44px; height: 44px; padding: 0; border: none; border-radius: 50%; background: white; color: #3b82f6; cursor: pointer; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.3); }
 
-/* SCNO లేబుల్ డిజైన్ */
 .scno-label { background: white !important; border: 1px solid #333 !important; border-radius: 4px !important; padding: 2px 4px !important; font-size: 10px !important; font-weight: bold !important; color: #000 !important; white-space: nowrap !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; }
-
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999 !important; margin: 0 !important; border-radius: 0 !important; }
+
+/* 🌟 POPUP 3D MAGIC - ఇక్కడే మొత్తం పాప్-అప్ ని 3D గా మార్చాను 🌟 */
+.leaflet-popup-content-wrapper {
+  border-radius: 16px !important;
+  /* మల్టీ లేయర్ 3D షాడో: డబ్బా మొత్తం బయటికి వచ్చినట్లు ఉంటుంది */
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.8) !important;
+  padding: 0 !important; 
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0;
+}
+.leaflet-popup-content {
+  margin: 12px !important; 
+  width: 220px !important; /* వెడల్పు పక్కాగా తగ్గించబడింది */
+}
+.leaflet-popup-tip {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+}
 
 /* హెడర్ */
 .header-box { position: relative; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-align: center; padding: 16px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
@@ -82,13 +75,10 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 #catBox { margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #f8fafc; }
 #catBox summary { cursor: pointer; font-weight: bold; color: #475569; }
 .cat-list { margin-top: 8px; max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #334155; }
-.cat-list input[type="checkbox"] { width: auto; margin: 0; transform: scale(1.2); cursor: pointer; }
 
 /* యాక్షన్ బటన్స్ */
 .action-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
 .btn-print, .btn-map { background: white; color: #475569; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.btn-print:hover, .btn-map:hover { background: #f1f5f9; }
 
 /* మోడల్స్ (Modals) */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 9999; backdrop-filter: blur(2px); }
@@ -96,21 +86,17 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 #printHeader { display: none; }
 
-/* ప్రింట్ డిజైన్ - స్క్రీన్‌షాట్స్ ఆధారంగా కరెక్ట్ సైజులు */
+/* ప్రింట్ డిజైన్ */
 @media print {
   @page { margin: 10mm; } 
   body { background: white; color: black; margin: 0; padding: 0; }
   #map, #myLocationBtn, #closeMapBtn, #searchBox, #searchResults, .advanced-filters, .action-buttons, .modal-overlay, .header-box, .stats-container, button { display: none !important; }
-  
   #printHeader { display: block !important; text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
   #printHeader h2 { margin-bottom: 4px; font-size: 18px; font-weight: bold; }
   #printHeader p { margin: 2px 0; font-size: 12px; }
-  
   table { width: 100%; display: table; box-shadow: none; white-space: normal; border-collapse: collapse; table-layout: fixed; } 
-  
   th, td { border: 1px solid #333; padding: 4px 5px; font-size: 10px; text-align: center; word-wrap: break-word; }
   th { background: #e2e8f0 !important; color: black; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  
   th:nth-child(1), td:nth-child(1) { width: 10%; text-align: left; }
   th:nth-child(2), td:nth-child(2) { width: 22%; text-align: left; }
   th:nth-child(3), td:nth-child(3) { width: 5%; }
@@ -397,41 +383,43 @@ loadData = async function(){
        className: "scno-label" 
    });
    
-   // కొత్త స్మార్ట్ కాంపాక్ట్ పాప్-అప్ డిజైన్
+   // 🌟 3D POPUP CONTENT WITH LARGE ICONS 🌟
    m.bindPopup(`
-   <div style="font-family:sans-serif; min-width:240px;">
-     <div style="font-size:15px; font-weight:bold; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-bottom:8px;">
-       👤 ${r.name || ""}
+   <div style="font-family:sans-serif; text-align:center;">
+     <div style="font-size:15px; font-weight:800; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px;">
+       <span style="font-size:18px;">👤</span> ${r.name || ""}
      </div>
      
-     <table style="width:100%; font-size:12px; color:#334155; margin-bottom:8px;">
-       <tr><td style="padding:2px 0;"><b>SCNO:</b> ${r.scno || ""}</td><td style="padding:2px 0;"><b>Cat:</b> ${r.cat || ""}</td></tr>
-       <tr><td style="padding:2px 0;"><b>Pole:</b> ${r.pole_no || ""}</td><td style="padding:2px 0;"><b>Status:</b> ${r.status || ""}</td></tr>
-     </table>
+     <div style="background:#f1f5f9; border-radius:8px; padding:6px; margin-bottom:8px; font-size:11px; display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:left; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+       <div><b>SCNO:</b><br><span style="color:#2563eb; font-weight:bold;">${r.scno || ""}</span></div>
+       <div><b>Pole:</b><br>${r.pole_no || ""}</div>
+       <div><b>Cat:</b> ${r.cat || ""}</div>
+       <div><b>Status:</b> ${r.status || ""}</div>
+       <div style="grid-column: span 2; border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px;"><b>📱 Mobile:</b> ${r.mobile_no || ""}</div>
+     </div>
      
-     <div style="font-size:12px; color:#334155; margin-bottom:8px;"><b>📱 Mobile:</b> ${r.mobile_no || ""}</div>
-     
-     <div style="background:#f8fafc; padding:8px; border-radius:6px; margin-bottom:8px; border:1px solid #e2e8f0;">
-        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
-          <span>Demand: <b style="color:#ef4444;">₹${r.current_demand||0}</b></span>
-          <span>Arrears: <b style="color:#ef4444;">₹${r.arrears||0}</b></span>
+     <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:8px; border-radius:8px; margin-bottom:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border:1px solid #bfdbfe;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold; color:#475569;">
+          <span>Dem: <span style="color:#ef4444;">₹${r.current_demand||0}</span></span>
+          <span>Arr: <span style="color:#ef4444;">₹${r.arrears||0}</span></span>
         </div>
-        <div style="font-size:14px; font-weight:bold; color:#3b82f6;">Total: ₹${r.total_amt||0}</div>
+        <div style="font-size:15px; font-weight:900; color:#1d4ed8; margin-top:4px;">Total: ₹${r.total_amt||0}</div>
      </div>
      
-     <div style="font-size:12px; color:#10b981; margin-bottom:12px; font-weight:bold;">Remark: ${remarksData[String(r.scno)] || "None"}</div>
-     
-     <div style="display:flex; gap:10px; margin-bottom:10px;">
-       <a href="tel:${r.mobile_no||""}" style="flex:1; text-align:center; background:#f1f5f9; color:#334155; text-decoration:none; padding:10px; border-radius:6px; border:1px solid #cbd5e1; font-weight:bold; box-shadow:0 1px 2px rgba(0,0,0,0.05);">📞 Call</a>
-       <a target="_blank" href="https://wa.me/91${r.mobile_no||""}" style="flex:1; text-align:center; background:#dcfce3; color:#166534; text-decoration:none; padding:10px; border-radius:6px; border:1px solid #bbf7d0; font-weight:bold; box-shadow:0 1px 2px rgba(0,0,0,0.05);">🟢 WA</a>
+     <div style="display:flex; gap:12px; margin-bottom:12px;">
+       <a href="tel:${r.mobile_no||""}" style="flex:1; display:flex; justify-content:center; align-items:center; background: linear-gradient(145deg, #ffffff, #e6e6e6); text-decoration:none; height:45px; border-radius:12px; font-size:24px; box-shadow: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff; border:1px solid #f1f5f9;">📞</a>
+       
+       <a target="_blank" href="https://wa.me/91${r.mobile_no||""}" style="flex:1; display:flex; justify-content:center; align-items:center; background: linear-gradient(145deg, #ffffff, #e6e6e6); text-decoration:none; height:45px; border-radius:12px; font-size:24px; box-shadow: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff; border:1px solid #f1f5f9;">🟢</a>
      </div>
      
-     <div style="display:flex; gap:10px; margin-bottom:10px;">
-       <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow:0 2px 4px rgba(139,92,246,0.3);">🛣 Route</button>
-       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow:0 2px 4px rgba(59,130,246,0.3);">🧭 Navigate</button>
+     <div style="display:flex; gap:8px; margin-bottom:8px;">
+       <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px #5b21b6, 0 5px 10px rgba(0,0,0,0.2);">🛣 Route</button>
+       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px #1e40af, 0 5px 10px rgba(0,0,0,0.2);">🧭 Nav</button>
      </div>
      
-     <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow:0 2px 4px rgba(16,185,129,0.3);">📝 Remark</button>
+     <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px #065f46, 0 5px 10px rgba(0,0,0,0.2); margin-bottom:6px;">📝 Remark</button>
+     
+     <div style="font-size:11px; color:#059669; font-weight:bold; border-top:1px solid #e2e8f0; padding-top:6px; text-align:left;">Rmk: ${remarksData[String(r.scno)] || "None"}</div>
    </div>
    `);
    
@@ -479,7 +467,6 @@ document.getElementById("poleFilter").onchange=()=>{
 
 document.getElementById("searchBox").oninput = searchServices;
 
-// బాణం లేని లైవ్ లొకేషన్ బ్లూ డాట్ ఫంక్షన్
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
 
@@ -689,16 +676,11 @@ function closeRemark(){
  document.getElementById("customRemark").style.display="none";
 }
 
-// PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then(registration => {
-        console.log('ServiceWorker registered successfully');
-      })
-      .catch(err => {
-        console.log('ServiceWorker registration failed: ', err);
-      });
+      .then(registration => { console.log('ServiceWorker registered successfully'); })
+      .catch(err => { console.log('ServiceWorker registration failed: ', err); });
   });
 }
 </script>
