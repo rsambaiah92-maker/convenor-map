@@ -1,58 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TGNPDCL - Login</title>
 
-<title>TGNPDCL Login</title>
 <meta name="theme-color" content="#2563eb">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="images/icon-192.png">
 
-<link rel="stylesheet" href="css/style.css">
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="js/config.js"></script>
-<script src="js/auth.js" defer></script>
-
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { 
+    margin: 0; 
+    padding: 0; 
+    height: 100vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: #f8fafc; 
+  }
+  .login-container {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  .login-header {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .login-header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+  .login-header p { margin: 10px 0 0 0; font-size: 14px; opacity: 0.9; }
+  .login-form { padding: 30px 20px; }
+  
+  .input-group { margin-bottom: 20px; }
+  .input-group label { display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 600; }
+  .input-group input { 
+    width: 100%; 
+    padding: 14px; 
+    border-radius: 8px; 
+    border: 1px solid #cbd5e1; 
+    font-size: 15px; 
+    outline: none; 
+    transition: all 0.3s; 
+  }
+  .input-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+  
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    transition: all 0.3s;
+  }
+  .login-btn:hover { background: linear-gradient(135deg, #1d4ed8, #2563eb); }
+  .login-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+  
+  .error-msg {
+    color: #ef4444;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 15px;
+    display: none;
+    font-weight: 500;
+  }
+</style>
 </head>
-
 <body>
 
-<div class="login-box">
-
-<h2>TGNPDCL COLLECTION SYSTEM</h2>
-
-<input
-type="text"
-id="username"
-placeholder="Username">
-
-<input
-type="password"
-id="password"
-placeholder="Password">
-
-<button onclick="login()">
-LOGIN
-</button>
-
-<p id="msg"></p>
-
+<div class="login-container">
+  <div class="login-header">
+    <h1>⚡ TGNPDCL</h1>
+    <p>Collection Services Dashboard</p>
+  </div>
+  
+  <div class="login-form">
+    <div id="errorMsg" class="error-msg">Invalid Username or Password!</div>
+    
+    <div class="input-group">
+      <label>👤 Username / User ID</label>
+      <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+    </div>
+    
+    <div class="input-group">
+      <label>🔒 Password</label>
+      <input type="password" id="password" placeholder="Enter your password">
+    </div>
+    
+    <button id="loginBtn" class="login-btn" onclick="performLogin()">Login</button>
+  </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+
 <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(registration => {
-          console.log('ServiceWorker registered successfully');
-        })
-        .catch(err => {
-          console.log('ServiceWorker registration failed: ', err);
-        });
-    });
+// ఒకవేళ ముందే లాగిన్ అయి ఉంటే డైరెక్ట్ గా డ్యాష్ బోర్డ్ కి పంపించేయడం
+window.onload = () => {
+  if(localStorage.getItem("isLoggedIn") === "true") {
+    window.location.replace("user.html");
   }
+};
+
+async function performLogin() {
+  const uname = document.getElementById("username").value.trim();
+  const pass = document.getElementById("password").value.trim();
+  const errorBox = document.getElementById("errorMsg");
+  const btn = document.getElementById("loginBtn");
+
+  errorBox.style.display = "none";
+
+  if(!uname || !pass) {
+    errorBox.innerText = "Please enter both Username and Password.";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  // లోడింగ్ స్టేటస్
+  btn.innerText = "Verifying...";
+  btn.disabled = true;
+
+  try {
+    // Supabase లోని 'users' టేబుల్ నుండి యూజర్ డీటెయిల్స్ చెక్ చేయడం
+    const { data, error } = await supabaseClient
+      .from("users")
+      .select("*")
+      .eq("username", uname)
+      .eq("password", pass);
+
+    if (error) throw error;
+
+    if (data && data.length > 0) {
+      // లాగిన్ సక్సెస్ అయితే ఫోన్ మెమరీలో సేవ్ చేసి user.html కి పంపడం
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("employeeName", uname.toUpperCase());
+      window.location.replace("user.html");
+    } else {
+      // తప్పు పాస్‌వర్డ్ కొడితే
+      errorBox.innerText = "❌ Invalid Username or Password!";
+      errorBox.style.display = "block";
+      btn.innerText = "Login";
+      btn.disabled = false;
+    }
+  } catch (err) {
+    errorBox.innerText = "⚠️ Network Error. Please try again.";
+    errorBox.style.display = "block";
+    btn.innerText = "Login";
+    btn.disabled = false;
+    console.error(err);
+  }
+}
+
+// PWA Service Worker (ఆటోమేటిక్ అప్‌డేట్స్ కోసం)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js');
+  });
+}
 </script>
 
 </body>
