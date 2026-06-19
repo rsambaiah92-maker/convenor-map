@@ -9,6 +9,7 @@
 <link rel="apple-touch-icon" href="images/icon-192.png">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<!-- పాత రూటింగ్ CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
@@ -95,7 +96,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 #printHeader { display: none; }
 
-/* ప్రింట్ కోసం పర్ఫెక్ట్ అడ్జస్ట్‌మెంట్ - మీ స్క్రీన్‌షాట్స్ ఆధారంగా మార్చబడింది */
+/* ప్రింట్ డిజైన్ - స్క్రీన్‌షాట్స్ ఆధారంగా కరెక్ట్ సైజులు */
 @media print {
   @page { margin: 10mm; } 
   body { background: white; color: black; margin: 0; padding: 0; }
@@ -105,22 +106,20 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
   #printHeader h2 { margin-bottom: 4px; font-size: 18px; font-weight: bold; }
   #printHeader p { margin: 2px 0; font-size: 12px; }
   
-  /* టేబుల్ లేఅవుట్ ఫిక్స్ చేసి, కరెక్ట్ సైజులు ఇవ్వడం */
   table { width: 100%; display: table; box-shadow: none; white-space: normal; border-collapse: collapse; table-layout: fixed; } 
   
   th, td { border: 1px solid #333; padding: 4px 5px; font-size: 10px; text-align: center; word-wrap: break-word; }
   th { background: #e2e8f0 !important; color: black; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   
-  /* ఒక్కో కాలమ్ కి కరెక్ట్ గా పర్సెంటేజ్ ఇవ్వడం జరిగింది */
-  th:nth-child(1), td:nth-child(1) { width: 10%; text-align: left; }  /* SCNO */
-  th:nth-child(2), td:nth-child(2) { width: 22%; text-align: left; }  /* NAME (ఎక్కువ స్పేస్) */
-  th:nth-child(3), td:nth-child(3) { width: 5%; }                     /* CAT */
-  th:nth-child(4), td:nth-child(4) { width: 5%; }                     /* STATUS */
-  th:nth-child(5), td:nth-child(5) { width: 11%; }                    /* MOBILE */
-  th:nth-child(6), td:nth-child(6) { width: 8%; }                     /* CURRENT DEMAND (సైజ్ తగ్గించబడింది) */
-  th:nth-child(7), td:nth-child(7) { width: 8%; }                     /* ARREARS (సైజ్ తగ్గించబడింది) */
-  th:nth-child(8), td:nth-child(8) { width: 8%; }                     /* TOTAL (సైజ్ తగ్గించబడింది) */
-  th:nth-child(9), td:nth-child(9) { width: 23%; text-align: left; }  /* REMARK (ఎక్కువ స్పేస్) */
+  th:nth-child(1), td:nth-child(1) { width: 10%; text-align: left; }
+  th:nth-child(2), td:nth-child(2) { width: 22%; text-align: left; }
+  th:nth-child(3), td:nth-child(3) { width: 5%; }
+  th:nth-child(4), td:nth-child(4) { width: 5%; }
+  th:nth-child(5), td:nth-child(5) { width: 11%; }
+  th:nth-child(6), td:nth-child(6) { width: 8%; }
+  th:nth-child(7), td:nth-child(7) { width: 8%; }
+  th:nth-child(8), td:nth-child(8) { width: 8%; }
+  th:nth-child(9), td:nth-child(9) { width: 23%; text-align: left; }
 }
 </style>
 </head>
@@ -398,27 +397,43 @@ loadData = async function(){
        className: "scno-label" 
    });
    
-   m.bindPopup(
-   "<b>"+(r.name||"")+"</b><br>"+
-   "SCNO: "+(r.scno||"")+"<br>"+
-   "Category: "+(r.cat||"")+"<br>"+
-   "Pole No: "+(r.pole_no||"")+"<br>"+
-   "Status: "+(r.status||"")+"<br>"+
-   "Mobile: "+(r.mobile_no||"")+"<br>"+
-   "Current Demand: "+(r.current_demand||0)+"<br>"+
-   "Arrears: "+(r.arrears||0)+"<br>"+
-   "Amount: "+(r.total_amt||0)+"<br><br>"+
-   "Remark: "+(remarksData[String(r.scno)] || "")+"<br><br>"+
-   "<div style='display:flex; gap:10px;'>"+
-   "<a href='tel:"+(r.mobile_no||"")+"' style='text-decoration:none;'>📞 Call</a>"+
-   "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"' style='text-decoration:none;'>🟢 WhatsApp</a>"+
-   "</div><br>"+
-   "<div style='display:flex; gap:5px;'>"+
-   "<button onclick='showRoute("+lat+","+lng+")' style='flex:1; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; cursor:pointer;'>🛣 Route</button>"+
-   "<button onclick='window.open(\"https://www.google.com/maps/dir/?api=1&destination="+lat+","+lng+"\", \"_blank\")' style='flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:6px; cursor:pointer;'>🧭 Navigate</button>"+
-   "</div><br>"+
-   "<button onclick='showRemark(\""+(r.scno||"")+"\")' style='width:100%; background:#10b981; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;'>📝 Remark</button>"
-   );
+   // కొత్త స్మార్ట్ కాంపాక్ట్ పాప్-అప్ డిజైన్
+   m.bindPopup(`
+   <div style="font-family:sans-serif; min-width:240px;">
+     <div style="font-size:15px; font-weight:bold; color:#0f172a; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-bottom:8px;">
+       👤 ${r.name || ""}
+     </div>
+     
+     <table style="width:100%; font-size:12px; color:#334155; margin-bottom:8px;">
+       <tr><td style="padding:2px 0;"><b>SCNO:</b> ${r.scno || ""}</td><td style="padding:2px 0;"><b>Cat:</b> ${r.cat || ""}</td></tr>
+       <tr><td style="padding:2px 0;"><b>Pole:</b> ${r.pole_no || ""}</td><td style="padding:2px 0;"><b>Status:</b> ${r.status || ""}</td></tr>
+     </table>
+     
+     <div style="font-size:12px; color:#334155; margin-bottom:8px;"><b>📱 Mobile:</b> ${r.mobile_no || ""}</div>
+     
+     <div style="background:#f8fafc; padding:8px; border-radius:6px; margin-bottom:8px; border:1px solid #e2e8f0;">
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+          <span>Demand: <b style="color:#ef4444;">₹${r.current_demand||0}</b></span>
+          <span>Arrears: <b style="color:#ef4444;">₹${r.arrears||0}</b></span>
+        </div>
+        <div style="font-size:14px; font-weight:bold; color:#3b82f6;">Total: ₹${r.total_amt||0}</div>
+     </div>
+     
+     <div style="font-size:12px; color:#10b981; margin-bottom:12px; font-weight:bold;">Remark: ${remarksData[String(r.scno)] || "None"}</div>
+     
+     <div style="display:flex; gap:10px; margin-bottom:10px;">
+       <a href="tel:${r.mobile_no||""}" style="flex:1; text-align:center; background:#f1f5f9; color:#334155; text-decoration:none; padding:10px; border-radius:6px; border:1px solid #cbd5e1; font-weight:bold; box-shadow:0 1px 2px rgba(0,0,0,0.05);">📞 Call</a>
+       <a target="_blank" href="https://wa.me/91${r.mobile_no||""}" style="flex:1; text-align:center; background:#dcfce3; color:#166534; text-decoration:none; padding:10px; border-radius:6px; border:1px solid #bbf7d0; font-weight:bold; box-shadow:0 1px 2px rgba(0,0,0,0.05);">🟢 WA</a>
+     </div>
+     
+     <div style="display:flex; gap:10px; margin-bottom:10px;">
+       <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow:0 2px 4px rgba(139,92,246,0.3);">🛣 Route</button>
+       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow:0 2px 4px rgba(59,130,246,0.3);">🧭 Navigate</button>
+     </div>
+     
+     <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; box-shadow:0 2px 4px rgba(16,185,129,0.3);">📝 Remark</button>
+   </div>
+   `);
    
    markersGroup.addLayer(m);
   }
@@ -464,6 +479,7 @@ document.getElementById("poleFilter").onchange=()=>{
 
 document.getElementById("searchBox").oninput = searchServices;
 
+// బాణం లేని లైవ్ లొకేషన్ బ్లూ డాట్ ఫంక్షన్
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
 
