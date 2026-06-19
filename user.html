@@ -95,9 +95,9 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 #printHeader { display: none; }
 
-/* ప్రింట్ కోసం కాంపాక్ట్ (Excel లాంటి) డిజైన్ - ఎక్కువ సర్వీసులు పట్టడానికి */
+/* ప్రింట్ కోసం పర్ఫెక్ట్ అడ్జస్ట్‌మెంట్ - మీ స్క్రీన్‌షాట్స్ ఆధారంగా మార్చబడింది */
 @media print {
-  @page { margin: 10mm; } /* మార్జిన్లు తగ్గించాను */
+  @page { margin: 10mm; } 
   body { background: white; color: black; margin: 0; padding: 0; }
   #map, #myLocationBtn, #closeMapBtn, #searchBox, #searchResults, .advanced-filters, .action-buttons, .modal-overlay, .header-box, .stats-container, button { display: none !important; }
   
@@ -105,15 +105,22 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
   #printHeader h2 { margin-bottom: 4px; font-size: 18px; font-weight: bold; }
   #printHeader p { margin: 2px 0; font-size: 12px; }
   
-  table { width: 100%; display: table; box-shadow: none; white-space: normal; border-collapse: collapse; }
+  /* టేబుల్ లేఅవుట్ ఫిక్స్ చేసి, కరెక్ట్ సైజులు ఇవ్వడం */
+  table { width: 100%; display: table; box-shadow: none; white-space: normal; border-collapse: collapse; table-layout: fixed; } 
   
-  /* అక్షరాల సైజు మరియు ప్యాడింగ్ తగ్గించాను (ఎక్కువ లైన్లు పట్టడానికి) */
-  th, td { border: 1px solid #333; padding: 4px 5px; font-size: 10px; text-align: left; word-break: break-word; }
+  th, td { border: 1px solid #333; padding: 4px 5px; font-size: 10px; text-align: center; word-wrap: break-word; }
   th { background: #e2e8f0 !important; color: black; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   
-  /* రిమార్క్ (REMARK) కాలమ్ కి స్పేస్ ఎక్కువ దొరకడానికి అడ్జస్ట్మెంట్ */
-  th:last-child, td:last-child { width: 25%; } 
-  th:nth-child(2), td:nth-child(2) { width: 20%; } 
+  /* ఒక్కో కాలమ్ కి కరెక్ట్ గా పర్సెంటేజ్ ఇవ్వడం జరిగింది */
+  th:nth-child(1), td:nth-child(1) { width: 10%; text-align: left; }  /* SCNO */
+  th:nth-child(2), td:nth-child(2) { width: 22%; text-align: left; }  /* NAME (ఎక్కువ స్పేస్) */
+  th:nth-child(3), td:nth-child(3) { width: 5%; }                     /* CAT */
+  th:nth-child(4), td:nth-child(4) { width: 5%; }                     /* STATUS */
+  th:nth-child(5), td:nth-child(5) { width: 11%; }                    /* MOBILE */
+  th:nth-child(6), td:nth-child(6) { width: 8%; }                     /* CURRENT DEMAND (సైజ్ తగ్గించబడింది) */
+  th:nth-child(7), td:nth-child(7) { width: 8%; }                     /* ARREARS (సైజ్ తగ్గించబడింది) */
+  th:nth-child(8), td:nth-child(8) { width: 8%; }                     /* TOTAL (సైజ్ తగ్గించబడింది) */
+  th:nth-child(9), td:nth-child(9) { width: 23%; text-align: left; }  /* REMARK (ఎక్కువ స్పేస్) */
 }
 </style>
 </head>
@@ -391,7 +398,6 @@ loadData = async function(){
        className: "scno-label" 
    });
    
-   // పాత 'Route' బటన్ కి పక్కనే, కొత్తగా 'Navigate' బటన్ యాడ్ చేశాను
    m.bindPopup(
    "<b>"+(r.name||"")+"</b><br>"+
    "SCNO: "+(r.scno||"")+"<br>"+
@@ -458,7 +464,6 @@ document.getElementById("poleFilter").onchange=()=>{
 
 document.getElementById("searchBox").oninput = searchServices;
 
-// బాణం తీసేసి కేవలం సింపుల్ బ్లూ డాట్ ని మాత్రమే ఉంచిన ఫంక్షన్
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
 
@@ -494,7 +499,6 @@ function showMyLocation(){
   }
 }
 
-// పాత రూటింగ్ ఫంక్షన్ (ఏమీ మార్చలేదు)
 function showRoute(lat,lng){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
   
