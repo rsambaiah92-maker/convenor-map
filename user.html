@@ -40,25 +40,25 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .map-wrapper { position: relative; }
 #closeMapBtn { display: none; position: absolute; top: 10px; right: 10px; z-index: 9999; width: auto; padding: 8px 16px; border: none; border-radius: 8px; background: #ef4444; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-/* చిన్నగా మారిన మై లొకేషన్ స్క్వేర్ బటన్ డిజైన్ */
+/* గూగుల్ మ్యాప్స్ స్టైల్ లో కుడివైపు కిందకు మార్చిన రౌండ్ బటన్ */
 #myLocationBtn { 
   position: absolute; 
-  top: 52px; 
+  bottom: 20px; 
   right: 10px; 
   z-index: 9999; 
-  width: 34px;  
-  height: 34px; 
+  width: 44px;  
+  height: 44px; 
   padding: 0; 
-  border: 1px solid #cbd5e1; 
-  border-radius: 4px; 
+  border: none; 
+  border-radius: 50%; 
   background: white; 
   color: #3b82f6; 
   cursor: pointer; 
-  font-size: 18px; 
+  font-size: 24px; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3); 
 }
 #myLocationBtn:hover { background: #f1f5f9; }
 
@@ -66,9 +66,6 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .scno-label { background: white !important; border: 1px solid #333 !important; border-radius: 4px !important; padding: 2px 4px !important; font-size: 10px !important; font-weight: bold !important; color: #000 !important; white-space: nowrap !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; }
 
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999 !important; margin: 0 !important; border-radius: 0 !important; }
-
-/* Live Location Dot CSS */
-.my-live-location { background-color: #2563eb; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.5); }
 
 /* హెడర్ */
 .header-box { position: relative; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-align: center; padding: 16px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
@@ -97,14 +94,26 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .modal-content { background: white; margin: 40px auto; padding: 20px; width: 90%; max-width: 450px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 
 #printHeader { display: none; }
+
+/* ప్రింట్ కోసం కాంపాక్ట్ (Excel లాంటి) డిజైన్ - ఎక్కువ సర్వీసులు పట్టడానికి */
 @media print {
-  body { background: white; color: black; }
+  @page { margin: 10mm; } /* మార్జిన్లు తగ్గించాను */
+  body { background: white; color: black; margin: 0; padding: 0; }
   #map, #myLocationBtn, #closeMapBtn, #searchBox, #searchResults, .advanced-filters, .action-buttons, .modal-overlay, .header-box, .stats-container, button { display: none !important; }
-  #printHeader { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
-  #printHeader h2 { margin-bottom: 5px; font-size: 20px; }
-  #printHeader p { margin: 5px 0; font-size: 14px; }
-  table { width: 100%; display: table; box-shadow: none; white-space: normal; }
-  th, td { border: 1px solid #ddd; }
+  
+  #printHeader { display: block !important; text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+  #printHeader h2 { margin-bottom: 4px; font-size: 18px; font-weight: bold; }
+  #printHeader p { margin: 2px 0; font-size: 12px; }
+  
+  table { width: 100%; display: table; box-shadow: none; white-space: normal; border-collapse: collapse; }
+  
+  /* అక్షరాల సైజు మరియు ప్యాడింగ్ తగ్గించాను (ఎక్కువ లైన్లు పట్టడానికి) */
+  th, td { border: 1px solid #333; padding: 4px 5px; font-size: 10px; text-align: left; word-break: break-word; }
+  th { background: #e2e8f0 !important; color: black; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  
+  /* రిమార్క్ (REMARK) కాలమ్ కి స్పేస్ ఎక్కువ దొరకడానికి అడ్జస్ట్మెంట్ */
+  th:last-child, td:last-child { width: 25%; } 
+  th:nth-child(2), td:nth-child(2) { width: 20%; } 
 }
 </style>
 </head>
@@ -165,7 +174,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 <div class="map-wrapper">
   <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
-  <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">🎯</button>
+  <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">⌖</button>
   <div id="map"></div>
 </div>
 <br>
@@ -382,6 +391,7 @@ loadData = async function(){
        className: "scno-label" 
    });
    
+   // పాత 'Route' బటన్ కి పక్కనే, కొత్తగా 'Navigate' బటన్ యాడ్ చేశాను
    m.bindPopup(
    "<b>"+(r.name||"")+"</b><br>"+
    "SCNO: "+(r.scno||"")+"<br>"+
@@ -393,10 +403,15 @@ loadData = async function(){
    "Arrears: "+(r.arrears||0)+"<br>"+
    "Amount: "+(r.total_amt||0)+"<br><br>"+
    "Remark: "+(remarksData[String(r.scno)] || "")+"<br><br>"+
-   "<a href='tel:"+(r.mobile_no||"")+"'>📞 Call</a><br><br>"+
-   "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"'>🟢 WhatsApp</a><br><br>"+
-   "<button onclick='showRoute("+lat+","+lng+")' style='background:#8b5cf6; color:white; border:none; padding:8px 12px; border-radius:6px;'>🛣 Route</button><br><br>"+
-   "<button onclick='showRemark(\""+(r.scno||"")+"\")' style='background:#10b981; color:white; border:none; padding:8px 12px; border-radius:6px;'>📝 Remark</button>"
+   "<div style='display:flex; gap:10px;'>"+
+   "<a href='tel:"+(r.mobile_no||"")+"' style='text-decoration:none;'>📞 Call</a>"+
+   "<a target='_blank' href='https://wa.me/91"+(r.mobile_no||"")+"' style='text-decoration:none;'>🟢 WhatsApp</a>"+
+   "</div><br>"+
+   "<div style='display:flex; gap:5px;'>"+
+   "<button onclick='showRoute("+lat+","+lng+")' style='flex:1; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; cursor:pointer;'>🛣 Route</button>"+
+   "<button onclick='window.open(\"https://www.google.com/maps/dir/?api=1&destination="+lat+","+lng+"\", \"_blank\")' style='flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:6px; cursor:pointer;'>🧭 Navigate</button>"+
+   "</div><br>"+
+   "<button onclick='showRemark(\""+(r.scno||"")+"\")' style='width:100%; background:#10b981; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;'>📝 Remark</button>"
    );
    
    markersGroup.addLayer(m);
@@ -443,7 +458,7 @@ document.getElementById("poleFilter").onchange=()=>{
 
 document.getElementById("searchBox").oninput = searchServices;
 
-// ఇక్కడ సరిచేసిన పక్కా లైవ్ కంపాస్ దిక్సూచి ఫంక్షన్ (రివర్స్ కాకుండా ఫిక్స్ చేసింది)
+// బాణం తీసేసి కేవలం సింపుల్ బ్లూ డాట్ ని మాత్రమే ఉంచిన ఫంక్షన్
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
 
@@ -459,14 +474,9 @@ function showMyLocation(){
       if(!myLocationMarker){
         const dotIcon = L.divIcon({
           className: 'custom-live-location',
-          html: `<div id="compass-arrow" style="width: 50px; height: 50px; transform-origin: center; transition: transform 0.2s ease-out; display: flex; justify-content: center; align-items: center;">
-                   <svg width="50" height="50" viewBox="0 0 50 50">
-                     <polygon points="25,2 10,25 25,20 40,25" fill="rgba(37, 99, 235, 0.5)"></polygon>
-                     <circle cx="25" cy="25" r="7" fill="#2563eb" stroke="white" stroke-width="2.5"></circle>
-                   </svg>
-                 </div>`,
-          iconSize: [50, 50],
-          iconAnchor: [25, 25]
+          html: `<div style="width: 16px; height: 16px; background-color: #2563eb; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.5);"></div>`,
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
         });
 
         myLocationMarker = L.marker([lat,lng], {icon: dotIcon, zIndexOffset: 1000})
@@ -474,27 +484,6 @@ function showMyLocation(){
           .bindPopup("📍 మీరు ఇక్కడ ఉన్నారు");
         
           map.setView([lat,lng], 16);
-
-        // పక్కాగా నార్త్, ఈస్ట్, వెస్ట్ దిక్కులు సింక్ చేసే అడ్వాన్స్‌డ్ సెన్సార్ కోడ్
-        if (window.DeviceOrientationEvent) {
-          window.addEventListener('deviceorientationabsolute', function(event) {
-            let heading = 0;
-            let arrow = document.getElementById('compass-arrow');
-            
-            if (!arrow) return;
-
-            // ఐఫోన్ (Apple) యూజర్ల కోసం
-            if (event.webkitCompassHeading) {
-              heading = event.webkitCompassHeading;
-            } 
-            // ఆండ్రాయిడ్ యూజర్ల కోసం
-            else if (event.alpha !== null) {
-              heading = 360 - event.alpha;
-            }
-            
-            arrow.style.transform = `rotate(${heading}deg)`;
-          }, true);
-        }
 
       } else {
         myLocationMarker.setLatLng([lat, lng]);
@@ -505,6 +494,7 @@ function showMyLocation(){
   }
 }
 
+// పాత రూటింగ్ ఫంక్షన్ (ఏమీ మార్చలేదు)
 function showRoute(lat,lng){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
   
