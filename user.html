@@ -42,7 +42,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .scno-label { background: white !important; border: 1px solid #333 !important; border-radius: 4px !important; padding: 2px 4px !important; font-size: 10px !important; font-weight: bold !important; color: #000 !important; white-space: nowrap !important; }
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999 !important; margin: 0 !important; border-radius: 0 !important; }
 
-/* 🌟 POPUP (చిన్న సైజు) 🌟 */
+/* 🌟 POPUP 🌟 */
 .leaflet-popup-content-wrapper {
   border-radius: 8px !important;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
@@ -74,7 +74,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .action-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
 .btn-print, .btn-map { background: white; color: #475569; border: 1px solid #cbd5e1; }
 
-/* మోడల్స్ (Modals) */
+/* మోడల్స్ */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 9999; backdrop-filter: blur(2px); }
 .modal-content { background: white; margin: 40px auto; padding: 20px; width: 90%; max-width: 450px; border-radius: 12px; }
 
@@ -234,12 +234,61 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
 <script>
 let masterData=[];
+let map;
+let markersGroup;
+let routingControl = null;
+let myLocationMarker = null;
+let watchId = null;
+
+let selectedRemarkScno = "";
+let remarksData = JSON.parse(localStorage.getItem("remarksData") || "{}");
+
+// మ్యాప్ ని లోడ్ చేయడం
+window.onload = async () => {
+  let emp = localStorage.getItem("employeeName");
+  if(!emp){ emp = prompt("Enter Employee Name"); if(emp){ localStorage.setItem("employeeName", emp); } }
+  document.getElementById("profileBtn").innerText = (emp || "U").charAt(0).toUpperCase();
+
+  // Initialize Map
+  map = L.map('map').setView([17.95,80.82],11);
+  const normalLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'] });
+  const satelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'] });
+  normalLayer.addTo(map);
+  L.control.layers({ "🗺 Normal": normalLayer, "🛰 Satellite": satelliteLayer }).addTo(map);
+  markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
+
+  // ఏరియాస్ లోడ్ చేయడం
+  const { data, error } = await supabaseClient.from("records").select("area").range(0,12000);
+  if(error){ alert(error.message); return; }
+  const areas = [...new Set(data.map(r => r.area).filter(Boolean))];
+  const areaDropdown = document.getElementById("areaFilter");
+  areas.forEach(a=>{ areaDropdown.innerHTML += `<option value="${a}">${a}</option>`; });
+};
+
+function clearMarkers(){
+ if (map && map.hasLayer(markersGroup)) {
+   markersGroup.clearLayers();
+   map.removeLayer(markersGroup);
+ }
+ markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
+}
+
+function cleanCoord(v){
+ if(!v) return null;
+ return parseFloat(String(v).replace(/[NSEW]/gi,''));
+}
 
 async function loadData(){
  const area=document.getElementById("areaFilter").value;
  if(!area){ alert("Please Select Area"); return; }
+ 
+ // డేటాబేస్ నుండి తెచ్చుకోవడం
  let query = supabaseClient.from("records").select("*").range(0, 15000); 
  if(area){ query = query.eq("area", area); }
  const pole=document.getElementById("poleFilter").value;
@@ -253,6 +302,8 @@ async function loadData(){
 
  let filtered = data || [];
  masterData = filtered; 
+ 
+ // లోకల్ గా ఫిల్టర్ చేయడం
  const minAmt = Number(document.getElementById("minAmount").value||0);
  const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
  const search=document.getElementById("searchBox").value.toLowerCase();
@@ -266,6 +317,7 @@ async function loadData(){
   filtered=filtered.filter(r=> JSON.stringify(r).toLowerCase().includes(search));
  }
 
+ // టేబుల్ మరియు రికార్డ్స్ అప్డేట్
  document.getElementById("totalRecords").innerText=filtered.length;
  let total=0;
  filtered.forEach(r=>{ total += Number(r.total_amt||0); });
@@ -287,59 +339,9 @@ async function loadData(){
  });
  document.getElementById("tableBody").innerHTML=html;
  document.querySelector(".advanced-filters").open = false;
-}
 
-let map=L.map('map').setView([17.95,80.82],11);
-
-const normalLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'] });
-const satelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'] });
-
-normalLayer.addTo(map);
-L.control.layers({ "🗺 Normal": normalLayer, "🛰 Satellite": satelliteLayer }).addTo(map);
-
-let markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
-let routingControl = null;
-let myLocationMarker = null;
-let watchId = null;
-
-let selectedRemarkScno = "";
-let remarksData = {};
-remarksData = JSON.parse(localStorage.getItem("remarksData") || "{}");
-
-function clearMarkers(){
- if (map.hasLayer(markersGroup)) {
-   markersGroup.clearLayers();
-   map.removeLayer(markersGroup);
- }
- markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
-}
-
-function cleanCoord(v){
- if(!v) return null;
- return parseFloat(String(v).replace(/[NSEW]/gi,''));
-}
-
-const oldLoadData = loadData;
-loadData = async function(){
- await oldLoadData();
- if(typeof masterData==="undefined") return;
+ // మ్యాప్ పైన మార్కర్స్ వెయ్యడం
  clearMarkers();
-
- const area=document.getElementById("areaFilter").value;
- if(!area){ return; }
- const minAmt = Number(document.getElementById("minAmount").value||0);
- const maxAmt = Number(document.getElementById("maxAmount").value||99999999);
- const search=document.getElementById("searchBox").value.toLowerCase();
-
- let filtered=[...masterData];
- filtered = filtered.filter(r=>{
-  const amt = Number(r.total_amt||0);
-  return amt >= minAmt && amt <= maxAmt;
- });
- if(search){
-  filtered=filtered.filter(r=>JSON.stringify(r).toLowerCase().includes(search));
- }
-
  filtered.forEach(r=>{
   const lat=cleanCoord(r.latitude);
   const lng=cleanCoord(r.longitude);
@@ -365,11 +367,10 @@ loadData = async function(){
        permanent: true, direction: "top", offset: [0, -25], className: "scno-label" 
    });
    
-   // 🌟 సూపర్ కాంపాక్ట్ పాప్-అప్ (More Options తో) 🌟
+   // 🌟 సూపర్ కాంపాక్ట్ పాప్-అప్ & గూగుల్ మ్యాప్స్ లింక్ ఫిక్స్ 🌟
    m.bindPopup(`
    <div style="font-family:sans-serif; font-size:13px; color:#1e293b; line-height:1.4;">
      
-     <!-- బేసిక్ వివరాలు (ఎప్పుడూ కనబడతాయి) -->
      <strong style="font-size:14px; color:#0f172a;">👤 ${r.name || ""}</strong>
      
      <div style="display:flex; justify-content:space-between; margin-top:6px; padding-bottom:6px; border-bottom:1px solid #e2e8f0;">
@@ -382,26 +383,19 @@ loadData = async function(){
        <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; padding:6px 0; background:#3b82f6; color:white; border:none; border-radius:6px; font-weight:bold;">🧭 Nav</button>
      </div>
 
-     <!-- More Options బటన్ -->
      <button onclick="this.nextElementSibling.style.display='block'; this.style.display='none';" style="width:100%; padding:6px 0; margin-top:8px; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; border-radius:6px; font-weight:bold; cursor:pointer;">➕ More Options</button>
      
-     <!-- లోపల దాచిన వివరాలు (నొక్కినప్పుడు కనబడతాయి) -->
      <div style="display:none; margin-top:8px; border-top:1px dashed #cbd5e1; padding-top:8px;">
-        
         <div style="color:#2563eb; font-weight:bold; margin-bottom:6px; text-align:center;">📱 ${r.mobile_no || "No Number"}</div>
-        
         <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px; background:#fee2e2; padding:4px 6px; border-radius:4px; border:1px solid #fca5a5;">
           <span>Dem: ₹${r.current_demand||0}</span>
           <span>Arr: ₹${r.arrears||0}</span>
         </div>
-        
         <div style="display:flex; gap:6px; margin-bottom:6px;">
           <a href="tel:${r.mobile_no||""}" style="flex:1; padding:6px 0; text-align:center; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; text-decoration:none; color:#0f172a; font-weight:bold;">📞 Call</a>
           <a target="_blank" href="https://wa.me/91${r.mobile_no||""}" style="flex:1; padding:6px 0; text-align:center; background:#dcfce3; border:1px solid #bbf7d0; border-radius:6px; text-decoration:none; color:#166534; font-weight:bold;">🟢 WA</a>
         </div>
-        
         <button onclick="showRemark('${r.scno||""}')" style="width:100%; padding:6px 0; background:#10b981; color:white; border:none; border-radius:6px; font-weight:bold;">📝 Remark</button>
-        
         <div style="font-size:11px; color:#059669; font-weight:bold; margin-top:6px; text-align:center;">Rmk: ${remarksData[String(r.scno)] || "None"}</div>
      </div>
    </div>
@@ -474,18 +468,6 @@ function showRoute(lat,lng){
     showMyLocation();
   });
 }
-
-window.onload = async () => {
- let emp = localStorage.getItem("employeeName");
- if(!emp){ emp = prompt("Enter Employee Name"); if(emp){ localStorage.setItem("employeeName", emp); } }
- document.getElementById("profileBtn").innerText = (emp || "U").charAt(0).toUpperCase();
-
- const { data, error } = await supabaseClient.from("records").select("area").range(0,12000);
- if(error){ alert(error.message); return; }
- const areas = [...new Set(data.map(r => r.area).filter(Boolean))];
- const area = document.getElementById("areaFilter");
- areas.forEach(a=>{ area.innerHTML += `<option value="${a}">${a}</option>`; });
-};
 
 function openFullMap(){ document.getElementById("map").classList.add("fullMapMode"); document.getElementById("closeMapBtn").style.display="block"; setTimeout(()=>{ map.invalidateSize(); },300); }
 function printReport(){
