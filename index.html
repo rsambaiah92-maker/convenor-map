@@ -106,9 +106,13 @@
 <script src="js/config.js"></script>
 
 <script>
-// ఒకవేళ ముందే లాగిన్ అయి ఉంటే డైరెక్ట్ గా డ్యాష్ బోర్డ్ కి పంపించేయడం
+// 🛑 బ్రౌజర్ లూప్ సమస్యను బ్రేక్ చేయడానికి కొత్త సెక్యూరిటీ లాజిక్ 🛑
 window.onload = () => {
-  if(localStorage.getItem("isLoggedIn") === "true") {
+  // పాత పాడైపోయిన ముద్రను క్లియర్ చేస్తున్నాను
+  localStorage.removeItem("isLoggedIn"); 
+
+  // కొత్త తాళం చెవితో మాత్రమే చెక్ చేస్తున్నాను
+  if(localStorage.getItem("auth_token") === "secure_login") {
     window.location.replace("user.html");
   }
 };
@@ -132,7 +136,6 @@ async function performLogin() {
   btn.disabled = true;
 
   try {
-    // Supabase లోని 'users' టేబుల్ నుండి యూజర్ డీటెయిల్స్ చెక్ చేయడం
     const { data, error } = await supabaseClient
       .from("users")
       .select("*")
@@ -142,12 +145,11 @@ async function performLogin() {
     if (error) throw error;
 
     if (data && data.length > 0) {
-      // లాగిన్ సక్సెస్ అయితే ఫోన్ మెమరీలో సేవ్ చేసి user.html కి పంపడం
-      localStorage.setItem("isLoggedIn", "true");
+      // సక్సెస్ అయితే కొత్త 'auth_token' ముద్ర వేసి పంపుతున్నాను
+      localStorage.setItem("auth_token", "secure_login");
       localStorage.setItem("employeeName", uname.toUpperCase());
       window.location.replace("user.html");
     } else {
-      // తప్పు పాస్‌వర్డ్ కొడితే
       errorBox.innerText = "❌ Invalid Username or Password!";
       errorBox.style.display = "block";
       btn.innerText = "Login";
@@ -162,7 +164,6 @@ async function performLogin() {
   }
 }
 
-// PWA Service Worker (ఆటోమేటిక్ అప్‌డేట్స్ కోసం)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js');
