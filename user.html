@@ -16,7 +16,10 @@
 <style>
 /* బేసిక్ డిజైన్ మరియు బ్యాక్ గ్రౌండ్ */
 * { box-sizing: border-box; }
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 10px; background-color: #f8fafc; color: #1e293b; margin: 0; line-height: 1.5; }
+
+/* 🔒 సెక్యూరిటీ: ముందుగా పేజీని దాచిపెడుతున్నాం. లాగిన్ అయితేనే చూపిస్తాం */
+body { display: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 10px; background-color: #f8fafc; color: #1e293b; margin: 0; line-height: 1.5; }
+
 input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; transition: all 0.2s ease; font-size: 14px; }
 input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 button { cursor: pointer; font-weight: bold; }
@@ -45,20 +48,9 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999 !important; margin: 0 !important; border-radius: 0 !important; }
 
 /* 🌟 POPUP 3D MAGIC 🌟 */
-.leaflet-popup-content-wrapper {
-  border-radius: 16px !important;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.8) !important;
-  padding: 0 !important; 
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-}
-.leaflet-popup-content {
-  margin: 12px !important; 
-  width: 220px !important; 
-}
-.leaflet-popup-tip {
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
-}
+.leaflet-popup-content-wrapper { border-radius: 16px !important; box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.1), inset 0 2px 4px rgba(255,255,255,0.8) !important; padding: 0 !important; background: #ffffff !important; border: 1px solid #e2e8f0; }
+.leaflet-popup-content { margin: 12px !important; width: 220px !important; }
+.leaflet-popup-tip { box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important; }
 
 /* హెడర్ */
 .header-box { position: relative; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-align: center; padding: 16px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
@@ -75,7 +67,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 #catBox summary { cursor: pointer; font-weight: bold; color: #475569; }
 .cat-list { margin-top: 8px; max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-/* ఫిల్టర్ చెక్-బాక్సులు సాగకుండా సెట్ చేసిన కోడ్ (ఇది పక్కాగా ఉంది) */
+/* ఫిల్టర్ చెక్-బాక్సులు */
 .cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #334155; margin: 0; }
 .cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); cursor: pointer; }
 
@@ -90,10 +82,10 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 #printHeader { display: none; }
 
-/* ప్రింట్ డిజైన్ (పర్ఫెక్ట్ ఎక్సెల్ ఫార్మాట్) */
+/* ప్రింట్ డిజైన్ */
 @media print {
   @page { margin: 10mm; } 
-  body { background: white; color: black; margin: 0; padding: 0; }
+  body { background: white; color: black; margin: 0; padding: 0; display: block !important; }
   #map, #myLocationBtn, #closeMapBtn, #searchBox, #searchResults, .advanced-filters, .action-buttons, .modal-overlay, .header-box, .stats-container, button { display: none !important; }
   #printHeader { display: block !important; text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
   #printHeader h2 { margin-bottom: 4px; font-size: 18px; font-weight: bold; }
@@ -166,6 +158,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 <div class="action-buttons">
   <button class="btn-print" onclick="printReport()">🖨️ Print List</button>
   <button class="btn-map" onclick="openFullMap()">🗺️ Full Map</button>
+  <button class="btn-print" onclick="logoutUser()" style="color: #ef4444;">🚪 Logout</button>
 </div>
 
 <div class="map-wrapper">
@@ -387,7 +380,6 @@ loadData = async function(){
        className: "scno-label" 
    });
    
-   // 🌟 3D POPUP CONTENT (గూగుల్ మ్యాప్స్ ఒరిజినల్ నావిగేషన్ లింక్ తో ఫిక్స్ చేయబడింది) 🌟
    m.bindPopup(`
    <div style="font-family:sans-serif; text-align:center;">
      <div style="font-size:15px; font-weight:800; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px;">
@@ -433,9 +425,7 @@ loadData = async function(){
  map.addLayer(markersGroup);
 
  if(markersGroup.getLayers().length > 0){
-   map.fitBounds(markersGroup.getBounds(), {
-      padding:[30,30]
-   });
+   map.fitBounds(markersGroup.getBounds(), { padding:[30,30] });
  }
 }
 
@@ -528,21 +518,42 @@ function showRoute(lat,lng){
   });
 }
 
+// 🔒 🌟 MAIN SECURITY GUARD 🌟 🔒
 window.onload = async () => {
- let emp = localStorage.getItem("employeeName");
- if(!emp){
-   emp = prompt("Enter Employee Name");
-   if(emp){ localStorage.setItem("employeeName", emp); }
- }
- document.getElementById("profileBtn").innerText = (emp || "U").charAt(0).toUpperCase();
+  // 1. Supabase సర్వర్ ని అడిగి నిజంగా లాగిన్ అయ్యాడా లేదా అని చెక్ చేస్తాం
+  const { data: authData, error: authError } = await supabaseClient.auth.getSession();
 
- const { data, error } = await supabaseClient.from("records").select("area").range(0,12000);
- if(error){ alert(error.message); return; }
+  // ఒకవేళ సెషన్ లేకపోతే (అంటే దొంగతనంగా డైరెక్ట్ గా వస్తే)
+  if (!authData.session) {
+    window.location.replace("index.html"); // వెంటనే లాగిన్ పేజీకి గెంటేస్తాం
+    return; // ఇక్కడితో కోడ్ ఆగిపోతుంది
+  }
 
- const areas = [...new Set(data.map(r => r.area).filter(Boolean))];
- const area = document.getElementById("areaFilter");
- areas.forEach(a=>{ area.innerHTML += `<option value="${a}">${a}</option>`; });
+  // 2. లాగిన్ కన్ఫర్మ్ అయితేనే, దాచిన పేజీని చూపిస్తాం
+  document.body.style.display = "block";
+
+  // 3. ప్రొఫైల్ నేమ్ సెట్ చేయడం
+  let userEmail = authData.session.user.email;
+  let defaultEmpName = userEmail.split('@')[0]; // ఉదాహరణకి 'ravi123@tgnpdcl.com' అయితే 'ravi123' తీసుకుంటుంది
+  let emp = localStorage.getItem("employeeName") || defaultEmpName;
+  
+  document.getElementById("profileBtn").innerText = emp.charAt(0).toUpperCase();
+  document.getElementById("empModalName").innerText = emp;
+
+  // 4. డేటాబేస్ నుండి ఏరియాలు లోడ్ చేయడం
+  const { data, error } = await supabaseClient.from("records").select("area").range(0,12000);
+  if(error){ alert(error.message); return; }
+
+  const areas = [...new Set(data.map(r => r.area).filter(Boolean))];
+  const areaDropdown = document.getElementById("areaFilter");
+  areas.forEach(a=>{ areaDropdown.innerHTML += `<option value="${a}">${a}</option>`; });
 };
+
+// సెక్యూరిటీ కోసం లాగ్ అవుట్ ఫంక్షన్
+async function logoutUser() {
+  await supabaseClient.auth.signOut();
+  window.location.replace("index.html");
+}
 
 function openFullMap(){
  document.getElementById("map").classList.add("fullMapMode");
@@ -577,8 +588,6 @@ function setEmployeeName(){
 }
 
 function openEmployeeModal(){
- const emp = localStorage.getItem("employeeName") || "Not Set";
- document.getElementById("empModalName").innerText = emp;
  document.getElementById("employeeModal").style.display="flex";
 }
 
