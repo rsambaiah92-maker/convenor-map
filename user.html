@@ -584,6 +584,7 @@ function showRoute(lat,lng){
     if(routingControl){ map.removeControl(routingControl); }
     routingControl = L.Routing.control({ waypoints:[ L.latLng(myLat,myLng), L.latLng(lat,lng) ], routeWhileDragging: false, show: false, lineOptions: { styles: [{color: '#8b5cf6', opacity: 0.9, weight: 6}] }, createMarker: function() { return null; } }).addTo(map);
     showMyLocation();
+    switchTab('home');
     openFullMap(); 
   });
 }
