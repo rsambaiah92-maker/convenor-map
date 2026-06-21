@@ -41,7 +41,7 @@ button { cursor: pointer; font-weight: bold; }
 .nav-item .icon { font-size: 24px; margin-bottom: 3px; transition: transform 0.2s; }
 .nav-item.active .icon { transform: scale(1.1); }
 
-/* 🌟 స్మార్ట్ కార్డ్స్ (టేబుల్ బదులు) 🌟 */
+/* 🌟 స్మార్ట్ కార్డ్స్ 🌟 */
 .smart-card {
   background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative;
@@ -77,14 +77,11 @@ button { cursor: pointer; font-weight: bold; }
 .cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 0; }
 .cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); }
 
-/* మ్యాప్ */
-#map { height: 350px; border: 1px solid #cbd5e1; border-radius: 12px; margin-top: 5px; }
-.map-wrapper { position: relative; margin-bottom: 15px; }
+/* 🌟 మ్యాప్ (పక్కా ఫుల్ స్క్రీన్ ఫిక్స్) 🌟 */
+#mapSection { position: fixed; top: 0; left: 0; width: 100vw; height: calc(100vh - 65px); z-index: 999; background: white; }
+#map { width: 100%; height: 100%; border: none; }
 #myLocationBtn { position: absolute; bottom: 20px; right: 10px; z-index: 9999; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #3b82f6; font-size: 24px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); }
 .scno-label { background: white !important; border: 1px solid #333 !important; border-radius: 4px !important; padding: 2px 4px !important; font-size: 10px !important; font-weight: bold !important; color: #000 !important; }
-
-/* ఫుల్ మ్యాప్ మోడ్ (బాటమ్ బార్ పైన ఉంటుంది) */
-.fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: calc(100vh - 65px) !important; z-index: 999 !important; margin: 0 !important; border-radius: 0 !important; }
 
 /* పాప్ అప్ */
 .leaflet-popup-content-wrapper { border-radius: 16px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important; padding: 0 !important; }
@@ -95,15 +92,31 @@ button { cursor: pointer; font-weight: bold; }
 .modal-content { background: white; margin: 40px auto; padding: 20px; width: 90%; max-width: 450px; border-radius: 16px; }
 
 #printHeader { display: none; }
+#hiddenTable { display: none; }
 
-/* ప్రింట్ డిజైన్ */
+/* 🌟 పక్కా ఎక్సెల్ ప్రింట్ డిజైన్ (ఫిక్స్డ్) 🌟 */
 @media print {
-  @page { margin: 10mm; } 
-  body { background: white; color: black; margin: 0; padding: 0; }
-  .bottom-nav, #searchBox, .advanced-filters, .modal-overlay, .header-box, .stats-container, button, .map-wrapper { display: none !important; }
-  #listSection { display: block !important; }
+  @page { margin: 5mm; } 
+  body { background: white; color: black; margin: 0; padding: 0 !important; }
+  .bottom-nav, #searchBox, .advanced-filters, .modal-overlay, .header-box, .stats-container, button, #mapSection, #homeSection, #listSection { display: none !important; }
+  
   #printHeader { display: block !important; text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
-  .smart-card { page-break-inside: avoid; border: 1px solid #000; box-shadow: none; margin-bottom: 10px; }
+  #printHeader h2 { margin-bottom: 4px; font-size: 18px; font-weight: bold; }
+  #printHeader p { margin: 2px 0; font-size: 12px; }
+  
+  /* దాచిన టేబుల్ ని ప్రింట్ లో చూపిస్తున్నాం */
+  #hiddenTable { display: table !important; width: 100%; box-shadow: none; white-space: normal; border-collapse: collapse; table-layout: fixed; } 
+  #hiddenTable th, #hiddenTable td { border: 1px solid #333; padding: 4px 5px; font-size: 10px; text-align: center; word-wrap: break-word; }
+  #hiddenTable th { background: #e2e8f0 !important; color: black; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #hiddenTable th:nth-child(1), #hiddenTable td:nth-child(1) { width: 10%; text-align: left; }
+  #hiddenTable th:nth-child(2), #hiddenTable td:nth-child(2) { width: 20%; text-align: left; }
+  #hiddenTable th:nth-child(3), #hiddenTable td:nth-child(3) { width: 5%; }
+  #hiddenTable th:nth-child(4), #hiddenTable td:nth-child(4) { width: 7%; }
+  #hiddenTable th:nth-child(5), #hiddenTable td:nth-child(5) { width: 12%; }
+  #hiddenTable th:nth-child(6), #hiddenTable td:nth-child(6) { width: 8%; }
+  #hiddenTable th:nth-child(7), #hiddenTable td:nth-child(7) { width: 8%; }
+  #hiddenTable th:nth-child(8), #hiddenTable td:nth-child(8) { width: 10%; }
+  #hiddenTable th:nth-child(9), #hiddenTable td:nth-child(9) { width: 20%; text-align: left; }
 }
 </style>
 </head>
@@ -158,18 +171,24 @@ button { cursor: pointer; font-weight: bold; }
   </details>
 </div>
 
-<div class="map-wrapper" id="mapSection">
+<div id="listSection" style="display: none;"></div>
+
+<div id="mapSection" style="display: none;">
   <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">⌖</button>
   <div id="map"></div>
 </div>
-
-<div id="listSection" style="display: none;"></div>
 
 <div id="printHeader">
   <h2>TGNPDCL Collection Report</h2>
   <p>Employee : <span id="printEmployee"></span> | Area : <span id="printArea"></span></p>
   <p>Total Services : <span id="printServices"></span> | Total Amount : ₹<span id="printTotal"></span></p>
 </div>
+<table id="hiddenTable">
+  <thead>
+    <tr><th>SCNO</th><th>NAME</th><th>CAT</th><th>STATUS</th><th>MOBILE</th><th>DEMAND</th><th>ARREARS</th><th>TOTAL</th><th>REMARK</th></tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
 
 <div class="bottom-nav">
   <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
@@ -249,7 +268,7 @@ window.addEventListener('online', updateNetworkStatus);
 window.addEventListener('offline', updateNetworkStatus);
 updateNetworkStatus();
 
-// 🌟 TABS SYSTEM LOGIC 🌟
+// 🌟 పక్కా TABS SYSTEM 🌟
 function switchTab(tab) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('nav-' + tab).classList.add('active');
@@ -257,22 +276,17 @@ function switchTab(tab) {
   const homeSec = document.getElementById('homeSection');
   const listSec = document.getElementById('listSection');
   const mapSec = document.getElementById('mapSection');
+  const searchBox = document.getElementById('searchBox'); // సెర్చ్ బార్
 
   if(tab === 'home') {
-    homeSec.style.display = 'block';
-    listSec.style.display = 'none';
-    mapSec.style.display = 'block';
-    mapSec.classList.remove('fullMapMode');
-    setTimeout(() => { if(map) map.invalidateSize(); }, 300);
+    homeSec.style.display = 'block'; listSec.style.display = 'none'; mapSec.style.display = 'none';
+    searchBox.style.display = 'block'; // సెర్చ్ బార్ చూపిస్తుంది
   } else if(tab === 'list') {
-    homeSec.style.display = 'none';
-    listSec.style.display = 'block';
-    mapSec.style.display = 'none';
+    homeSec.style.display = 'none'; listSec.style.display = 'block'; mapSec.style.display = 'none';
+    searchBox.style.display = 'block'; // సెర్చ్ బార్ చూపిస్తుంది
   } else if(tab === 'map') {
-    homeSec.style.display = 'none';
-    listSec.style.display = 'none';
-    mapSec.style.display = 'block';
-    mapSec.classList.add('fullMapMode');
+    homeSec.style.display = 'none'; listSec.style.display = 'none'; mapSec.style.display = 'block';
+    searchBox.style.display = 'none'; // 🌟 మ్యాప్ లో సెర్చ్ బార్ మాయం 🌟
     setTimeout(() => { if(map) map.invalidateSize(); }, 300);
   }
 }
@@ -309,7 +323,7 @@ function clearMarkers(){
 }
 function cleanCoord(v){ if(!v) return null; return parseFloat(String(v).replace(/[NSEW]/gi,'')); }
 
-// 🌟 సెర్చ్ చేస్తే ఆటోమేటిక్ గా డేటా ఫిల్టర్ అవ్వడానికి 🌟
+// సెర్చ్ బార్ టచ్
 document.getElementById("searchBox").addEventListener("input", () => {
   clearTimeout(window.searchTimeout);
   window.searchTimeout = setTimeout(() => { loadData(true); }, 400); 
@@ -330,7 +344,7 @@ async function loadData(isSearch = false){
    const { data, error } = await query;
    if(error){ alert(error.message); return; }
    masterData = data || [];
-   document.getElementById("filtersBox").open = false; // ఫిల్టర్ బాక్స్ మూసేస్తుంది
+   document.getElementById("filtersBox").open = false; 
  }
 
  const minAmt = Number(document.getElementById("minAmount").value||0);
@@ -346,13 +360,13 @@ async function loadData(isSearch = false){
   filtered=filtered.filter(r=> String(r.scno||"").toLowerCase().includes(search) || String(r.name||"").toLowerCase().includes(search) || String(r.mobile_no||"").toLowerCase().includes(search));
  }
 
- // స్టాట్స్ అప్డేట్
+ // స్టాట్స్
  document.getElementById("totalRecords").innerText=filtered.length;
  let total=0; filtered.forEach(r=>{ total += Number(r.total_amt||0); });
  document.getElementById("totalAmount").innerText = Number(total).toLocaleString("en-IN", {minimumFractionDigits: 2});
 
- // 🌟 స్మార్ట్ కార్డ్స్ క్రియేషన్ (లిస్ట్ వ్యూ కోసం) 🌟
  let html='';
+ let tableHtml = ''; // 🌟 ప్రింట్ టేబుల్ కోసం 🌟
  clearMarkers();
  
  filtered.forEach(r=>{
@@ -360,24 +374,28 @@ async function loadData(isSearch = false){
   const lng = cleanCoord(r.longitude);
   const arr = Number(r.arrears||0);
   
-  // కలర్ కోడింగ్ (పెండింగ్ బట్టి)
-  let bColor = "#10b981"; // ఆకుపచ్చ (0 Arrears)
-  if(arr > 0 && arr <= 5000) bColor = "#f59e0b"; // ఆరెంజ్ (కొంచెం)
-  else if(arr > 5000) bColor = "#ef4444"; // ఎరుపు (ఎక్కువ)
+  let bColor = "#10b981"; 
+  if(arr > 0 && arr <= 5000) bColor = "#f59e0b"; 
+  else if(arr > 5000) bColor = "#ef4444"; 
 
-  // కార్డ్ డిజైన్
+  // 🖨️ ప్రింట్ టేబుల్ లోకి డేటా పంపడం
+  tableHtml += `<tr>
+  <td>${r.scno||''}</td><td>${r.name||''}</td><td>${r.cat||''}</td><td>${r.status||''}</td>
+  <td>${r.mobile_no||''}</td><td>${r.current_demand||0}</td><td>${r.arrears||0}</td>
+  <td>${r.total_amt||0}</td><td>${remarksData[String(r.scno)] || ''}</td>
+  </tr>`;
+
+  // స్మార్ట్ కార్డ్స్
   html += `
   <div class="smart-card" style="border-left: 6px solid ${bColor};">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <span style="font-weight:900; font-size:16px; color:#0f172a;">👤 ${r.name||'Name Not Found'}</span>
       <span style="font-size:11px; background:#e2e8f0; padding:2px 6px; border-radius:4px; color:#475569; font-weight:bold;">Cat: ${r.cat||''}</span>
     </div>
-    
     <div style="font-size:13px; color:#475569; margin-bottom:10px; border-bottom:1px dashed #e2e8f0; padding-bottom:8px;">
       <b>SCNO:</b> <span style="color:#2563eb; font-weight:bold; font-size:15px;">${r.scno}</span> <br>
       <b>Pole:</b> ${r.pole_no||''} | <b>Status:</b> ${r.status||''}
     </div>
-    
     <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border:1px solid #bfdbfe;">
       <div style="font-size:12px; font-weight:bold; color:#475569;">
         Dem: <span style="color:#ef4444;">₹${r.current_demand||0}</span><br>
@@ -388,19 +406,17 @@ async function loadData(isSearch = false){
         <span style="font-size:20px; font-weight:900; color:#1d4ed8;">₹${r.total_amt||0}</span>
       </div>
     </div>
-    
     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
       <a href="tel:${r.mobile_no||''}" class="sc-btn" style="background:#e0f2fe; color:#2563eb; box-shadow:0 2px 4px rgba(37,99,235,0.1);">📞 Call</a>
       <a href="https://wa.me/91${r.mobile_no||''}" target="_blank" class="sc-btn" style="background:#dcfce3; color:#16a34a; box-shadow:0 2px 4px rgba(22,163,74,0.1);">🟢 WA</a>
       <button onclick="showRoute(${lat},${lng})" class="sc-btn" style="background:#f3e8ff; color:#7c3aed; box-shadow:0 2px 4px rgba(124,58,237,0.1);">🛣️ Route</button>
       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" class="sc-btn" style="background:#e0e7ff; color:#1d4ed8; box-shadow:0 2px 4px rgba(29,78,216,0.1);">🧭 Nav</button>
     </div>
-    
     <button onclick="showRemark('${r.scno}')" style="width:100%; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; font-weight:bold; color:#334155; cursor:pointer;">📝 Remark: <span style="color:#059669;">${remarksData[String(r.scno)] || "None"}</span></button>
   </div>
   `;
 
-  // మ్యాప్ మార్కర్స్ (హోమ్ మరియు ఫుల్ మ్యాప్ కోసం)
+  // మ్యాప్ మార్కర్స్ & పాప్-అప్
   if(lat && lng){
    const icon = L.icon({
      iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${bColor === "#10b981" ? "green" : (bColor === "#f59e0b" ? "orange" : "red")}.png`,
@@ -410,22 +426,61 @@ async function loadData(isSearch = false){
    const m = L.marker([lat,lng], {icon});
    m.bindTooltip(String(r.scno || "").slice(-5), { permanent: true, direction: "top", offset: [0, -25], className: "scno-label" });
    
-   // మ్యాప్ లోని చిన్న పాప్-అప్
-   m.bindPopup(`
-   <div style="font-family:sans-serif; text-align:center;">
-     <b style="font-size:14px; color:#0f172a;">👤 ${r.name || ""}</b><br>
-     <b style="color:#2563eb;">SCNO: ${r.scno}</b>
-     <div style="font-size:16px; font-weight:900; color:#dc2626; margin:5px 0;">Total: ₹${r.total_amt||0}</div>
-     <div style="display:flex; gap:5px;">
-       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold;">🧭 Nav</button>
+   let uId = "pop_" + Math.random().toString(36).substr(2, 9);
+   
+   // 🌟 1. చిన్న పాప్ అప్ (ముందుగా ఇది కనిపిస్తుంది) 🌟
+   let smallPopup = `
+   <div id="small_${uId}" style="text-align:center; padding:4px;">
+     <b style="font-size:15px; color:#0f172a;">👤 ${r.name || ""}</b><br>
+     <span style="color:#2563eb; font-weight:bold; font-size:14px;">SCNO: ${r.scno}</span>
+     <div style="display:flex; gap:8px; margin-top:10px;">
+       <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #5b21b6;">🛣️ Route</button>
+       <button onclick="document.getElementById('small_${uId}').style.display='none'; document.getElementById('large_${uId}').style.display='block';" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #1d4ed8;">➕ More</button>
      </div>
    </div>
-   `);
+   `;
+
+   // 🌟 2. పెద్ద 3D పాప్ అప్ (More నొక్కినప్పుడు వస్తుంది - పాత 46 ఫైల్ డిజైన్) 🌟
+   let largePopup = `
+   <div id="large_${uId}" style="display:none; font-family:sans-serif; text-align:center;">
+     <div style="font-size:15px; font-weight:800; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px;">
+       <span style="font-size:18px;">👤</span> ${r.name || ""}
+     </div>
+     <div style="background:#f1f5f9; border-radius:8px; padding:6px; margin-bottom:8px; font-size:11px; display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:left; border:1px solid #e2e8f0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+       <div><b>SCNO:</b><br><span style="color:#2563eb; font-weight:bold;">${r.scno || ""}</span></div>
+       <div><b>Pole:</b><br>${r.pole_no || ""}</div>
+       <div><b>Cat:</b> ${r.cat || ""}</div>
+       <div><b>Status:</b> ${r.status || ""}</div>
+       <div style="grid-column: span 2; border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px;"><b>📱 Mobile:</b> ${r.mobile_no || ""}</div>
+     </div>
+     <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:8px; border-radius:8px; margin-bottom:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border:1px solid #bfdbfe;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold; color:#475569;">
+          <span>Dem: <span style="color:#ef4444;">₹${r.current_demand||0}</span></span>
+          <span>Arr: <span style="color:#ef4444;">₹${r.arrears||0}</span></span>
+        </div>
+        <div style="font-size:15px; font-weight:900; color:#1d4ed8; margin-top:4px;">Total: ₹${r.total_amt||0}</div>
+     </div>
+     <div style="display:flex; gap:12px; margin-bottom:12px;">
+       <a href="tel:${r.mobile_no||""}" style="flex:1; display:flex; justify-content:center; align-items:center; background: linear-gradient(145deg, #ffffff, #e6e6e6); text-decoration:none; height:45px; border-radius:12px; font-size:24px; box-shadow: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff; border:1px solid #f1f5f9;">📞</a>
+       <a target="_blank" href="https://wa.me/91${r.mobile_no||""}" style="flex:1; display:flex; justify-content:center; align-items:center; background: linear-gradient(145deg, #ffffff, #e6e6e6); text-decoration:none; height:45px; border-radius:12px; font-size:24px; box-shadow: 4px 4px 8px #cbd5e1, -4px -4px 8px #ffffff; border:1px solid #f1f5f9;">🟢</a>
+     </div>
+     <div style="display:flex; gap:8px; margin-bottom:8px;">
+       <button onclick="document.getElementById('large_${uId}').style.display='none'; document.getElementById('small_${uId}').style.display='block';" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #475569;">🔙 Back</button>
+       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #1e40af;">🧭 Nav</button>
+     </div>
+     <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #065f46; margin-bottom:6px;">📝 Remark</button>
+     <div style="font-size:11px; color:#059669; font-weight:bold; border-top:1px solid #e2e8f0; padding-top:6px; text-align:left;">Rmk: ${remarksData[String(r.scno)] || "None"}</div>
+   </div>
+   `;
+
+   m.bindPopup(smallPopup + largePopup);
    markersGroup.addLayer(m);
   }
  });
 
  document.getElementById("listSection").innerHTML = html || `<div style="text-align:center; padding:30px; color:#64748b;"><b>No Records Found</b><br>Try changing filters or search</div>`;
+ document.getElementById("tableBody").innerHTML = tableHtml; // ప్రింట్ టేబుల్ లోకి డేటా
+
  map.addLayer(markersGroup);
  if(markersGroup.getLayers().length > 0){ map.fitBounds(markersGroup.getBounds(), { padding:[30,30] }); }
 }
@@ -449,7 +504,7 @@ document.getElementById("areaFilter").onchange = async () => {
  poles.forEach(p=>{ poleDropdown.innerHTML += `<option value="${p}">${p}</option>`; });
 };
 
-// ప్రింట్ రిపోర్ట్
+// 🖨️ ప్రింట్ రిపోర్ట్ ఫంక్షన్
 function printReport(){
  document.getElementById("printEmployee").innerText = localStorage.getItem("employeeName") || "Not Set";
  document.getElementById("printArea").innerText = document.getElementById("areaFilter").value || "ALL AREAS";
@@ -461,13 +516,11 @@ function printReport(){
  window.print();
 }
 
-// ఎంప్లాయ్ ప్రొఫైల్
 function setEmployeeName(){ let name = prompt("Enter Employee Name"); if(!name) return; localStorage.setItem("employeeName", name); document.getElementById("profileBtn").innerText = name.charAt(0).toUpperCase(); document.getElementById("empModalName").innerText = name; closeEmployeeModal(); }
 function openEmployeeModal(){ document.getElementById("empModalName").innerText = localStorage.getItem("employeeName") || "Not Set"; document.getElementById("employeeModal").style.display="flex"; }
 function closeEmployeeModal(){ document.getElementById("employeeModal").style.display="none"; }
 function logoutUser() { localStorage.removeItem("auth_token"); localStorage.removeItem("employeeName"); window.location.replace("index.html"); }
 
-// రిమార్క్స్
 function showRemark(scno){ selectedRemarkScno = scno; document.getElementById("remarkScno").innerHTML = "<b>SCNO :</b> " + scno; document.getElementById("remarkModal").style.display="block"; }
 document.addEventListener("change",function(e){ if(e.target.id==="remarkSelect"){ document.getElementById("customRemark").style.display = e.target.value==="Other Remark" ? "block" : "none"; } });
 function saveRemark(){
@@ -475,11 +528,10 @@ function saveRemark(){
  if(!remark){ alert("Select Remark"); return; }
  if(remark==="Other Remark"){ remark = document.getElementById("customRemark").value; }
  remarksData[String(selectedRemarkScno)] = remark; localStorage.setItem("remarksData", JSON.stringify(remarksData)); closeRemark();
- loadData(true); // రిఫ్రెష్ డేటా
+ loadData(true); 
 }
 function closeRemark(){ document.getElementById("remarkModal").style.display="none"; document.getElementById("remarkSelect").value=""; document.getElementById("customRemark").value=""; document.getElementById("customRemark").style.display="none"; }
 
-// లొకేషన్ & రూటింగ్
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
   if (myLocationMarker) { map.flyTo(myLocationMarker.getLatLng(), 16); }
@@ -501,7 +553,7 @@ function showRoute(lat,lng){
     if(routingControl){ map.removeControl(routingControl); }
     routingControl = L.Routing.control({ waypoints:[ L.latLng(myLat,myLng), L.latLng(lat,lng) ], routeWhileDragging: false, show: false, lineOptions: { styles: [{color: '#8b5cf6', opacity: 0.9, weight: 6}] }, createMarker: function() { return null; } }).addTo(map);
     showMyLocation();
-    switchTab('map'); // రూట్ నొక్కగానే ఆటోమేటిక్ గా ఫుల్ మ్యాప్ కి వెళుతుంది!
+    switchTab('map'); 
   });
 }
 
