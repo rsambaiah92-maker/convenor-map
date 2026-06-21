@@ -66,11 +66,11 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
   box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
 }
 
-/* హెడర్ */
-.header-box { position: relative; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-align: center; padding: 16px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
-.profile-btn { position: absolute; top: 16px; right: 15px; width: 40px; height: 40px; border-radius: 50%; background: white; color: #2563eb; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.title { font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.subtitle { font-size: 14px; margin-top: 4px; opacity: 0.9; }
+/* 🌟 మీరు ఇచ్చిన కొత్త హెడర్ డిజైన్ (కాంపాక్ట్) 🌟 */
+.header-box { position: relative; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-align: center; padding: 8px 12px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
+.profile-btn { position: absolute; top: 8px; right: 12px; width: 40px; height: 40px; border-radius: 50%; background: white; color: #2563eb; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.title { font-size: 22px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.subtitle { font-size: 12px; margin-top: 2px; opacity: 0.9; }
 
 /* ఫిల్టర్లు & సెర్చ్ */
 .advanced-filters { background: white; border-radius: 12px; padding: 12px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
@@ -80,8 +80,6 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 #catBox { margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: #f8fafc; }
 #catBox summary { cursor: pointer; font-weight: bold; color: #475569; }
 .cat-list { margin-top: 8px; max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-/* ఫిల్టర్ చెక్-బాక్సులు సాగకుండా సెట్ చేసిన కోడ్ */
 .cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #334155; margin: 0; }
 .cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); cursor: pointer; }
 
@@ -595,7 +593,7 @@ function closeEmployeeModal(){
  document.getElementById("employeeModal").style.display="none";
 }
 
-// 🚪 పక్కా లాగౌట్ ఫంక్షన్ (లాగిన్ కి పంపుతుంది, డేటా క్లియర్ చేస్తుంది) 🚪
+// 🚪 పక్కా లాగౌట్ ఫంక్షన్ (కొత్తగా యాడ్ చేశాను)
 function logoutUser() {
   localStorage.removeItem("auth_token");
   localStorage.removeItem("employeeName");
