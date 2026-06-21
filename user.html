@@ -27,7 +27,7 @@ input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radi
 input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 button { cursor: pointer; font-weight: bold; }
 
-/* 🌟 బాటమ్ నావిగేషన్ బార్ (3 బటన్లు మాత్రమే) 🌟 */
+/* 🌟 బాటమ్ నావిగేషన్ బార్ 🌟 */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
   background: #ffffff; display: flex; justify-content: space-around;
@@ -71,37 +71,21 @@ button { cursor: pointer; font-weight: bold; }
 .cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 0; }
 .cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); }
 
-/* 🌟 మ్యాప్ కంట్రోల్స్ 🌟 */
+/* మ్యాప్ కంట్రోల్స్ */
 .map-wrapper { position: relative; margin-top: 10px; }
 #map { height: 40vh; min-height: 350px; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; }
 
-/* లొకేషన్ బటన్ */
 #myLocationBtn { position: absolute; bottom: 20px; right: 10px; z-index: 999; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #3b82f6; font-size: 24px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
-
-/* ఫుల్ స్క్రీన్ బటన్ */
 #fullScreenBtn { position: absolute; bottom: 75px; right: 10px; z-index: 999; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #334155; font-size: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
 
-/* 🌟 పక్కా ఎర్రటి క్లోజ్ బటన్ (నిండు ఎరుపు రంగు) 🌟 */
 #closeMapBtn { 
-  display: none; 
-  position: absolute; 
-  top: 15px; 
-  right: 15px; 
-  z-index: 10001; 
-  background: #ff0000; /* నిండు ఎరుపు */
-  color: white; 
-  border: 2px solid #cc0000; 
-  padding: 12px 20px; 
-  border-radius: 8px; 
-  font-weight: 900; 
-  font-size: 15px; 
-  box-shadow: 0 4px 10px rgba(255,0,0,0.5); /* ఎర్రటి షాడో */
-  cursor: pointer; 
-  text-transform: uppercase; 
-  letter-spacing: 1px;
+  display: none; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); 
+  width: auto !important; z-index: 10001; background: #ff0000; color: white; border: 2px solid #cc0000; 
+  padding: 10px 24px; border-radius: 30px; font-weight: 900; font-size: 14px; 
+  box-shadow: 0 4px 10px rgba(255,0,0,0.5); cursor: pointer; text-transform: uppercase; 
+  letter-spacing: 1px; white-space: nowrap;
 }
 
-/* 🌟 ఫుల్ మ్యాప్ మోడ్ 🌟 */
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 10000 !important; background: white; margin: 0 !important; padding: 0 !important; }
 .fullMapMode #map { height: 100% !important; border-radius: 0 !important; border: none !important; }
 .fullMapMode #fullScreenBtn { display: none !important; }
@@ -123,12 +107,15 @@ button { cursor: pointer; font-weight: bold; }
   body { background: white; color: black; margin: 0; padding: 0 !important; }
   .header-box, #searchBox, #homeSection, #listSection, #mapWrapper, .bottom-nav, .modal-overlay { display: none !important; }
   #printContainer { display: block !important; width: 100%; }
+  
   #printHeader { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
   #printHeader h2 { margin-bottom: 4px; font-size: 18px; font-weight: bold; }
-  #printHeader p { margin: 2px 0; font-size: 12px; }
+  #printHeader p { margin: 3px 0; font-size: 12px; }
+  
   #hiddenTable { display: table !important; width: 100%; border-collapse: collapse; table-layout: fixed; } 
   #hiddenTable th, #hiddenTable td { border: 1px solid #000; padding: 5px; font-size: 10px; text-align: center; word-wrap: break-word; }
   #hiddenTable th { background: #e2e8f0 !important; color: black; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  
   #hiddenTable th:nth-child(1) { width: 10%; }
   #hiddenTable th:nth-child(2) { width: 20%; text-align: left; }
   #hiddenTable td:nth-child(2) { text-align: left; }
@@ -197,7 +184,6 @@ button { cursor: pointer; font-weight: bold; }
     <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
     <button id="fullScreenBtn" onclick="openFullMap()" title="Full Screen">⛶</button>
     <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">⌖</button>
-    
     <div id="map"></div>
   </div>
 </div>
@@ -208,6 +194,7 @@ button { cursor: pointer; font-weight: bold; }
   <div id="printHeader">
     <h2>TGNPDCL Collection Report</h2>
     <p>Employee : <span id="printEmployee"></span> | Area : <span id="printArea"></span></p>
+    <p>Date : <span id="printDate"></span> | Time : <span id="printTime"></span></p>
     <p>Total Services : <span id="printServices"></span> | Total Amount : ₹<span id="printTotal"></span></p>
   </div>
   <table id="hiddenTable">
@@ -280,7 +267,6 @@ button { cursor: pointer; font-weight: bold; }
 <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
 <script>
-// ఆన్‌లైన్ స్టేటస్
 function updateNetworkStatus() {
   const statusEl = document.getElementById('networkStatus');
   if (navigator.onLine) {
@@ -293,7 +279,6 @@ window.addEventListener('online', updateNetworkStatus);
 window.addEventListener('offline', updateNetworkStatus);
 updateNetworkStatus();
 
-// 🌟 TABS SYSTEM 🌟
 function switchTab(tab) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   
@@ -318,7 +303,6 @@ function switchTab(tab) {
   }
 }
 
-// 🌟 ఫుల్ మ్యాప్ కంట్రోల్స్ 🌟
 function openFullMap() {
   const mapWrap = document.getElementById('mapWrapper');
   mapWrap.classList.add('fullMapMode');
@@ -356,6 +340,9 @@ window.onload = async () => {
   if(error) return;
   const areas = [...new Set(data.map(r => r.area).filter(Boolean))];
   const areaDropdown = document.getElementById("areaFilter");
+  
+  areaDropdown.innerHTML = '<option value="">🌍 ALL AREAS</option>';
+  
   areas.forEach(a=>{ areaDropdown.innerHTML += `<option value="${a}">${a}</option>`; });
 };
 
@@ -365,7 +352,6 @@ function clearMarkers(){
 }
 function cleanCoord(v){ if(!v) return null; return parseFloat(String(v).replace(/[NSEW]/gi,'')); }
 
-// సెర్చ్ ఫిల్టర్
 document.getElementById("searchBox").addEventListener("input", () => {
   clearTimeout(window.searchTimeout);
   window.searchTimeout = setTimeout(() => { loadData(true); }, 400); 
@@ -376,7 +362,7 @@ async function loadData(isSearch = false){
  if(!area && !isSearch){ alert("Please Select Area"); return; }
  
  if(!isSearch) {
-   let query = supabaseClient.from("records").select("*").range(0, 15000); 
+   let query = supabaseClient.from("records").select("*").range(0, 5000); 
    if(area){ query = query.eq("area", area); }
    const pole=document.getElementById("poleFilter").value;
    const selectedCats = [...document.querySelectorAll('#catBox input[type="checkbox"]:checked')].map(cb => cb.value);
@@ -502,7 +488,7 @@ async function loadData(isSearch = false){
      </div>
      <div style="display:flex; gap:8px; margin-bottom:8px;">
        <button onclick="document.getElementById('large_${uId}').style.display='none'; document.getElementById('small_${uId}').style.display='block';" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #475569;">🔙 Back</button>
-       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #1e40af;">🧭 Nav</button>
+       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #1e40af;">🧭 Nav</button>
      </div>
      <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #065f46; margin-bottom:6px;">📝 Remark</button>
      <div style="font-size:11px; color:#059669; font-weight:bold; border-top:1px solid #e2e8f0; padding-top:6px; text-align:left;">Rmk: ${remarksData[String(r.scno)] || "None"}</div>
@@ -517,7 +503,9 @@ async function loadData(isSearch = false){
  document.getElementById("listSection").innerHTML = html || `<div style="text-align:center; padding:30px; color:#64748b;"><b>No Records Found</b><br>Try changing filters or search</div>`;
  document.getElementById("tableBody").innerHTML = tableHtml; 
 
- map.addLayer(markersGroup);
+ if(!map.hasLayer(markersGroup)){
+   map.addLayer(markersGroup);
+ }
  if(markersGroup.getLayers().length > 0){ map.fitBounds(markersGroup.getBounds(), { padding:[30,30] }); }
 }
 
@@ -553,7 +541,16 @@ function printReport(){
 function setEmployeeName(){ let name = prompt("Enter Employee Name"); if(!name) return; localStorage.setItem("employeeName", name); document.getElementById("profileBtn").innerText = name.charAt(0).toUpperCase(); document.getElementById("empModalName").innerText = name; closeEmployeeModal(); }
 function openEmployeeModal(){ document.getElementById("empModalName").innerText = localStorage.getItem("employeeName") || "Not Set"; document.getElementById("employeeModal").style.display="flex"; }
 function closeEmployeeModal(){ document.getElementById("employeeModal").style.display="none"; }
-function logoutUser() { localStorage.removeItem("auth_token"); localStorage.removeItem("employeeName"); window.location.replace("index.html"); }
+
+function logoutUser() {
+  if(watchId){
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("employeeName");
+  window.location.replace("index.html");
+}
 
 function showRemark(scno){ selectedRemarkScno = scno; document.getElementById("remarkScno").innerHTML = "<b>SCNO :</b> " + scno; document.getElementById("remarkModal").style.display="block"; }
 document.addEventListener("change",function(e){ if(e.target.id==="remarkSelect"){ document.getElementById("customRemark").style.display = e.target.value==="Other Remark" ? "block" : "none"; } });
@@ -587,8 +584,6 @@ function showRoute(lat,lng){
     if(routingControl){ map.removeControl(routingControl); }
     routingControl = L.Routing.control({ waypoints:[ L.latLng(myLat,myLng), L.latLng(lat,lng) ], routeWhileDragging: false, show: false, lineOptions: { styles: [{color: '#8b5cf6', opacity: 0.9, weight: 6}] }, createMarker: function() { return null; } }).addTo(map);
     showMyLocation();
-    
-    // ఆటోమేటిక్ గా ఫుల్ స్క్రీన్ మోడ్ కి వెళుతుంది
     openFullMap(); 
   });
 }
