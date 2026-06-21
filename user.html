@@ -4,6 +4,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TGNPDCL User Dashboard</title>
 
+<script>
+  if (localStorage.getItem("auth_token") !== "secure_login") {
+    window.location.replace("index.html");
+  }
+</script>
+
 <meta name="theme-color" content="#2563eb">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -75,7 +81,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 #catBox summary { cursor: pointer; font-weight: bold; color: #475569; }
 .cat-list { margin-top: 8px; max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-/* ఫిల్టర్ చెక్-బాక్సులు సాగకుండా సెట్ చేసిన కోడ్ (ఇది పక్కాగా ఉంది) */
+/* ఫిల్టర్ చెక్-బాక్సులు సాగకుండా సెట్ చేసిన కోడ్ */
 .cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #334155; margin: 0; }
 .cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); cursor: pointer; }
 
@@ -90,7 +96,7 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
 
 #printHeader { display: none; }
 
-/* ప్రింట్ డిజైన్ (పర్ఫెక్ట్ ఎక్సెల్ ఫార్మాట్) */
+/* ప్రింట్ డిజైన్ */
 @media print {
   @page { margin: 10mm; } 
   body { background: white; color: black; margin: 0; padding: 0; }
@@ -237,6 +243,9 @@ td { border: none; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; font-si
     <h3 style="margin-top: 0; color: #0f172a;">👤 Employee Profile</h3>
     <p style="background: #f1f5f9; padding: 12px; border-radius: 8px;"><b>Name :</b> <span id="empModalName" style="color: #3b82f6; font-weight: bold;"></span></p>
     <button onclick="setEmployeeName()" style="background: #3b82f6; color: white; margin-top: 10px;">✏️ Change Name</button>
+    
+    <button onclick="logoutUser()" style="background: #f59e0b; color: white; margin-top: 10px;">🚪 Logout</button>
+    
     <button onclick="closeEmployeeModal()" style="background: #ef4444; color: white; margin-top: 10px;">❌ Close</button>
   </div>
 </div>
@@ -387,7 +396,7 @@ loadData = async function(){
        className: "scno-label" 
    });
    
-   // 🌟 3D POPUP CONTENT (గూగుల్ మ్యాప్స్ ఒరిజినల్ నావిగేషన్ లింక్ తో ఫిక్స్ చేయబడింది) 🌟
+   // 🌟 3D POPUP CONTENT 🌟
    m.bindPopup(`
    <div style="font-family:sans-serif; text-align:center;">
      <div style="font-size:15px; font-weight:800; color:#0f172a; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px;">
@@ -584,6 +593,13 @@ function openEmployeeModal(){
 
 function closeEmployeeModal(){
  document.getElementById("employeeModal").style.display="none";
+}
+
+// 🚪 పక్కా లాగౌట్ ఫంక్షన్ (లాగిన్ కి పంపుతుంది, డేటా క్లియర్ చేస్తుంది) 🚪
+function logoutUser() {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("employeeName");
+  window.location.replace("index.html");
 }
 
 function searchServices(){
