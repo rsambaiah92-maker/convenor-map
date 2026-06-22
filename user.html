@@ -578,8 +578,7 @@ function saveRemark(){
  remark + " | " + today; localStorage.setItem("remarksData", JSON.stringify(remarksData)); closeRemark();
  loadData(true); 
 }
-function closeRemark(){ document.getElementById("remarkModal").style.display="none"; document.getElementById("remarkSelect").value=""; document.getElementById("customRemark").value=""; document.getElementById("readingInput").value="";
-document.getElementById("readingInput").style.display="none"; document.getElementById("customRemark").style.display="none"; }
+function closeRemark(){ document.getElementById("remarkModal").style.display="none"; document.getElementById("remarkSelect").value=""; document.getElementById("customRemark").value=""; document.getElementById("customRemark").style.display="none"; }
 
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
