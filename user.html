@@ -436,7 +436,7 @@ async function loadData(isSearch = false){
       <a href="tel:${r.mobile_no||''}" class="sc-btn" style="background:#e0f2fe; color:#2563eb; box-shadow:0 2px 4px rgba(37,99,235,0.1);">📞 Call</a>
       <a href="https://wa.me/91${r.mobile_no||''}" target="_blank" class="sc-btn" style="background:#dcfce3; color:#16a34a; box-shadow:0 2px 4px rgba(22,163,74,0.1);">🟢 WA</a>
       <button onclick="showRoute(${lat},${lng})" class="sc-btn" style="background:#f3e8ff; color:#7c3aed; box-shadow:0 2px 4px rgba(124,58,237,0.1);">🛣️ Route</button>
-      <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" class="sc-btn" style="background:#e0e7ff; color:#1d4ed8; box-shadow:0 2px 4px rgba(29,78,216,0.1);">🧭 Nav</button>
+      <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" class="sc-btn" style="background:#e0e7ff; color:#1d4ed8; box-shadow:0 2px 4px rgba(29,78,216,0.1);">🧭 Nav</button>
     </div>
     <button onclick="showRemark('${r.scno}')" style="width:100%; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; font-weight:bold; color:#334155; cursor:pointer;">📝 Remark: <span style="color:#059669;">${remarksData[String(r.scno)] || "None"}</span></button>
   </div>
@@ -489,7 +489,7 @@ async function loadData(isSearch = false){
      </div>
      <div style="display:flex; gap:8px; margin-bottom:8px;">
        <button onclick="document.getElementById('large_${uId}').style.display='none'; document.getElementById('small_${uId}').style.display='block';" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #475569;">🔙 Back</button>
-       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #1e40af;">🧭 Nav</button>
+       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #1e40af;">🧭 Nav</button>
      </div>
      <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #065f46; margin-bottom:6px;">📝 Remark</button>
      <div style="font-size:11px; color:#059669; font-weight:bold; border-top:1px solid #e2e8f0; padding-top:6px; text-align:left;">Rmk: ${remarksData[String(r.scno)] || "None"}</div>
