@@ -558,7 +558,11 @@ function saveRemark(){
  let remark = document.getElementById("remarkSelect").value;
  if(!remark){ alert("Select Remark"); return; }
  if(remark==="Other Remark"){ remark = document.getElementById("customRemark").value; }
- remarksData[String(selectedRemarkScno)] = remark; localStorage.setItem("remarksData", JSON.stringify(remarksData)); closeRemark();
+  const today =
+ new Date().toLocaleDateString("en-GB");
+
+ remarksData[String(selectedRemarkScno)] =
+ remark + " | " + today; localStorage.setItem("remarksData", JSON.stringify(remarksData)); closeRemark();
  loadData(true); 
 }
 function closeRemark(){ document.getElementById("remarkModal").style.display="none"; document.getElementById("remarkSelect").value=""; document.getElementById("customRemark").value=""; document.getElementById("customRemark").style.display="none"; }
