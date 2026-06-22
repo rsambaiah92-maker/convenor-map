@@ -244,10 +244,6 @@ button { cursor: pointer; font-weight: bold; }
     </select>
     <input id="customRemark" placeholder="✍️ Enter Custom Remark" style="display:none; margin-top: 10px;">
 
-    <input id="readingInput"
-type="number"
-placeholder="Enter Reading"
-style="display:none;margin-top:10px;">
     <div style="display: flex; gap: 10px; margin-top: 15px;">
       <button onclick="saveRemark()" style="background: #10b981; color: white;">💾 Save</button>
       <button onclick="closeRemark()" style="background: #ef4444; color: white;">❌ Cancel</button>
@@ -558,16 +554,14 @@ function logoutUser() {
 }
 
 function showRemark(scno){ selectedRemarkScno = scno; document.getElementById("remarkScno").innerHTML = "<b>SCNO :</b> " + scno; document.getElementById("remarkModal").style.display="block"; }
-document.addEventListener("change",function(e){ if(e.target.id==="remarkSelect"){ document.getElementById("customRemark").style.display = e.target.value==="Other Remark" ? "block" : "none";
-  document.getElementByID("readingInput").style.display =e.target.value==="disconnected" ? "block":"none"; } });
+document.addEventListener("change",function(e){ if(e.target.id==="remarkSelect"){ document.getElementById("customRemark").style.display = e.target.value==="Other Remark" ? "block" : "none"; } });
 function saveRemark(){
  let remark = document.getElementById("remarkSelect").value;
  if(!remark){ alert("Select Remark"); return; }
  if(remark==="Other Remark"){ remark = document.getElementById("customRemark").value; }
   if(remark==="Disconnected"){
 
- const reading =
- document.getElementById("readingInput").value;
+ const reading = prompt("Enter Reading");
 
  if(!reading){
    alert("Please Enter Reading");
@@ -575,7 +569,7 @@ function saveRemark(){
  }
 
  remark =
- "Disconnected | Reading : " + reading;
+ "Disconnected - Reading : " + reading;
 }
   const today =
  new Date().toLocaleDateString("en-GB");
