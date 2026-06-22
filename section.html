@@ -61,7 +61,10 @@ font-weight:bold;
 <h2>SECTION DASHBOARD</h2>
 
 <input type="file" id="excelFile" accept=".xlsx,.xls">
-
+<button onclick="clearAllData()"
+style="background:red;color:white;">
+🗑 CLEAR ALL DATA
+</button>
 <button onclick="uploadExcel()">
 UPLOAD EXCEL
 </button>
@@ -246,7 +249,36 @@ async function uploadExcel(){
     document.getElementById("status").innerHTML = "<span style='color:red;'>Code Error : " + error.message + "</span>";
   }
 }
+async function clearAllData(){
 
+  const confirmDelete = prompt(
+    "Type DELETE to clear all records"
+  );
+
+  if(confirmDelete !== "DELETE"){
+    alert("Cancelled");
+    return;
+  }
+
+  document.getElementById("status").innerHTML =
+  "Deleting All Records...";
+
+  const { error } = await supabaseClient
+    .from("records")
+    .delete()
+    .gt("id",0);
+
+  if(error){
+    document.getElementById("status").innerHTML =
+    "Delete Error : " + error.message;
+    return;
+  }
+
+  document.getElementById("status").innerHTML =
+  "All Records Deleted Successfully";
+
+  alert("All Records Cleared");
+}
 </script>
 
 </body>
