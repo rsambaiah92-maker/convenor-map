@@ -20,14 +20,14 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
 <style>
-/* బేసిక్ డిజైన్ */
+/* బేసిక్ డిజైన్ సెట్టింగ్స్ */
 * { box-sizing: border-box; }
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 10px; padding-bottom: 80px; background-color: #f8fafc; color: #1e293b; margin: 0; line-height: 1.5; }
 input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 14px; }
 input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 button { cursor: pointer; font-weight: bold; }
 
-/* 🌟 బాటమ్ నావిగేషన్ బార్ 🌟 */
+/* 🌟 బాటమ్ నావిగేషన్ బార్ (4 బటన్లు) 🌟 */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
   background: #ffffff; display: flex; justify-content: space-around;
@@ -35,34 +35,46 @@ button { cursor: pointer; font-weight: bold; }
 }
 .nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s;
+  color: #64748b; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
 }
 .nav-item.active { color: #2563eb; }
-.nav-item .icon { font-size: 24px; margin-bottom: 3px; transition: transform 0.2s; }
+.nav-item .icon { font-size: 22px; margin-bottom: 3px; transition: transform 0.2s; }
 .nav-item.active .icon { transform: scale(1.1); }
 
-/* స్మార్ట్ కార్డ్స్ */
+/* స్మార్ట్ కార్డ్స్ డిజైన్ */
 .smart-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; }
 .sc-btn { display: flex; align-items: center; justify-content: center; padding: 10px 0; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; cursor: pointer; border: none; }
 
-/* హెడర్ */
+/* హెడర్ ప్రొఫైల్ బాక్స్ */
 .header-box { position: relative; background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; text-align: center; padding: 8px 12px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
 .profile-btn { position: absolute; top: 8px; right: 12px; width: 40px; height: 40px; border-radius: 50%; background: white; color: #2563eb; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .title { font-size: 22px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; }
 .subtitle { font-size: 12px; margin-top: 2px; opacity: 0.9; margin-bottom: 8px; }
 
-/* స్టాట్స్ */
-.stats-container { display: flex; gap: 12px; margin-bottom: 15px; }
+/* హోమ్ స్క్రీన్ స్టాట్స్ కార్డ్స్ */
+.stats-container { display: flex; gap: 12px; margin-bottom: 10px; }
 .stat-card { flex: 1; background: white; border-radius: 12px; padding: 15px 10px; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
 .stat-card:nth-child(1) { border-left: 5px solid #3b82f6; }
 .stat-card:nth-child(2) { border-left: 5px solid #10b981; }
 .stat-card h4 { margin: 0 0 5px 0; color: #64748b; font-size: 13px; text-transform: uppercase; }
 .stat-card .value { font-size: 20px; font-weight: 800; color: #0f172a; }
 
+/* 🎯 లైవ్ టార్గెట్ ప్రోగ్రెస్ బార్ */
+.progress-box { background: white; border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: #475569; margin-bottom: 5px; }
+.progress-track { background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; }
+.progress-fill { background: linear-gradient(90deg, #3b82f6, #10b981); height: 100%; width: 0%; transition: width 0.5s ease; }
+
+/* 📊 సమ్మరి పేజీ స్టైల్స్ */
+.summary-list { background: white; border-radius: 12px; border: 1px solid #cbd5e1; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.summary-item { display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 10px; font-size: 15px; }
+.summary-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.summary-val { font-weight: 900; font-size: 16px; }
+
 /* స్టిక్కీ సెర్చ్ బార్ */
 #searchBox { position: sticky; top: 10px; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border-radius: 20px; padding-left: 20px; font-size: 15px; margin-bottom: 15px; border: 2px solid #e2e8f0; background: white; }
 
-/* ఫిల్టర్లు */
+/* అడ్వాన్స్డ్ ఫిల్టర్స్ */
 .advanced-filters { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; }
 .advanced-filters summary { font-weight: bold; cursor: pointer; color: #334155; font-size: 15px; padding: 5px; outline: none; }
 .amount-inputs { display: flex; gap: 10px; }
@@ -71,41 +83,41 @@ button { cursor: pointer; font-weight: bold; }
 .cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 0; }
 .cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); }
 
-/* మ్యాప్ కంట్రోల్స్ */
+/* మ్యాప్ కంట్రోల్స్ అండ్ మోడ్స్ */
 .map-wrapper { position: relative; margin-top: 10px; }
 #map { height: 40vh; min-height: 410px; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; }
 
 #myLocationBtn { position: absolute; bottom: 30px; right: 10px; z-index: 10001; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #3b82f6; font-size: 24px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
-#fullScreenBtn { position: absolute; bottom: 75px; right: 10px; z-index: 999; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #334155; font-size: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+#fullScreenBtn { position: absolute; bottom: 75px; right: 10px; z-index: 10001; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #334155; font-size: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
 
 #closeMapBtn { 
   display: none; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); 
-  width: auto !important; z-index: 10001; background: #ff0000; color: white; border: 2px solid #cc0000; 
+  width: auto !important; z-index: 10005; background: #ff0000; color: white; border: 2px solid #cc0000; 
   padding: 10px 24px; border-radius: 30px; font-weight: 900; font-size: 14px; 
   box-shadow: 0 4px 10px rgba(255,0,0,0.5); cursor: pointer; text-transform: uppercase; 
   letter-spacing: 1px; white-space: nowrap;
 }
 
-.fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 10005 !important; background: white; margin: 0 !important; padding: 0 !important; }
+.fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 10002 !important; background: white; margin: 0 !important; padding: 0 !important; }
 .fullMapMode #map { height: 100% !important; border-radius: 0 !important; border: none !important; }
 .fullMapMode #fullScreenBtn { display: none !important; }
 
 .scno-label { background: white !important; border: 1px solid #333 !important; border-radius: 4px !important; padding: 2px 4px !important; font-size: 10px !important; font-weight: bold !important; color: #000 !important; }
 
-/* పాప్ అప్ */
+/* లీఫ్లెట్ పాప్ అప్స్ */
 .leaflet-popup-content-wrapper { border-radius: 16px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important; padding: 0 !important; }
 .leaflet-popup-content { margin: 12px !important; width: 220px !important; }
 
-/* మోడల్స్ */
+/* మోడల్ ఓవర్లే అండ్ కంటెంట్ */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 10005; backdrop-filter: blur(2px); }
 .modal-content { background: white; margin: 40px auto; padding: 20px; width: 90%; max-width: 450px; border-radius: 16px; }
 
-/* 🖨️ ప్రింట్ ఏరియా 🖨️ */
+/* 🖨️ ప్రింట్ సెట్టింగ్స్ రిపోర్ట్ 🖨️ */
 #printContainer { display: none; }
 @media print {
   @page { margin: 5mm; } 
   body { background: white; color: black; margin: 0; padding: 0 !important; }
-  .header-box, #searchBox, #homeSection, #listSection, #mapWrapper, .bottom-nav, .modal-overlay { display: none !important; }
+  .header-box, #searchBox, #homeSection, #listSection, #statsSection, #mapWrapper, .bottom-nav, .modal-overlay { display: none !important; }
   #printContainer { display: block !important; width: 100%; }
   
   #printHeader { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
@@ -153,6 +165,16 @@ button { cursor: pointer; font-weight: bold; }
     </div>
   </div>
 
+  <div class="progress-box">
+    <div class="progress-header">
+      <span>🎯 Area Target Progress</span>
+      <span id="progressText">0 / 0 Visited</span>
+    </div>
+    <div class="progress-track">
+      <div id="progressBar" class="progress-fill"></div>
+    </div>
+  </div>
+
   <details class="advanced-filters" id="filtersBox">
     <summary>⚙️ <span>Advanced Filters (Area, Amount)</span></summary>
     <div style="margin-top: 10px;">
@@ -190,6 +212,54 @@ button { cursor: pointer; font-weight: bold; }
 
 <div id="listSection" style="display: none;"></div>
 
+<div id="statsSection" style="display: none;">
+  <h3 style="margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">📊 Day-End Summary</h3>
+  
+  <div class="stats-container">
+    <div class="stat-card" style="border-left: 5px solid #8b5cf6;">
+      <h4>✅ Visited</h4>
+      <div class="value" id="statVisited" style="color: #8b5cf6;">0</div>
+    </div>
+    <div class="stat-card" style="border-left: 5px solid #f59e0b;">
+      <h4>⏳ Pending</h4>
+      <div class="value" id="statPending" style="color: #f59e0b;">0</div>
+    </div>
+  </div>
+
+  <h4 style="color: #475569; margin: 20px 0 10px 0; text-transform: uppercase; font-size: 13px;">Remarks & Cash Analytics</h4>
+  <div class="summary-list">
+    <div style="background: #dcfce3; padding: 14px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #bbf7d0; display: flex; justify-content: space-between; align-items: center;">
+      <span style="color: #16a34a; font-weight: 800; font-size: 15px;">💰 Total Cash Collected</span>
+      <span id="statCollectedCash" style="color: #16a34a; font-weight: 900; font-size: 19px;">₹0.00</span>
+    </div>
+
+    <div class="summary-item">
+      <span style="color: #10b981; font-weight: bold;">🟢 Full Paid (Collected)</span>
+      <span class="summary-val" id="countCollected">0</span>
+    </div>
+    <div class="summary-item">
+      <span style="color: #ef4444; font-weight: bold;">🔴 Disconnected</span>
+      <span class="summary-val" id="countDisconnected">0</span>
+    </div>
+    <div class="summary-item">
+      <span style="color: #f59e0b; font-weight: bold;">🟡 Promise To Pay / Later</span>
+      <span class="summary-val" id="countPromise">0</span>
+    </div>
+    <div class="summary-item">
+      <span style="color: #64748b; font-weight: bold;">⚪ Door Locked</span>
+      <span class="summary-val" id="countLocked">0</span>
+    </div>
+    <div class="summary-item">
+      <span style="color: #3b82f6; font-weight: bold;">🔵 Part Paid / Others</span>
+      <span class="summary-val" id="countOthers">0</span>
+    </div>
+  </div>
+
+  <button onclick="shareWhatsAppReport()" style="background: #25D366; color: white; width: 100%; margin-top: 15px; padding: 12px; font-size: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px rgba(37, 211, 102, 0.2); border: none;">
+    <span style="font-size: 22px;">📲</span> <b>Share Summary to WhatsApp Group</b>
+  </button>
+</div>
+
 <div id="printContainer">
   <div id="printHeader">
     <h2>TGNPDCL Collection Report</h2>
@@ -211,6 +281,9 @@ button { cursor: pointer; font-weight: bold; }
   </div>
   <div class="nav-item" id="nav-list" onclick="switchTab('list')">
     <span class="icon">📋</span><span>List</span>
+  </div>
+  <div class="nav-item" id="nav-stats" onclick="switchTab('stats')">
+    <span class="icon">📊</span><span>Stats</span>
   </div>
   <div class="nav-item" id="nav-print" onclick="printReport()">
     <span class="icon">🖨️</span><span>Print</span>
@@ -242,6 +315,8 @@ button { cursor: pointer; font-weight: bold; }
       <option>Phone Not Reachable</option>
       <option>Other Remark</option>
     </select>
+    
+    <input id="remarkAmount" type="number" placeholder="💰 Enter Amount Collected (₹)" style="display:none; margin-top: 10px;">
     <input id="customRemark" placeholder="✍️ Enter Custom Remark" style="display:none; margin-top: 10px;">
 
     <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -283,24 +358,28 @@ updateNetworkStatus();
 function switchTab(tab) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   
-  if(tab === 'home' || tab === 'list') {
+  if(tab === 'home' || tab === 'list' || tab === 'stats') {
     document.getElementById('nav-' + tab).classList.add('active');
   }
 
   const homeSec = document.getElementById('homeSection');
   const listSec = document.getElementById('listSection');
+  const statsSec = document.getElementById('statsSection');
   const searchBox = document.getElementById('searchBox'); 
 
   if(tab === 'home') {
-    homeSec.style.display = 'block'; 
-    listSec.style.display = 'none'; 
+    homeSec.style.display = 'block'; listSec.style.display = 'none'; statsSec.style.display = 'none';
     searchBox.style.display = 'block'; 
     setTimeout(() => { if(map) map.invalidateSize(); }, 300);
   } 
   else if(tab === 'list') {
-    homeSec.style.display = 'none'; 
-    listSec.style.display = 'block'; 
+    homeSec.style.display = 'none'; listSec.style.display = 'block'; statsSec.style.display = 'none';
     searchBox.style.display = 'block'; 
+  }
+  else if(tab === 'stats') {
+    homeSec.style.display = 'none'; listSec.style.display = 'none'; statsSec.style.display = 'block';
+    searchBox.style.display = 'none'; 
+    calculateStats(); 
   }
 }
 
@@ -319,6 +398,7 @@ function closeFullMap() {
 }
 
 let masterData=[];
+let currentFilteredData=[]; 
 let map = L.map('map').setView([17.95,80.82],11);
 const normalLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'] });
 const satelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'] });
@@ -388,6 +468,8 @@ async function loadData(isSearch = false){
  if(search){
   filtered=filtered.filter(r=> String(r.scno||"").toLowerCase().includes(search) || String(r.name||"").toLowerCase().includes(search) || String(r.mobile_no||"").toLowerCase().includes(search));
  }
+ 
+ currentFilteredData = filtered; 
 
  document.getElementById("totalRecords").innerText=filtered.length;
  let total=0; filtered.forEach(r=>{ total += Number(r.total_amt||0); });
@@ -436,7 +518,7 @@ async function loadData(isSearch = false){
       <a href="tel:${r.mobile_no||''}" class="sc-btn" style="background:#e0f2fe; color:#2563eb; box-shadow:0 2px 4px rgba(37,99,235,0.1);">📞 Call</a>
       <a href="https://wa.me/91${r.mobile_no||''}" target="_blank" class="sc-btn" style="background:#dcfce3; color:#16a34a; box-shadow:0 2px 4px rgba(22,163,74,0.1);">🟢 WA</a>
       <button onclick="showRoute(${lat},${lng})" class="sc-btn" style="background:#f3e8ff; color:#7c3aed; box-shadow:0 2px 4px rgba(124,58,237,0.1);">🛣️ Route</button>
-      <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" class="sc-btn" style="background:#e0e7ff; color:#1d4ed8; box-shadow:0 2px 4px rgba(29,78,216,0.1);">🧭 Nav</button>
+      <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" class="sc-btn" style="background:#e0e7ff; color:#1d4ed8; box-shadow:0 2px 4px rgba(29,78,216,0.1);">🧭 Nav</button>
     </div>
     <button onclick="showRemark('${r.scno}')" style="width:100%; padding:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; font-weight:bold; color:#334155; cursor:pointer;">📝 Remark: <span style="color:#059669;">${remarksData[String(r.scno)] || "None"}</span></button>
   </div>
@@ -489,7 +571,7 @@ async function loadData(isSearch = false){
      </div>
      <div style="display:flex; gap:8px; margin-bottom:8px;">
        <button onclick="document.getElementById('large_${uId}').style.display='none'; document.getElementById('small_${uId}').style.display='block';" style="flex:1; background:#64748b; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #475569;">🔙 Back</button>
-       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #1e40af;">🧭 Nav</button>
+       <button onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=$${lat},${lng}', '_blank')" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #1e40af;">🧭 Nav</button>
      </div>
      <button onclick="showRemark('${r.scno||""}')" style="width:100%; background:#10b981; color:white; border:none; padding:8px; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 3px #065f46; margin-bottom:6px;">📝 Remark</button>
      <div style="font-size:11px; color:#059669; font-weight:bold; border-top:1px solid #e2e8f0; padding-top:6px; text-align:left;">Rmk: ${remarksData[String(r.scno)] || "None"}</div>
@@ -508,6 +590,58 @@ async function loadData(isSearch = false){
    map.addLayer(markersGroup);
  }
  if(markersGroup.getLayers().length > 0){ map.fitBounds(markersGroup.getBounds(), { padding:[30,30] }); }
+ 
+ calculateStats(); 
+}
+
+// 📈 ఆటో-కాలిక్యులేషన్, లైవ్ క్యాష్ రిపోర్ట్ & ప్రోగ్రెస్ బార్ లాజిక్ 📈
+function calculateStats() {
+  if(!currentFilteredData || currentFilteredData.length === 0) return;
+  
+  let total = currentFilteredData.length;
+  let visited = 0, collected = 0, disconnected = 0, promise = 0, locked = 0, others = 0;
+  let totalCashCollected = 0;
+
+  currentFilteredData.forEach(r => {
+    let rmkStr = remarksData[String(r.scno)];
+    if(rmkStr) {
+      visited++;
+      if(rmkStr.includes("Collected")) {
+        collected++;
+        totalCashCollected += Number(r.total_amt || 0); // Collected అయితే పూర్తి అమౌంట్ కూడుతుంది
+      }
+      else if(rmkStr.includes("Part Payment")) {
+        // Part Payment నుంచి అమౌంట్ నెంబర్ ని విడిగా లాగి కూడుతుంది
+        const amtMatch = rmkStr.match(/Paid:\s*₹\s*(\d+)/);
+        if(amtMatch && amtMatch[1]) {
+          totalCashCollected += Number(amtMatch[1]);
+        }
+        others++; 
+      }
+      else if(rmkStr.includes("Disconnected")) disconnected++;
+      else if(rmkStr.includes("Promise") || rmkStr.includes("Tomorrow")) promise++;
+      else if(rmkStr.includes("Locked") || rmkStr.includes("Door Locked")) locked++;
+      else others++;
+    }
+  });
+
+  let pending = total - visited;
+  let percent = total > 0 ? Math.round((visited / total) * 100) : 0;
+
+  // హోమ్ స్క్రీన్ ప్రోగ్రెస్ లైన్ అప్‌డేట్
+  document.getElementById("progressText").innerText = `${visited} / ${total} Visited (${percent}%)`;
+  document.getElementById("progressBar").style.width = percent + "%";
+
+  // స్టాట్స్ అనలిటిక్స్ స్క్రీన్ అప్‌డేట్
+  document.getElementById("statVisited").innerText = visited;
+  document.getElementById("statPending").innerText = pending;
+  document.getElementById("statCollectedCash").innerText = "₹" + totalCashCollected.toLocaleString("en-IN", {minimumFractionDigits: 2});
+  
+  document.getElementById("countCollected").innerText = collected;
+  document.getElementById("countDisconnected").innerText = disconnected;
+  document.getElementById("countPromise").innerText = promise;
+  document.getElementById("countLocked").innerText = locked;
+  document.getElementById("countOthers").innerText = others;
 }
 
 document.getElementById("areaFilter").onchange = async () => {
@@ -515,6 +649,9 @@ document.getElementById("areaFilter").onchange = async () => {
  document.getElementById("listSection").innerHTML="";
  document.getElementById("totalRecords").innerText="0";
  document.getElementById("totalAmount").innerText="0";
+ currentFilteredData = [];
+ calculateStats();
+ 
  const poleDropdown = document.getElementById("poleFilter");
  poleDropdown.innerHTML = '<option value="">📍 ALL POLES</option>'; 
  document.querySelectorAll('#catBox input[type="checkbox"]').forEach(x => x.checked = false);
@@ -544,41 +681,61 @@ function openEmployeeModal(){ document.getElementById("empModalName").innerText 
 function closeEmployeeModal(){ document.getElementById("employeeModal").style.display="none"; }
 
 function logoutUser() {
-  if(watchId){
-    navigator.geolocation.clearWatch(watchId);
-    watchId = null;
-  }
+  if(watchId){ navigator.geolocation.clearWatch(watchId); watchId = null; }
   localStorage.removeItem("auth_token");
   localStorage.removeItem("employeeName");
   window.location.replace("index.html");
 }
 
 function showRemark(scno){ selectedRemarkScno = scno; document.getElementById("remarkScno").innerHTML = "<b>SCNO :</b> " + scno; document.getElementById("remarkModal").style.display="block"; }
-document.addEventListener("change",function(e){ if(e.target.id==="remarkSelect"){ document.getElementById("customRemark").style.display = e.target.value==="Other Remark" ? "block" : "none"; } });
+
+// ⚙️ రిమార్క్ మారినప్పుడు బాక్స్ లు ఆన్/ఆఫ్ చేసే ఈవెంట్
+document.addEventListener("change", function(e){ 
+  if(e.target.id === "remarkSelect"){ 
+    const val = e.target.value;
+    document.getElementById("customRemark").style.display = (val === "Other Remark") ? "block" : "none"; 
+    document.getElementById("remarkAmount").style.display = (val === "Part Payment") ? "block" : "none"; 
+  } 
+});
+
+// ⚡ 100% బగ్-ఫ్రీ రిమార్క్ అండ్ అమౌంట్ సేవింగ్ లాజిక్ ⚡
 function saveRemark(){
  let remark = document.getElementById("remarkSelect").value;
- if(!remark){ alert("Select Remark"); return; }
- if(remark==="Other Remark"){ remark = document.getElementById("customRemark").value; }
-  if(remark==="Disconnected"){
-
- const reading = prompt("Enter Reading");
-
- if(!reading){
-   alert("Please Enter Reading");
-   return;
+ if(!remark){ alert("Please Select a Remark Option"); return; }
+ 
+ if(remark === "Other Remark"){ 
+   remark = document.getElementById("customRemark").value.trim(); 
+   if(!remark){ alert("Custom remark text cannot be empty!"); return; }
  }
-
- remark =
- "Disconnected - Reading : " + reading;
-}
-  const today =
- new Date().toLocaleDateString("en-GB");
-
- remarksData[String(selectedRemarkScno)] =
- remark + " | " + today; localStorage.setItem("remarksData", JSON.stringify(remarksData)); closeRemark();
+ 
+ // 💰 Part Payment సెలెక్ట్ చేస్తే అమౌంట్ రికార్డ్ అవుతుంది
+ if(remark === "Part Payment"){
+   const inputAmt = document.getElementById("remarkAmount").value.trim();
+   if(!inputAmt || Number(inputAmt) <= 0){ alert("Please enter a valid cash amount!"); return; }
+   remark = "Part Payment - Paid: ₹" + inputAmt;
+ }
+ 
+ if(remark === "Disconnected"){
+   const reading = prompt("Enter Disconnected Meter Reading:");
+   if(!reading || reading.trim() === ""){ alert("Meter reading is mandatory for Disconnection!"); return; }
+   remark = "Disconnected - Rdg: " + reading.trim();
+ }
+ 
+ const today = new Date().toLocaleDateString("en-GB");
+ remarksData[String(selectedRemarkScno)] = remark + " | " + today; 
+ localStorage.setItem("remarksData", JSON.stringify(remarksData)); 
+ closeRemark();
  loadData(true); 
 }
-function closeRemark(){ document.getElementById("remarkModal").style.display="none"; document.getElementById("remarkSelect").value=""; document.getElementById("customRemark").value=""; document.getElementById("customRemark").style.display="none"; }
+
+function closeRemark(){ 
+  document.getElementById("remarkModal").style.display="none"; 
+  document.getElementById("remarkSelect").value=""; 
+  document.getElementById("customRemark").value=""; 
+  document.getElementById("remarkAmount").value=""; 
+  document.getElementById("customRemark").style.display="none"; 
+  document.getElementById("remarkAmount").style.display="none"; 
+}
 
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
@@ -594,6 +751,7 @@ function showMyLocation(){
     }, (err)=>{ alert("Location error. Please turn on GPS."); }, { enableHighAccuracy: true });
   }
 }
+
 function showRoute(lat,lng){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -604,6 +762,44 @@ function showRoute(lat,lng){
     switchTab('home');
     openFullMap(); 
   });
+}
+
+// 📲 వాట్సాప్ గ్రూప్ కి టెక్స్ట్ సమ్మరీ షేర్ చేసే పవర్‌ఫుల్ ఫంక్షన్
+function shareWhatsAppReport() {
+  const empName = localStorage.getItem("employeeName") || "Unknown Staff";
+  const area = document.getElementById("areaFilter").value || "All Selected Areas";
+  const date = new Date().toLocaleDateString("en-GB");
+  
+  const visited = document.getElementById("statVisited").innerText;
+  const pending = document.getElementById("statPending").innerText;
+  const cashCollected = document.getElementById("statCollectedCash").innerText;
+  
+  const collected = document.getElementById("countCollected").innerText;
+  const disconnected = document.getElementById("countDisconnected").innerText;
+  const promise = document.getElementById("countPromise").innerText;
+  const locked = document.getElementById("countLocked").innerText;
+  const others = document.getElementById("countOthers").innerText;
+  
+  // ప్రొఫెషనల్ టెక్స్ట్ ఫార్మాటింగ్ డిజైన్
+  const msgText = `⚡ *TGNPDCL Daily Collection Report* ⚡\n\n` +
+                  `👤 *Staff:* ${empName}\n` +
+                  `🌍 *Area:* ${area}\n` +
+                  `📅 *Date:* ${date}\n` +
+                  `----------------------------\n` +
+                  `✅ *Total Visited:* ${visited}\n` +
+                  `💰 *Cash Collected:* *${cashCollected}*\n` +
+                  `----------------------------\n` +
+                  `🟢 *Full Paid (Collected):* ${collected}\n` +
+                  `🔵 *Part Paid / Others:* ${others}\n` +
+                  `🔴 *Disconnected:* ${disconnected}\n` +
+                  `⚪ *Door Locked:* ${locked}\n` +
+                  `🟡 *Promise To Pay:* ${promise}\n` +
+                  `----------------------------\n` +
+                  `⏳ *Pending Services:* ${pending}\n\n` +
+                  `_Sent via Smart Collection Dashboard_`;
+               
+  const encodedMsg = encodeURIComponent(msgText);
+  window.open(`https://wa.me/?text=${encodedMsg}`, '_blank');
 }
 
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => {}); }); }
