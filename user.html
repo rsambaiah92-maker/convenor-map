@@ -774,43 +774,89 @@ function showRoute(lat,lng){
   });
 }
 
-// 📲 వాట్సాప్ గ్రూప్ కి టెక్స్ట్ సమ్మరీ షేర్ చేసే పవర్‌ఫుల్ ఫంక్షన్
-function shareWhatsAppReport() {
+// 📲 వాట్సాప్ గ్రూప్ కి 'ఓవరాల్' టెక్స్ట్ సమ్మరీ షేర్ చేసే స్మార్ట్ ఫంక్షన్
+async function shareWhatsAppReport() {
+  const todayStr = new Date().toLocaleDateString("en-GB");
+  let todayScnos = [];
+  let todayRemarks = {};
+
+  // 1. ఈరోజు మీరు ఎంటర్ చేసిన రిమార్క్స్ అన్నీ వెతికి తీయడం (అన్ని ఏరియాలవి కలుపుకుని)
+  for (let scno in remarksData) {
+    let parts = remarksData[scno].split(" | ");
+    if (parts[1] === todayStr) {
+      todayScnos.push(scno);
+      todayRemarks[scno] = parts[0];
+    }
+  }
+
+  if (todayScnos.length === 0) {
+    alert("ఈరోజు ఎటువంటి రిమార్క్స్ లేదా కలెక్షన్ డేటా ఎంటర్ చేయలేదు!");
+    return;
+  }
+
+  // బటన్ నొక్కినప్పుడు ప్రాసెస్ అవుతుందని చెప్పడానికి
+  document.getElementById("statCollectedCash").innerText = "Loading...";
+
+  // 2. ఆ SCNO లకి సంబంధించిన అమౌంట్, ఏరియా వివరాలు సుపాబేస్ నుండి ఒకేసారి తెచ్చుకోవడం
+  const { data, error } = await supabaseClient
+    .from("records")
+    .select("scno, area, total_amt")
+    .in("scno", todayScnos);
+
+  if (error) {
+    alert("డేటా తీసుకురావడంలో సమస్య: " + error.message);
+    document.getElementById("statCollectedCash").innerText = "Error";
+    return;
+  }
+
+  // 3. 4 ఏరియాలకు కలిపి ఓవరాల్ లెక్కలు కట్టడం
+  let visited = todayScnos.length;
+  let collected = 0, disconnected = 0, promise = 0, locked = 0, others = 0;
+  let totalCash = 0;
+  let areasSet = new Set(); // ఎన్ని ఏరియాలు చేశారో ఆ పేర్లు అన్నీ ఇందులో ఉంటాయి
+
+  data.forEach(r => {
+    if(r.area) areasSet.add(r.area);
+    
+    let rmk = todayRemarks[String(r.scno)];
+    if (rmk.includes("Collected")) {
+      collected++;
+      totalCash += Number(r.total_amt || 0);
+    } else if (rmk.includes("Part Payment")) {
+      const amtMatch = rmk.match(/Paid:\s*₹\s*(\d+)/);
+      if (amtMatch && amtMatch[1]) totalCash += Number(amtMatch[1]);
+      others++;
+    } else if (rmk.includes("Disconnected")) disconnected++;
+    else if (rmk.includes("Promise") || rmk.includes("Tomorrow")) promise++;
+    else if (rmk.includes("Locked") || rmk.includes("Door Locked")) locked++;
+    else others++;
+  });
+
   const empName = localStorage.getItem("employeeName") || "Unknown Staff";
-  const area = document.getElementById("areaFilter").value || "All Selected Areas";
-  const date = new Date().toLocaleDateString("en-GB");
-  
-  const visited = document.getElementById("statVisited").innerText;
-  const pending = document.getElementById("statPending").innerText;
-  const cashCollected = document.getElementById("statCollectedCash").innerText;
-  
-  const collected = document.getElementById("countCollected").innerText;
-  const disconnected = document.getElementById("countDisconnected").innerText;
-  const promise = document.getElementById("countPromise").innerText;
-  const locked = document.getElementById("countLocked").innerText;
-  const others = document.getElementById("countOthers").innerText;
-  
-  // ప్రొఫెషనల్ టెక్స్ట్ ఫార్మాటింగ్ డిజైన్
-  const msgText = `⚡ *TGNPDCL Daily Collection Report* ⚡\n\n` +
+  const workedAreas = Array.from(areasSet).join(", ") || "Multiple Areas";
+
+  // మళ్ళీ స్క్రీన్ మీద అమౌంట్ అప్డేట్ చేయడం కోసం (ఆప్షనల్)
+  calculateStats();
+
+  // 4. ఫైనల్ ఓవరాల్ వాట్సాప్ మెసేజ్
+  const msgText = `⚡ *TGNPDCL Consolidated Daily Report* ⚡\n\n` +
                   `👤 *Staff:* ${empName}\n` +
-                  `🌍 *Area:* ${area}\n` +
-                  `📅 *Date:* ${date}\n` +
+                  `🌍 *Areas:* ${workedAreas}\n` +
+                  `📅 *Date:* ${todayStr}\n` +
                   `----------------------------\n` +
                   `✅ *Total Visited:* ${visited}\n` +
-                  `💰 *Cash Collected:* *${cashCollected}*\n` +
+                  `💰 *Total Cash:* *₹${totalCash.toLocaleString("en-IN", {minimumFractionDigits: 2})}*\n` +
                   `----------------------------\n` +
-                  `🟢 *Full Paid (Collected):* ${collected}\n` +
-                  `🔵 *Part Paid / Others:* ${others}\n` +
+                  `🟢 *Full Paid:* ${collected}\n` +
+                  `🔵 *Part Paid/Others:* ${others}\n` +
                   `🔴 *Disconnected:* ${disconnected}\n` +
                   `⚪ *Door Locked:* ${locked}\n` +
                   `🟡 *Promise To Pay:* ${promise}\n` +
                   `----------------------------\n` +
-                  `⏳ *Pending Services:* ${pending}\n\n` +
                   `_Sent via Smart Collection Dashboard_`;
-               
-  const encodedMsg = encodeURIComponent(msgText);
-  window.open(`https://wa.me/?text=${encodedMsg}`, '_blank');
-}
+
+  window.open(`https://wa.me/?text=${encodeURIComponent(msgText)}`, '_blank');
+        }
 
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => {}); }); }
 </script>
