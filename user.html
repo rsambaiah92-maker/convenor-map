@@ -594,7 +594,7 @@ async function loadData(isSearch = false){
  calculateStats(); 
 }
 
-// 📈 ఆటో-కాలిక్యులేషన్, లైవ్ క్యాష్ రిపోర్ట్ & ప్రోగ్రెస్ బార్ లాజిక్ 📈
+// 📈 ఆటో-కాలిక్యులేషన్, లైవ్ క్యాష్ రిపోర్ట్ & ప్రోగ్రెస్ బార్ లాజిక్ (టుデー రిపోర్ట్ అప్‌డేటెడ్) 📈
 function calculateStats() {
   if(!currentFilteredData || currentFilteredData.length === 0) return;
   
@@ -602,26 +602,36 @@ function calculateStats() {
   let visited = 0, collected = 0, disconnected = 0, promise = 0, locked = 0, others = 0;
   let totalCashCollected = 0;
 
+  // సిస్టమ్ నుండి ఈరోజు తేదీని తీసుకుంటున్నాం
+  const todayStr = new Date().toLocaleDateString("en-GB");
+
   currentFilteredData.forEach(r => {
-    let rmkStr = remarksData[String(r.scno)];
-    if(rmkStr) {
-      visited++;
-      if(rmkStr.includes("Collected")) {
-        collected++;
-        totalCashCollected += Number(r.total_amt || 0); // Collected అయితే పూర్తి అమౌంట్ కూడుతుంది
+    let rmkFullStr = remarksData[String(r.scno)];
+    if(rmkFullStr) {
+      // రిమార్క్ లో నుండి టెక్స్ట్ మరియు తేదీని వేరు చేస్తున్నాం
+      let parts = rmkFullStr.split(" | ");
+      let rmkStr = parts[0];
+      let rmkDate = parts[1];
+
+      // కేవలం 'ఈరోజు' సేవ్ చేసిన రిమార్క్స్ మాత్రమే లెక్కలోకి వస్తాయి
+      if(rmkDate === todayStr) {
+          visited++;
+          if(rmkStr.includes("Collected")) {
+            collected++;
+            totalCashCollected += Number(r.total_amt || 0);
+          }
+          else if(rmkStr.includes("Part Payment")) {
+            const amtMatch = rmkStr.match(/Paid:\s*₹\s*(\d+)/);
+            if(amtMatch && amtMatch[1]) {
+              totalCashCollected += Number(amtMatch[1]);
+            }
+            others++; 
+          }
+          else if(rmkStr.includes("Disconnected")) disconnected++;
+          else if(rmkStr.includes("Promise") || rmkStr.includes("Tomorrow")) promise++;
+          else if(rmkStr.includes("Locked") || rmkStr.includes("Door Locked")) locked++;
+          else others++;
       }
-      else if(rmkStr.includes("Part Payment")) {
-        // Part Payment నుంచి అమౌంట్ నెంబర్ ని విడిగా లాగి కూడుతుంది
-        const amtMatch = rmkStr.match(/Paid:\s*₹\s*(\d+)/);
-        if(amtMatch && amtMatch[1]) {
-          totalCashCollected += Number(amtMatch[1]);
-        }
-        others++; 
-      }
-      else if(rmkStr.includes("Disconnected")) disconnected++;
-      else if(rmkStr.includes("Promise") || rmkStr.includes("Tomorrow")) promise++;
-      else if(rmkStr.includes("Locked") || rmkStr.includes("Door Locked")) locked++;
-      else others++;
     }
   });
 
@@ -642,8 +652,8 @@ function calculateStats() {
   document.getElementById("countPromise").innerText = promise;
   document.getElementById("countLocked").innerText = locked;
   document.getElementById("countOthers").innerText = others;
-}
-
+    }
+  
 document.getElementById("areaFilter").onchange = async () => {
  clearMarkers();
  document.getElementById("listSection").innerHTML="";
