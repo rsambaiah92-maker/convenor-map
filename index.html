@@ -203,27 +203,41 @@
 <body>
 
 <div class="login-container">
-  <div class="login-header">
-    <h1>⚡ TGNPDCL</h1>
-    <p>Collection Services Dashboard</p>
-  </div>
-  
-  <div class="login-form">
-    <div id="errorMsg" class="error-msg">Invalid Username or Password!</div>
-    
-    <div class="input-group">
-      <label>👤 Username / User ID</label>
-      <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+<body>
+
+  <div class="top-section">
+    <div class="logo-container">
+      <div class="logo-inner">N<span>⚡</span>D</div>
     </div>
-    
-    <div class="input-group">
-      <label>🔒 Password</label>
-      <input type="password" id="password" placeholder="Enter your password">
-    </div>
-    
-    <button id="loginBtn" class="login-btn" onclick="performLogin()">Login</button>
+    <h1 class="app-title">NPDCL Employee</h1>
+    <div class="app-subtitle">TELANGANA • NPDCL</div>
   </div>
-</div>
+
+  <div class="bottom-sheet">
+    <div id="errorMsg" class="error-msg"> Invalid Employee ID or password.</div>
+    
+    <h2 class="welcome-text">Welcome back</h2>
+    <p class="instruction-text">Sign in to continue to your account</p>
+
+    <div class="input-group">
+      <label>Employee ID</label>
+      <span class="input-icon">👤</span>
+      <input type="text" id="username" placeholder="50001035" autocomplete="off">
+    </div>
+
+    <div class="input-group">
+      <label>Password</label>
+      <span class="input-icon">🔒</span>
+      <input type="password" id="password" placeholder="•••••">
+      <button type="button" class="eye-btn" onclick="togglePassword()">👁️</button>
+    </div>
+
+    <a href="#" class="forgot-link" onclick="alert('Please contact admin to reset password.')">Forgot Password?</a>
+
+    <button id="loginBtn" class="login-btn" onclick="performLogin()">Sign In</button>
+
+    <div class="footer">Powered by ITWing • TGNPDCL</div>
+  </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
