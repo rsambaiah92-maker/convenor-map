@@ -300,7 +300,6 @@ button { cursor: pointer; font-weight: bold; }
       <option>Part Payment</option>
       <option>Promise To Pay</option>
       <option>Disconnected</option>
-      <option>Locked</option>
       <option>Door Locked</option>
       <option>Not Available</option>
       <option>Out Of Station</option>
@@ -313,9 +312,15 @@ button { cursor: pointer; font-weight: bold; }
       <option>Will Pay Later</option>
       <option>Phone Switched Off</option>
       <option>Phone Not Reachable</option>
-      <option>Other Remark</option>
+      <option>Theft utilization</option> <option>Other Remark</option>
     </select>
     
+    <div id="disconReadingsBox" style="display: none; margin-top: 10px; background: #ffebee; padding: 10px; border-radius: 8px; border: 1px solid #fca5a5;">
+        <label style="color: #d32f2f; font-weight: bold; font-size: 13px;">🔴 Disconnection Final Readings</label>
+        <input type="number" id="kwhReading" placeholder="Enter KWH Reading (Mandatory)" style="margin-bottom: 5px; border-color: #fca5a5;">
+        <input type="number" id="kvahReading" placeholder="Enter KVAH Reading (Optional)" style="border-color: #fca5a5;">
+    </div>
+
     <input id="remarkAmount" type="number" placeholder="💰 Enter Amount Collected (₹)" style="display:none; margin-top: 10px;">
     <input id="customRemark" placeholder="✍️ Enter Custom Remark" style="display:none; margin-top: 10px;">
 
@@ -501,7 +506,10 @@ async function loadData(isSearch = false){
       <span style="font-size:11px; background:#e2e8f0; padding:2px 6px; border-radius:4px; color:#475569; font-weight:bold;">Cat: ${r.cat||''}</span>
     </div>
     <div style="font-size:13px; color:#475569; margin-bottom:10px; border-bottom:1px dashed #e2e8f0; padding-bottom:8px;">
-      <b>SCNO:</b> <span style="color:#2563eb; font-weight:bold; font-size:15px;">${r.scno}</span> <br>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span><b>SCNO:</b> <span style="color:#2563eb; font-weight:bold; font-size:15px;">${r.scno}</span></span>
+        <span style="color:#000000; font-size:11px; font-weight:bold;">📅 Paid: 15-05-2026</span>
+      </div>
       <b>Pole:</b> ${r.pole_no||''} | <b>Status:</b> ${r.status||''}
     </div>
     <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border:1px solid #bfdbfe;">
@@ -727,6 +735,7 @@ document.addEventListener("change", function(e){
     const val = e.target.value;
     document.getElementById("customRemark").style.display = (val === "Other Remark") ? "block" : "none"; 
     document.getElementById("remarkAmount").style.display = (val === "Part Payment") ? "block" : "none"; 
+    document.getElementById("disconReadingsBox").style.display = (val === "Disconnected") ? "block" : "none"; 
   } 
 });
 
@@ -740,17 +749,23 @@ function saveRemark(){
    if(!remark){ alert("Custom remark text cannot be empty!"); return; }
  }
  
- // 💰 Part Payment సెలెక్ట్ చేస్తే అమౌంట్ రికార్డ్ అవుతుంది
  if(remark === "Part Payment"){
    const inputAmt = document.getElementById("remarkAmount").value.trim();
    if(!inputAmt || Number(inputAmt) <= 0){ alert("Please enter a valid cash amount!"); return; }
    remark = "Part Payment - Paid: ₹" + inputAmt;
  }
  
+ // 🔴 డిస్‌కనెక్ట్ రీడింగ్స్ సేవ్ చేసే లాజిక్ 🔴
  if(remark === "Disconnected"){
-   const reading = prompt("Enter Disconnected Meter Reading:");
-   if(!reading || reading.trim() === ""){ alert("Meter reading is mandatory for Disconnection!"); return; }
-   remark = "Disconnected - Rdg: " + reading.trim();
+   const kwh = document.getElementById("kwhReading").value.trim();
+   const kvah = document.getElementById("kvahReading").value.trim();
+   
+   if(!kwh){ alert("KWH Reading is mandatory for Disconnection!"); return; }
+   
+   let rdgText = "KWH: " + kwh;
+   if(kvah) rdgText += ", KVAH: " + kvah; // KVAH ఉంటేనే కలుపుతుంది
+   
+   remark = "Disconnected - " + rdgText;
  }
  
  const today = new Date().toLocaleDateString("en-GB");
@@ -765,10 +780,12 @@ function closeRemark(){
   document.getElementById("remarkSelect").value=""; 
   document.getElementById("customRemark").value=""; 
   document.getElementById("remarkAmount").value=""; 
+  document.getElementById("kwhReading").value=""; // ఓల్డ్ రీడింగ్స్ క్లియర్
+  document.getElementById("kvahReading").value=""; 
   document.getElementById("customRemark").style.display="none"; 
   document.getElementById("remarkAmount").style.display="none"; 
+  document.getElementById("disconReadingsBox").style.display="none"; 
 }
-
 function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
   if (myLocationMarker) { map.flyTo(myLocationMarker.getLatLng(), 16); }
