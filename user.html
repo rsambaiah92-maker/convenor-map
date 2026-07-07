@@ -786,7 +786,7 @@ function closeRemark(){
   document.getElementById("remarkAmount").style.display="none"; 
   document.getElementById("disconReadingsBox").style.display="none"; 
 }
-function showMyLocation(){
+  function showMyLocation(){
   if(!navigator.geolocation){ alert("Location not supported"); return; }
   if (myLocationMarker) { map.flyTo(myLocationMarker.getLatLng(), 16); }
   if(!watchId) {
