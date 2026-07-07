@@ -3,178 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TGNPDCL - Secure Login</title>
-    
-    <meta name="theme-color" content="#2563eb">
+    <title>TGNPDCL - Login</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="images/icon-192.png">
-
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { 
-    margin: 0 !important;
-    padding: 0 !important;
-    position: fixed !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
-    overflow: hidden !important; /* స్క్రీన్ కదలకుండా లాక్ చేస్తుంది */
-}
-
-/* కొత్తగా ఈ మార్పులు చేయండి */
-.bottom-sheet { 
-    background: #ffffff; 
-    border-radius: 35px 35px 0 0; 
-    padding: 25px 25px; /* ప్యాడింగ్ కొద్దిగా తగ్గించాం */
-    box-shadow: 0 -10px 25px rgba(0,0,0,0.15);
-    flex-shrink: 0; /* కార్డ్ సైజు మారకుండా చూస్తుంది */
-}
-
-.top-section {
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    color: white; 
-    padding: 10px; /* ప్యాడింగ్ తగ్గించాం */
-    text-align: center;
-    overflow: hidden;
-}
-
-        /* మోడ్రన్ ఇన్‌పుట్ బాక్సులు */
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group span.icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #94a3b8; }
-        .input-group input { width: 100%; padding: 16px 15px 16px 45px; border: 1.5px solid #e2e8f0; border-radius: 14px; font-size: 15px; outline: none; background: #f8fafc; transition: all 0.3s ease; color: #1e293b; font-weight: 500; }
-        .input-group input:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-        .eye-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer; padding: 0; }
-
-        /* లాగిన్ బటన్ */
-        .login-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 14px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); transition: transform 0.1s; }
-        .login-btn:active { transform: scale(0.97); }
-        .login-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
-
-        .forgot-link { display: block; text-align: right; color: #3b82f6; font-size: 13px; font-weight: bold; text-decoration: none; margin-top: -5px; margin-bottom: 20px; }
-        .footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 25px; }
-        
-        /* ఎర్రర్ మెసేజ్ పాపప్ */
-        .error-msg { display: none; background: #ef4444; color: white; text-align: center; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 15px; animation: shake 0.3s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            display: flex; flex-direction: column;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            overflow: hidden; /* స్క్రీన్ కదలికలు ఆగిపోతాయి */
+        }
+        .top-section { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
+        .bottom-sheet { 
+            background: white; border-radius: 40px 40px 0 0; 
+            padding: 30px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+            flex-shrink: 0; /* కార్డ్ సైజ్ మారకుండా ఫిక్స్ చేశాను */
+        }
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; }
+        .login-btn { width: 100%; padding: 15px; background: #2563eb; color: white; border: none; border-radius: 12px; font-weight: bold; }
+        .footer { text-align: center; font-size: 12px; color: #888; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div class="top-section">
-        <div class="logo-circle">⚡</div>
-        <h1 class="app-title">TGNPDCL</h1>
-        <div class="app-subtitle">Collection Services</div>
+        <div style="font-size: 50px;">⚡</div>
+        <h1 style="margin: 5px;">TGNPDCL</h1>
+        <p>Collection Services</p>
     </div>
 
     <div class="bottom-sheet">
-        <h2 class="welcome-text">Welcome Back!</h2>
-        <p class="instruction-text">Securely login to your field dashboard</p>
-
-        <div id="errorMsg" class="error-msg"></div>
-
-        <div class="input-group">
-            <span class="icon">👤</span>
-            <input type="text" id="username" placeholder="Employee ID / Username" autocomplete="off">
-        </div>
-
-        <div class="input-group">
-            <span class="icon">🔒</span>
-            <input type="password" id="password" placeholder="Enter Password">
-            <button class="eye-btn" onclick="togglePassword()" title="Show Password">👁️</button>
-        </div>
-
-        <a href="#" class="forgot-link" onclick="alert('Please contact Admin to reset password.')">Forgot Password?</a>
-
-        <button id="loginBtn" class="login-btn" onclick="performLogin()">Secure Login</button>
-
-        <div class="footer">
-            System V6.0 | Secured & Encrypted
-        </div>
+        <div id="errorMsg" style="color:red; display:none; text-align:center; margin-bottom:10px;"></div>
+        <div class="input-group"><input type="text" id="username" placeholder="Employee ID"></div>
+        <div class="input-group"><input type="password" id="password" placeholder="Password"></div>
+        <button class="login-btn" id="loginBtn" onclick="performLogin()">Login</button>
+        <div class="footer">System V4.1</div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
-
     <script>
-        // 1. పాస్‌వర్డ్ చూడటానికి / దాచడానికి ఫంక్షన్
-        function togglePassword() {
-            const pwdInput = document.getElementById("password");
-            const eyeBtn = document.querySelector(".eye-btn");
-            if (pwdInput.type === "password") {
-                pwdInput.type = "text";
-                eyeBtn.innerText = "🙈"; 
-            } else {
-                pwdInput.type = "password";
-                eyeBtn.innerText = "👁️"; 
-            }
-        }
-
-        // 2. పాత సెక్యూరిటీ లాజిక్ (లూప్ బ్రేకర్)
-        window.onload = () => {
-            localStorage.removeItem("isLoggedIn"); 
-            if(localStorage.getItem("auth_token") === "secure_login") {
-                window.location.replace("user.html");
-            }
-        };
-
-        // 3. మీ ఒరిజినల్ డేటాబేస్ లాగిన్ ఫంక్షన్
         async function performLogin() {
             const uname = document.getElementById("username").value.trim();
             const pass = document.getElementById("password").value.trim();
             const errorBox = document.getElementById("errorMsg");
             const btn = document.getElementById("loginBtn");
 
-            errorBox.style.display = "none";
-
-            if(!uname || !pass) {
-                errorBox.innerText = "⚠️ Please enter both Username and Password.";
-                errorBox.style.display = "block";
-                return;
-            }
-
-            btn.innerText = "Verifying...";
-            btn.disabled = true;
+            if(!uname || !pass) { errorBox.innerText="Enter ID & Pass"; errorBox.style.display="block"; return; }
+            btn.disabled = true; btn.innerText = "Checking...";
 
             try {
-                const { data, error } = await supabaseClient
-                    .from("users")
-                    .select("*")
-                    .eq("username", uname)
-                    .eq("password", pass);
-
+                const { data, error } = await supabaseClient.from("users").select("*").eq("username", uname).eq("password", pass);
                 if (error) throw error;
-
                 if (data && data.length > 0) {
                     localStorage.setItem("auth_token", "secure_login");
-                    localStorage.setItem("employeeName", uname.toUpperCase());
-                    window.location.replace("user.html"); // మీ మెయిన్ డాష్‌బోర్డ్‌కి పంపుతుంది
+                    window.location.replace("user.html");
                 } else {
-                    errorBox.innerText = "❌ Invalid Username or Password!";
-                    errorBox.style.display = "block";
-                    btn.innerText = "Secure Login";
-                    btn.disabled = false;
-                    document.getElementById("password").value = ""; 
+                    throw new Error("Invalid Credentials");
                 }
             } catch (err) {
-                errorBox.innerText = "⚠️ Network Error. Please try again.";
-                errorBox.style.display = "block";
-                btn.innerText = "Secure Login";
-                btn.disabled = false;
-                console.error(err);
+                errorBox.innerText = "❌ Login Failed!"; errorBox.style.display="block";
+                btn.disabled = false; btn.innerText = "Login";
             }
-        }
-
-        // 4. సర్వీస్ వర్కర్ (యాప్ ఆఫ్‌లైన్ వర్కింగ్ కోసం)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js');
-            });
         }
     </script>
 </body>
