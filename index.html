@@ -8,11 +8,14 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { 
             margin: 0; 
-            padding: 0; 
+            padding: 0;
+            position: fixed; /* స్క్రీన్‌ని ఒకే చోట కదలకుండా పట్టి ఉంచుతుంది */
+            width: 100%;
             height: 100vh; 
             display: flex; 
             flex-direction: column; 
             background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            overflow: hidden; /* స్క్రీన్ అస్సలు పైకి కిందకి జరగకుండా లాక్ చేస్తుంది */
         }
         
         /* పైభాగం డిజైన్ */
