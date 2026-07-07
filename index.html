@@ -2,153 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>TGNPDCL - Login</title>
 
 <meta name="theme-color" content="#2563eb">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="images/icon-192.png">
 
-<style>
-  * { 
-    box-sizing: border-box; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-  }
-  
-  body { 
-    margin: 0 !important; 
-    padding: 0 !important; 
-    height: 100vh !important; 
-    width: 100vw !important;
-    display: flex !important; 
-    flex-direction: column !important; 
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%) !important;
-    overflow: hidden !important; /* స్క్రీన్ కదలకుండా లాక్ చేస్తుంది */
-  }
-
-  /* పైభాగం: మోడ్రన్ గ్లోయింగ్ లోగో సెక్షన్ */
-  .top-section { 
-    flex: 1.3; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    color: white; 
-    text-align: center;
-    padding: 20px;
-    background: radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.2) 0%, transparent 60%),
-                radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.4) 0%, transparent 50%);
-  }
-  
-  .logo-container {
-    width: 90px;
-    height: 90px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 18px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  }
-  
-  .logo-inner {
-    width: 74px;
-    height: 74px;
-    background: #ffffff;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 800;
-    color: #1e3a8a;
-    font-size: 20px;
-    letter-spacing: -1px;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-  }
-  
-  .logo-inner span {
-    color: #ef4444;
-    font-size: 24px;
-    margin: 0 1px;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-
-  .app-title { font-size: 26px; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  .app-subtitle { font-size: 11px; opacity: 0.7; margin-top: 6px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; }
-
-  /* కింది వైట్ ప్రైవేట్ కార్డ్ */
-  .bottom-sheet { 
-    background: #ffffff; 
-    border-radius: 40px 40px 0 0; 
-    padding: 35px 25px 25px 25px; 
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.15); 
-    
-    /* ⚡ కింద గ్యాప్ రాకుండా స్క్రీన్ అడుగుభాగానికి లాక్ చేసే కొత్త కోడ్ ⚡ */
-    margin-top: auto !important;
-    width: 100% !important;
-}
-
-  .welcome-text { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0; }
-  .instruction-text { font-size: 13px; color: #64748b; margin-bottom: 25px; font-weight: 500; }
-
-  /* అడ్వాన్స్డ్ బాక్సులు */
-  .input-group { 
-    position: relative; 
-    margin-bottom: 22px; 
-  }
-  
-  .input-group label {
-    position: absolute;
-    left: 20px;
-    top: -10px;
-    background: white;
-    padding: 0 6px;
-    color: #64748b;
-    font-size: 12px;
-    font-weight: 600;
-    transition: color 0.3s;
-  }
-  
-  .input-icon { 
-    position: absolute; 
-    left: 20px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    font-size: 16px; 
-    color: #94a3b8; 
-  }
-  
-  .input-group input { 
-    width: 100%; 
-    padding: 16px 20px 16px 48px; 
-    border: 1.5px solid #e2e8f0; 
-    border-radius: 16px; 
-    font-size: 15px; 
-    outline: none; 
-    background: #f8fafc;
-    color: #0f172a;
-    font-weight: 600;
-    transition: all 0.3s ease;
-  }
-  
-  .input-group input:focus { 
-    border-color: #2563eb; 
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
-  }
-  .input-group input:focus + .input-icon { color: #2563eb; }
-  
-  .eye-btn { 
-    position: absolute; 
-    right: 20px; 
-    top: 50%; 
-    transform: translateY(-50%); 
-    background: none; 
-    border: none; 
 <style>
   * { 
     box-sizing: border-box; 
@@ -209,7 +69,7 @@
   /* మెరుపు (⚡) ఐకాన్ అద్భుతంగా పల్స్ అవుతూ మెరిసేలా యానిమేషన్ */
   .logo-inner span {
     display: inline-block;
-    color: #fbbf24; /* గోల్డెన్ ఎల్లో కలర్ */
+    color: #fbbf24; 
     filter: drop-shadow(0 0 6px #fbbf24);
     animation: superGlow 2s infinite ease-in-out;
   }
@@ -282,7 +142,7 @@
   </div>
 
   <div class="bottom-sheet">
-    <div id="errorMsg" class="error-msg"> Invalid Employee ID or password.</div>
+    <div id="errorMsg" class="error-msg"></div>
     
     <h2 class="welcome-text">Welcome back</h2>
     <p class="instruction-text">Sign in to continue to your account</p>
@@ -302,21 +162,22 @@
 
     <a href="#" class="forgot-link" onclick="alert('Please contact admin to reset password.')">Forgot Password?</a>
 
-<button id="loginBtn" class="login-btn" onclick="performLogin()">Sign In</button>
+    <button id="loginBtn" class="login-btn" onclick="performLogin()">Sign In</button>
 
-<div class="footer">Powered by ITWing • TGNPDCL</div>
+    <div class="footer">Powered by ITWing • TGNPDCL</div>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 
 <script>
-// 🛑 బ్రౌజర్ లూప్ సమస్యను బ్రేక్ చేయడానికి కొత్త సెక్యూరిటీ లాజిక్ 🛑
-window.onload = () => {
-  // పాత పాడైపోయిన ముద్రను క్లియర్ చేస్తున్నాను
-  localStorage.removeItem("isLoggedIn"); 
+function togglePassword() {
+    const pwd = document.getElementById("password");
+    pwd.type = (pwd.type === "password") ? "text" : "password";
+}
 
-  // కొత్త తాళం చెవితో మాత్రమే చెక్ చేస్తున్నాను
+window.onload = () => {
+  localStorage.removeItem("isLoggedIn"); 
   if(localStorage.getItem("auth_token") === "secure_login") {
     window.location.replace("user.html");
   }
@@ -331,12 +192,11 @@ async function performLogin() {
   errorBox.style.display = "none";
 
   if(!uname || !pass) {
-    errorBox.innerText = "Please enter both Username and Password.";
+    errorBox.innerText = "❌ Please enter both Username and Password.";
     errorBox.style.display = "block";
     return;
   }
 
-  // లోడింగ్ స్టేటస్
   btn.innerText = "Verifying...";
   btn.disabled = true;
 
@@ -350,20 +210,19 @@ async function performLogin() {
     if (error) throw error;
 
     if (data && data.length > 0) {
-      // సక్సెస్ అయితే కొత్త 'auth_token' ముద్ర వేసి పంపుతున్నాను
       localStorage.setItem("auth_token", "secure_login");
       localStorage.setItem("employeeName", uname.toUpperCase());
       window.location.replace("user.html");
     } else {
-      errorBox.innerText = "❌ Invalid Username or Password!";
+      errorBox.innerText = "❌ Invalid Employee ID or password.";
       errorBox.style.display = "block";
-      btn.innerText = "Login";
+      btn.innerText = "Sign In";
       btn.disabled = false;
     }
   } catch (err) {
     errorBox.innerText = "⚠️ Network Error. Please try again.";
     errorBox.style.display = "block";
-    btn.innerText = "Login";
+    btn.innerText = "Sign In";
     btn.disabled = false;
     console.error(err);
   }
