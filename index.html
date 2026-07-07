@@ -34,12 +34,32 @@
     </div>
 
     <div class="bottom-sheet">
-        <div id="errorMsg" style="color:red; display:none; text-align:center; margin-bottom:10px;"></div>
-        <div class="input-group"><input type="text" id="username" placeholder="Employee ID"></div>
-        <div class="input-group"><input type="password" id="password" placeholder="Password"></div>
-        <button class="login-btn" id="loginBtn" onclick="performLogin()">Login</button>
-        <div class="footer">System V6.0</div>
+    <h2 class="welcome-text">Welcome Back!</h2>
+    <p class="instruction-text">Securely login to your field dashboard</p>
+    
+    <div id="errorMsg" style="color:red; display:none; text-align:center; margin-bottom:10px;"></div>
+    
+    <div class="input-group">
+        <input type="text" id="username" placeholder="Employee ID">
     </div>
+    
+    <div class="input-group" style="position: relative;">
+        <input type="password" id="password" placeholder="Password">
+        <button type="button" onclick="togglePassword()" style="position:absolute; right:10px; top:10px; border:none; background:none; cursor:pointer;">👁️</button>
+    </div>
+    
+    <button class="login-btn" id="loginBtn" onclick="performLogin()">Login</button>
+    
+    <div class="footer">System V4.1 | Secured & Encrypted</div>
+</div>
+
+<script>
+    function togglePassword() {
+        const pwd = document.getElementById("password");
+        pwd.type = (pwd.type === "password") ? "text" : "password";
+    }
+    // ... మీ performLogin ఫంక్షన్ ఇక్కడ కొనసాగుతుంది ...
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
