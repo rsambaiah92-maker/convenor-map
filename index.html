@@ -149,71 +149,136 @@
     transform: translateY(-50%); 
     background: none; 
     border: none; 
-    font-size: 18px; 
-    color: #94a3b8; 
-    cursor: pointer; 
-    transition: color 0.2s;
+<style>
+  * { 
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   }
-  .eye-btn:hover { color: #2563eb; }
+  
+  body { 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    height: 100vh !important; 
+    width: 100vw !important;
+    display: flex !important; 
+    flex-direction: column !important; 
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%) !important;
+    overflow: hidden !important; /* స్క్రీన్ కదలకుండా లాక్ చేస్తుంది */
+  }
 
-  .forgot-link { 
-    display: block; 
-    text-align: right; 
-    color: #2563eb; 
-    font-size: 13px; 
-    font-weight: 700; 
-    text-decoration: none; 
-    margin-top: -5px; 
-    margin-bottom: 25px; 
+  /* డిజైన్ పరంగా సూపర్ అద్భుతంగా ఉండే హెడర్ స్టైల్ */
+  .top-section { 
+    flex: 1 !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    justify-content: center !important; 
+    align-items: center !important; 
+    color: white !important; 
+    text-align: center !important;
+    padding: 25px !important;
+    position: relative;
   }
 
-  /* అడ్వాన్స్డ్ సైన్ ఇన్ బటన్ */
-  .login-btn { 
-    width: 100%; 
-    padding: 16px; 
-    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); 
-    color: white; 
-    border: none; 
-    border-radius: 16px; 
-    font-size: 16px; 
-    font-weight: 700; 
-    cursor: pointer; 
-    box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
-    transition: all 0.2s ease;
+  /* పాత పెద్ద మెరుపు ఐకాన్ కి బదులు ఒక అద్భుతమైన గ్లోయింగ్ రింగ్ లోగో */
+  .logo-container {
+    width: 85px;
+    height: 85px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
-  .login-btn:active { transform: scale(0.98); box-shadow: none; }
+
+  .logo-inner {
+    width: 68px;
+    height: 68px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    box-shadow: inset 0 4px 10px rgba(0,0,0,0.15);
+  }
+
+  /* మెరుపు (⚡) ఐకాన్ అద్భుతంగా పల్స్ అవుతూ మెరిసేలా యానిమేషన్ */
+  .logo-inner span {
+    display: inline-block;
+    color: #fbbf24; /* గోల్డెన్ ఎల్లో కలర్ */
+    filter: drop-shadow(0 0 6px #fbbf24);
+    animation: superGlow 2s infinite ease-in-out;
+  }
+  @keyframes superGlow {
+    0%, 100% { transform: scale(0.95); opacity: 0.8; filter: drop-shadow(0 0 4px #fbbf24); }
+    50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px #f59e0b); }
+  }
+
+  /* పాత స్క్రీన్ లోని అదే హెడ్డింగ్ టెక్స్ట్ - కానీ రాయల్ లుక్ లో */
+  .app-title { 
+    font-size: 30px; 
+    font-weight: 900; 
+    margin: 0; 
+    letter-spacing: 1.5px; 
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+
+  /* పాత స్క్రీన్ లోని అదే సబ్‌టైటిల్ - మోడ్రన్ క్యాప్సూల్ బ్యాడ్జ్ స్టైల్ లో */
+  .app-subtitle { 
+    font-size: 12px; 
+    background: rgba(255, 255, 255, 0.12);
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-top: 8px; 
+    letter-spacing: 1px; 
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  /* కింది వైట్ కార్డ్ అడ్వాన్స్డ్ స్టైల్ */
+  .bottom-sheet { 
+    background: #ffffff !important; 
+    border-radius: 40px 40px 0 0 !important; 
+    padding: 35px 25px 25px 25px !important; 
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.15) !important; 
+    margin-top: auto !important;
+    min-height: 55vh !important;
+    width: 100% !important;
+  }
+
+  .welcome-text { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0; }
+  .instruction-text { font-size: 13px; color: #64748b; margin-bottom: 25px; font-weight: 500; }
+
+  .input-group { position: relative; margin-bottom: 22px; }
+  .input-group label { position: absolute; left: 20px; top: -10px; background: white; padding: 0 6px; color: #64748b; font-size: 12px; font-weight: 600; }
+  .input-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 16px; color: #94a3b8; }
+  .input-group input { width: 100%; padding: 16px 20px 16px 48px; border: 1.5px solid #e2e8f0; border-radius: 16px; font-size: 15px; outline: none; background: #f8fafc; color: #0f172a; font-weight: 600; transition: all 0.3s ease; }
+  .input-group input:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15); }
+  
+  .eye-btn { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer; }
+  .forgot-link { display: block; text-align: right; color: #2563eb; font-size: 13px; font-weight: 700; text-decoration: none; margin-top: -5px; margin-bottom: 25px; }
+  
+  .login-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3); }
   .login-btn:disabled { background: #94a3b8; }
-
-  .footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 25px; font-weight: 600; letter-spacing: 0.5px; }
-
-  /* టోస్ట్ ఎర్రర్ మెసేజ్ బాక్స్ */
-  .error-msg { 
-    display: none; 
-    background: #334155; 
-    color: #fca5a5; 
-    text-align: center; 
-    padding: 12px 20px; 
-    border-radius: 20px; 
-    font-size: 13px; 
-    font-weight: 600; 
-    margin-bottom: 18px; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-  }
- 
+  .footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 25px; font-weight: 600; }
+  .error-msg { display: none; background: #334155; color: #fca5a5; text-align: center; padding: 12px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(239, 68, 68, 0.2); }
 </style>
 </head>
 <body>
 
-<div class="login-container">
-<body>
-
   <div class="top-section">
     <div class="logo-container">
-      <div class="logo-inner">N<span>⚡</span>D</div>
+      <div class="logo-inner"><span>⚡</span></div>
     </div>
-    <h1 class="app-title">NPDCL Employee</h1>
-    <div class="app-subtitle">TELANGANA • NPDCL</div>
+    <h1 class="app-title">TGNPDCL</h1>
+    <div class="app-subtitle">Collection Services Dashboard</div>
   </div>
 
   <div class="bottom-sheet">
