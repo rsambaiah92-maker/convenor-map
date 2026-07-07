@@ -1,175 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TGNPDCL - Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TGNPDCL - Secure Login</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        }
+        
+        /* పైభాగం డిజైన్ */
+        .top-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo-circle {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 35px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .app-title { font-size: 26px; font-weight: 900; margin: 0; letter-spacing: 1px; }
+        .app-subtitle { font-size: 13px; opacity: 0.8; margin-top: 5px; letter-spacing: 2px; text-transform: uppercase; }
 
-<meta name="theme-color" content="#2563eb">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="images/icon-192.png">
+        /* కింది వైట్ కార్డ్ డిజైన్ */
+        .bottom-sheet {
+            background: #ffffff;
+            border-radius: 35px 35px 0 0;
+            padding: 40px 25px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.15);
+        }
+        .welcome-text { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 5px 0; }
+        .instruction-text { font-size: 14px; color: #64748b; margin-bottom: 25px; }
 
-<style>
-  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-  body { 
-    margin: 0; 
-    padding: 0; 
-    height: 100vh; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    background: #f8fafc; 
-  }
-  .login-container {
-    background: white;
-    width: 90%;
-    max-width: 400px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    overflow: hidden;
-  }
-  .login-header {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: white;
-    text-align: center;
-    padding: 30px 20px;
-  }
-  .login-header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1px; }
-  .login-header p { margin: 10px 0 0 0; font-size: 14px; opacity: 0.9; }
-  .login-form { padding: 30px 20px; }
-  
-  .input-group { margin-bottom: 20px; }
-  .input-group label { display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 600; }
-  .input-group input { 
-    width: 100%; 
-    padding: 14px; 
-    border-radius: 8px; 
-    border: 1px solid #cbd5e1; 
-    font-size: 15px; 
-    outline: none; 
-    transition: all 0.3s; 
-  }
-  .input-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-  
-  .login-btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-    transition: all 0.3s;
-  }
-  .login-btn:hover { background: linear-gradient(135deg, #1d4ed8, #2563eb); }
-  .login-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
-  
-  .error-msg {
-    color: #ef4444;
-    font-size: 14px;
-    text-align: center;
-    margin-bottom: 15px;
-    display: none;
-    font-weight: 500;
-  }
-</style>
+        /* మోడ్రన్ ఇన్‌పుట్ బాక్సులు */
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group span.icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #94a3b8;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 16px 15px 16px 45px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 15px;
+            outline: none;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        .input-group input:focus {
+            border-color: #3b82f6;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        .eye-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* లాగిన్ బటన్ */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.1s;
+        }
+        .login-btn:active { transform: scale(0.97); }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            color: #3b82f6;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: -5px;
+            margin-bottom: 20px;
+        }
+        
+        .footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 25px; }
+        
+        /* ఎర్రర్ మెసేజ్ పాపప్ */
+        #errorMsg {
+            display: none;
+            background: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            animation: shake 0.3s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+    </style>
 </head>
 <body>
 
-<div class="login-container">
-  <div class="login-header">
-    <h1>⚡ TGNPDCL</h1>
-    <p>Collection Services Dashboard</p>
-  </div>
-  
-  <div class="login-form">
-    <div id="errorMsg" class="error-msg">Invalid Username or Password!</div>
-    
-    <div class="input-group">
-      <label>👤 Username / User ID</label>
-      <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+    <div class="top-section">
+        <div class="logo-circle">⚡</div>
+        <h1 class="app-title">TGNPDCL</h1>
+        <div class="app-subtitle">Smart Collection Dash</div>
     </div>
-    
-    <div class="input-group">
-      <label>🔒 Password</label>
-      <input type="password" id="password" placeholder="Enter your password">
+
+    <div class="bottom-sheet">
+        <h2 class="welcome-text">Welcome Back!</h2>
+        <p class="instruction-text">Securely login to your field dashboard</p>
+
+        <div id="errorMsg">⚠️ Invalid Employee ID or Password.</div>
+
+        <div class="input-group">
+            <span class="icon">👤</span>
+            <input type="text" id="username" placeholder="Employee ID / Username" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <span class="icon">🔒</span>
+            <input type="password" id="password" placeholder="Enter Password">
+            <button class="eye-btn" onclick="togglePassword()" title="Show Password">👁️</button>
+        </div>
+
+        <a href="#" class="forgot-link" onclick="alert('Please contact Admin to reset password.')">Forgot Password?</a>
+
+        <button class="login-btn" onclick="checkLogin()">Secure Login</button>
+
+        <div class="footer">
+            System V2.0 | Secured & Encrypted
+        </div>
     </div>
-    
-    <button id="loginBtn" class="login-btn" onclick="performLogin()">Login</button>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/config.js"></script>
+    <script>
+        // పాస్‌వర్డ్ కనబడటానికి / దాచడానికి ఫంక్షన్
+        function togglePassword() {
+            const pwdInput = document.getElementById("password");
+            const eyeBtn = document.querySelector(".eye-btn");
+            if (pwdInput.type === "password") {
+                pwdInput.type = "text";
+                eyeBtn.innerText = "🙈"; // కన్ను మూసిన ఐకాన్
+            } else {
+                pwdInput.type = "password";
+                eyeBtn.innerText = "👁️"; // కన్ను తెరిచిన ఐకాన్
+            }
+        }
 
-<script>
-// 🛑 బ్రౌజర్ లూప్ సమస్యను బ్రేక్ చేయడానికి కొత్త సెక్యూరిటీ లాజిక్ 🛑
-window.onload = () => {
-  // పాత పాడైపోయిన ముద్రను క్లియర్ చేస్తున్నాను
-  localStorage.removeItem("isLoggedIn"); 
+        // లాగిన్ చెక్ చేసే ఫంక్షన్
+        function checkLogin() {
+            const user = document.getElementById("username").value.trim();
+            const pass = document.getElementById("password").value.trim();
+            const errorMsg = document.getElementById("errorMsg");
 
-  // కొత్త తాళం చెవితో మాత్రమే చెక్ చేస్తున్నాను
-  if(localStorage.getItem("auth_token") === "secure_login") {
-    window.location.replace("user.html");
-  }
-};
+            if (user === "" || pass === "") {
+                errorMsg.innerText = "⚠️ Please enter both ID and Password.";
+                errorMsg.style.display = "block";
+                return;
+            }
 
-async function performLogin() {
-  const uname = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value.trim();
-  const errorBox = document.getElementById("errorMsg");
-  const btn = document.getElementById("loginBtn");
-
-  errorBox.style.display = "none";
-
-  if(!uname || !pass) {
-    errorBox.innerText = "Please enter both Username and Password.";
-    errorBox.style.display = "block";
-    return;
-  }
-
-  // లోడింగ్ స్టేటస్
-  btn.innerText = "Verifying...";
-  btn.disabled = true;
-
-  try {
-    const { data, error } = await supabaseClient
-      .from("users")
-      .select("*")
-      .eq("username", uname)
-      .eq("password", pass);
-
-    if (error) throw error;
-
-    if (data && data.length > 0) {
-      // సక్సెస్ అయితే కొత్త 'auth_token' ముద్ర వేసి పంపుతున్నాను
-      localStorage.setItem("auth_token", "secure_login");
-      localStorage.setItem("employeeName", uname.toUpperCase());
-      window.location.replace("user.html");
-    } else {
-      errorBox.innerText = "❌ Invalid Username or Password!";
-      errorBox.style.display = "block";
-      btn.innerText = "Login";
-      btn.disabled = false;
-    }
-  } catch (err) {
-    errorBox.innerText = "⚠️ Network Error. Please try again.";
-    errorBox.style.display = "block";
-    btn.innerText = "Login";
-    btn.disabled = false;
-    console.error(err);
-  }
-}
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js');
-  });
-}
-</script>
-
+            // ఇక్కడ మీ అసలైన యూజర్ నేమ్ మరియు పాస్‌వర్డ్ సెట్ చేసుకోండి
+            if (user === "admin" && pass === "1234") { 
+                localStorage.setItem("auth_token", "secure_login");
+                // లాగిన్ అయ్యాక వెళ్లాల్సిన డాష్‌బోర్డ్ ఫైల్ పేరు ఇక్కడ ఇవ్వండి
+                window.location.replace("dashboard.html"); 
+            } else {
+                errorMsg.innerText = "⚠️ Invalid Employee ID or Password.";
+                errorMsg.style.display = "block";
+                document.getElementById("password").value = ""; // తప్పు కొడితే పాస్వర్డ్ బాక్స్ ఖాళీ అవుతుంది
+            }
+        }
+    </script>
 </body>
 </html>
