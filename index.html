@@ -10,71 +10,194 @@
 <link rel="apple-touch-icon" href="images/icon-192.png">
 
 <style>
-  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-  body { 
-    margin: 0; 
-    padding: 0; 
-    height: 100vh; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    background: #f8fafc; 
+  * { 
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   }
-  .login-container {
-    background: white;
-    width: 90%;
-    max-width: 400px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    overflow: hidden;
-  }
-  .login-header {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: white;
-    text-align: center;
-    padding: 30px 20px;
-  }
-  .login-header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1px; }
-  .login-header p { margin: 10px 0 0 0; font-size: 14px; opacity: 0.9; }
-  .login-form { padding: 30px 20px; }
   
-  .input-group { margin-bottom: 20px; }
-  .input-group label { display: block; margin-bottom: 8px; color: #475569; font-size: 14px; font-weight: 600; }
+  body { 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    height: 100vh !important; 
+    width: 100vw !important;
+    display: flex !important; 
+    flex-direction: column !important; 
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%) !important;
+    overflow: hidden !important; /* స్క్రీన్ కదలకుండా లాక్ చేస్తుంది */
+  }
+
+  /* పైభాగం: మోడ్రన్ గ్లోయింగ్ లోగో సెక్షన్ */
+  .top-section { 
+    flex: 1.3; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    color: white; 
+    text-align: center;
+    padding: 20px;
+    background: radial-gradient(circle at 80% 10%, rgba(59, 130, 246, 0.2) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.4) 0%, transparent 50%);
+  }
+  
+  .logo-container {
+    width: 90px;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
+  
+  .logo-inner {
+    width: 74px;
+    height: 74px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    color: #1e3a8a;
+    font-size: 20px;
+    letter-spacing: -1px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .logo-inner span {
+    color: #ef4444;
+    font-size: 24px;
+    margin: 0 1px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+  .app-title { font-size: 26px; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+  .app-subtitle { font-size: 11px; opacity: 0.7; margin-top: 6px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; }
+
+  /* కింది వైట్ ప్రైవేట్ కార్డ్ */
+  .bottom-sheet { 
+    background: #ffffff; 
+    border-radius: 40px 40px 0 0; 
+    padding: 40px 30px 30px 30px; 
+    box-shadow: 0 -15px 35px rgba(0,0,0,0.3); 
+    flex-shrink: 0;
+  }
+
+  .welcome-text { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0; }
+  .instruction-text { font-size: 13px; color: #64748b; margin-bottom: 25px; font-weight: 500; }
+
+  /* అడ్వాన్స్డ్ బాక్సులు */
+  .input-group { 
+    position: relative; 
+    margin-bottom: 22px; 
+  }
+  
+  .input-group label {
+    position: absolute;
+    left: 20px;
+    top: -10px;
+    background: white;
+    padding: 0 6px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    transition: color 0.3s;
+  }
+  
+  .input-icon { 
+    position: absolute; 
+    left: 20px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    font-size: 16px; 
+    color: #94a3b8; 
+  }
+  
   .input-group input { 
     width: 100%; 
-    padding: 14px; 
-    border-radius: 8px; 
-    border: 1px solid #cbd5e1; 
+    padding: 16px 20px 16px 48px; 
+    border: 1.5px solid #e2e8f0; 
+    border-radius: 16px; 
     font-size: 15px; 
     outline: none; 
-    transition: all 0.3s; 
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 600;
+    transition: all 0.3s ease;
   }
-  .input-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
   
-  .login-btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-    transition: all 0.3s;
+  .input-group input:focus { 
+    border-color: #2563eb; 
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
   }
-  .login-btn:hover { background: linear-gradient(135deg, #1d4ed8, #2563eb); }
-  .login-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+  .input-group input:focus + .input-icon { color: #2563eb; }
   
-  .error-msg {
-    color: #ef4444;
-    font-size: 14px;
-    text-align: center;
-    margin-bottom: 15px;
-    display: none;
-    font-weight: 500;
+  .eye-btn { 
+    position: absolute; 
+    right: 20px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    background: none; 
+    border: none; 
+    font-size: 18px; 
+    color: #94a3b8; 
+    cursor: pointer; 
+    transition: color 0.2s;
   }
+  .eye-btn:hover { color: #2563eb; }
+
+  .forgot-link { 
+    display: block; 
+    text-align: right; 
+    color: #2563eb; 
+    font-size: 13px; 
+    font-weight: 700; 
+    text-decoration: none; 
+    margin-top: -5px; 
+    margin-bottom: 25px; 
+  }
+
+  /* అడ్వాన్స్డ్ సైన్ ఇన్ బటన్ */
+  .login-btn { 
+    width: 100%; 
+    padding: 16px; 
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); 
+    color: white; 
+    border: none; 
+    border-radius: 16px; 
+    font-size: 16px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    box-shadow: 0 4px 14px rgba(30, 64, 175, 0.3);
+    transition: all 0.2s ease;
+  }
+  .login-btn:active { transform: scale(0.98); box-shadow: none; }
+  .login-btn:disabled { background: #94a3b8; }
+
+  .footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 25px; font-weight: 600; letter-spacing: 0.5px; }
+
+  /* టోస్ట్ ఎర్రర్ మెసేజ్ బాక్స్ */
+  .error-msg { 
+    display: none; 
+    background: #334155; 
+    color: #fca5a5; 
+    text-align: center; 
+    padding: 12px 20px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    margin-bottom: 18px; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+ 
 </style>
 </head>
 <body>
