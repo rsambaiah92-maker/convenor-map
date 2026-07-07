@@ -545,11 +545,14 @@ async function loadData(isSearch = false){
    
    let smallPopup = `
    <div id="small_${uId}" style="text-align:center; padding:4px;">
-     <b style="font-size:15px; color:#0f172a;">👤 ${r.name || ""}</b><br>
-     <span style="color:#2563eb; font-weight:bold; font-size:14px;">SCNO: ${r.scno}</span>
-     <div style="display:flex; gap:8px; margin-top:10px;">
-       <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #5b21b6;">🛣️ Route</button>
-       <button onclick="document.getElementById('small_${uId}').style.display='none'; document.getElementById('large_${uId}').style.display='block';" style="flex:1; background:#3b82f6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #1d4ed8;">➕ More</button>
+     <b style="font-size:14px; color:#0f172a;">👤 ${r.name || ""}</b>
+     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+       <span style="color:#2563eb; font-weight:bold; font-size:13px;">SCNO: ${r.scno}</span>
+       <span style="font-size:10px; font-weight:bold; color:#000;">📅 LP Paid: 15-05-2026</span>
+     </div>
+     <div style="display:flex; gap:8px; margin-top:8px;">
+       <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #5b21b6;">🛣️ Route</button>
+       <button onclick="document.getElementById('small_${uId}').style.display='none'; document.getElementById('large_${uId}').style.display='block';" style="flex:1; background:#3b82f6; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #1d4ed8;">➕ More</button>
      </div>
    </div>
    `;
@@ -564,7 +567,8 @@ async function loadData(isSearch = false){
        <div><b>Pole:</b><br>${r.pole_no || ""}</div>
        <div><b>Cat:</b> ${r.cat || ""}</div>
        <div><b>Status:</b> ${r.status || ""}</div>
-       <div style="grid-column: span 2; border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px;"><b>📱 Mobile:</b> ${r.mobile_no || ""}</div>
+       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px;"><b>📱 Mob:</b> ${r.mobile_no || ""}</div>
+       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px; color:#000;"><b>📅 LP Paid:</b> 15-05-2026</div>
      </div>
      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:8px; border-radius:8px; margin-bottom:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border:1px solid #bfdbfe;">
         <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold; color:#475569;">
