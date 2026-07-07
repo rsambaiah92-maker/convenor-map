@@ -109,9 +109,12 @@
     padding: 35px 25px 25px 25px !important; 
     box-shadow: 0 -10px 30px rgba(0,0,0,0.15) !important; 
     margin-top: auto !important;
-    min-height: 55vh !important;
+    min-height: 58vh !important; /* ⚡ ఇది బాక్స్‌ను కొద్దిగా పైకి జరుపుతుంది ⚡ */
     width: 100% !important;
-  }
+    position: relative !important;
+    z-index: 10 !important;
+}
+
 
   .welcome-text { font-size: 24px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0; }
   .instruction-text { font-size: 13px; color: #64748b; margin-bottom: 25px; font-weight: 500; }
@@ -141,21 +144,21 @@
     <div class="app-subtitle">Collection Services Dashboard</div>
   </div>
 
-  <div class="bottom-sheet">
+    <div class="bottom-sheet">
     <div id="errorMsg" class="error-msg"></div>
     
     <h2 class="welcome-text">Welcome back</h2>
     <p class="instruction-text">Sign in to continue to your account</p>
 
     <div class="input-group">
-      <label>Employee ID</label>
-      <span class="input-icon">👤</span>
-      <input type="text" id="username" placeholder="50001035" autocomplete="off">
+      <label>Username / User ID</label>
+      <span class="input-icon" style="color: #94a3b8;">👤</span>
+      <input type="text" id="username" placeholder="Enter Username or ID" autocomplete="off">
     </div>
 
     <div class="input-group">
       <label>Password</label>
-      <span class="input-icon">🔒</span>
+      <span class="input-icon" style="color: #94a3b8;">🔒</span>
       <input type="password" id="password" placeholder="•••••">
       <button type="button" class="eye-btn" onclick="togglePassword()">👁️</button>
     </div>
@@ -164,7 +167,7 @@
 
     <button id="loginBtn" class="login-btn" onclick="performLogin()">Sign In</button>
 
-    <div class="footer">Powered by ITWing • TGNPDCL</div>
+    <div class="footer">TGNPDCL © 2026 | All Rights Reserved</div>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
