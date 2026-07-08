@@ -1,5 +1,5 @@
 // ప్రతిసారి మీరు కోడ్ మార్చినప్పుడు ఈ కింద ఉన్న v3 ని v4, v5 అలా మార్చాలి.
-const CACHE_NAME = 'tgnpdcl-dashboard-v6.1'; 
+const CACHE_NAME = 'tgnpdcl-dashboard-v6.2'; 
 
 const urlsToCache = [
   './index.html',
