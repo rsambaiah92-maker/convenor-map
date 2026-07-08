@@ -340,7 +340,24 @@ button { cursor: pointer; font-weight: bold; }
     <button onclick="closeEmployeeModal()" style="background: #ef4444; color: white; margin-top: 10px;">❌ Close</button>
   </div>
 </div>
-
+<div id="limitModal" class="modal-overlay">
+  <div class="modal-content" style="text-align: center; padding: 30px 20px;">
+    <div style="font-size: 50px; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(239,68,68,0.3);">🛑</div>
+    <h2 style="margin-top: 0; color: #ef4444; font-size: 24px; font-weight: 900;"><span id="limitModalCount">0</span> Services Found</h2>
+    
+    <p style="font-size: 15px; color: #1e293b; font-weight: 800; margin-bottom: 12px; line-height: 1.4;">
+      డేటా చాలా ఎక్కువగా ఉంది! <span style="color:#ef4444;">Map స్పీడ్ కోసం 500 సర్వీసులు లోపు ఉంటేనే లోడ్ అవుతుంది.</span>
+    </p>
+    
+    <p style="font-size: 14px; color: #2563eb; margin-bottom: 25px; font-weight: 700; padding: 0 10px; border: 1px dashed #3b82f6; background: #eff6ff; padding: 10px; border-radius: 8px;">
+      ముందుకు వెళ్లాలంటే తప్పనిసరిగా Advanced Filters లో "Amount Range" లేదా "Pole" సెలెక్ట్ చేసుకొని తగ్గించండి!
+    </p>
+    
+    <button id="limitModalBtn" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 16px; font-weight: bold; width: 100%; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); cursor: pointer;">
+      ⚙️ ఓకే, ఫిల్టర్స్ వాడుతాను
+    </button>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -473,11 +490,29 @@ async function loadData(isSearch = false){
  if(search){
   filtered=filtered.filter(r=> String(r.scno||"").toLowerCase().includes(search) || String(r.name||"").toLowerCase().includes(search) || String(r.mobile_no||"").toLowerCase().includes(search));
  }
- 
- currentFilteredData = filtered; 
+ // 🛑 500 Services Hard Block & Force Filter Logic 🛑
+         if (filtered.length > 500) {
+            document.getElementById("limitModalCount").innerText = filtered.length;
+            document.getElementById("limitModal").style.display = "flex";
+            
+            document.getElementById("limitModalBtn").onclick = () => {
+                document.getElementById("limitModal").style.display = "none";
+                // యూజర్ ఓకే నొక్కగానే ఆటోమేటిక్‌గా ఫిల్టర్స్ బాక్స్ ఓపెన్ అవుతుంది!
+                document.getElementById("filtersBox").open = true; 
+            };
+            
+            // డేటా లోడ్ అవ్వకుండా కచ్చితంగా ఆపేయడానికి (Return) వాడుతున్నాం
+            clearMarkers();
+            document.getElementById("listSection").innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444; font-weight:bold; font-size:16px;">⚠️ తప్పనిసరిగా ఫిల్టర్స్ ఉపయోగించి 500 లోపుకు తగ్గించండి</div>`;
+            document.getElementById("totalRecords").innerText = "0";
+            document.getElementById("totalAmount").innerText = "0.00";
+            return; // ఇక్కడితో ఫంక్షన్ ఆగిపోతుంది! మ్యాప్‌లోకి వెళ్ళదు.
+         }
 
- document.getElementById("totalRecords").innerText=filtered.length;
- let total=0; filtered.forEach(r=>{ total += Number(r.total_amt||0); });
+         // ఒకవేళ 500 లోపు ఉంటే అప్పుడు మాత్రమే యాప్ మామూలుగా ముందుకు వెళ్తుంది
+         currentFilteredData = filtered; 
+         document.getElementById("totalRecords").innerText = filtered.length;
+  let total=0; filtered.forEach(r=>{ total += Number(r.total_amt||0); });
  document.getElementById("totalAmount").innerText = Number(total).toLocaleString("en-IN", {minimumFractionDigits: 2});
 
  let html='';
@@ -508,7 +543,9 @@ async function loadData(isSearch = false){
     <div style="font-size:13px; color:#475569; margin-bottom:10px; border-bottom:1px dashed #e2e8f0; padding-bottom:8px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span><b>SCNO:</b> <span style="color:#2563eb; font-weight:bold; font-size:15px;">${r.scno}</span></span>
-        <span style="color:#000000; font-size:11px; font-weight:bold;">📅 LP Paid: 15-05-2026</span>
+        <span style="color:#000000; font-size:11px; font-weight:bold;">
+📅 LP Paid: ${r.last_paid_date || "-"}
+</span>
       </div>
       <b>Pole:</b> ${r.pole_no||''} | <b>Status:</b> ${r.status||''}
     </div>
@@ -548,7 +585,9 @@ async function loadData(isSearch = false){
      <b style="font-size:14px; color:#0f172a;">👤 ${r.name || ""}</b>
      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
        <span style="color:#2563eb; font-weight:bold; font-size:13px;">SCNO: ${r.scno}</span>
-       <span style="font-size:10px; font-weight:bold; color:#000;">📅 LP Paid: 15-05-2026</span>
+       <span style="font-size:10px; font-weight:bold; color:#000;">
+📅 LP Paid: ${r.last_paid_date || "-"}
+</span>
      </div>
      <div style="display:flex; gap:8px; margin-top:8px;">
        <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #5b21b6;">🛣️ Route</button>
@@ -568,7 +607,8 @@ async function loadData(isSearch = false){
        <div><b>Cat:</b> ${r.cat || ""}</div>
        <div><b>Status:</b> ${r.status || ""}</div>
        <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px;"><b>📱 Mob:</b> ${r.mobile_no || ""}</div>
-       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px; color:#000;"><b>📅 LP Paid:</b> 15-05-2026</div>
+       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px; color:#000;"><b>📅 LP Paid:</b>
+       ${r.last_paid_date || "-"}</div>
      </div>
      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:8px; border-radius:8px; margin-bottom:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border:1px solid #bfdbfe;">
         <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold; color:#475569;">
@@ -819,10 +859,13 @@ function showRoute(lat,lng){
 
 // 📲 వాట్సాప్ గ్రూప్ కి సమ్మరీ షేర్ చేసే ఫంక్షన్ (డైరెక్ట్ గా కార్డుల మీద ఉన్నదే వెళ్తుంది)
 function shareWhatsAppReport() {
+function shareWhatsAppReport() {
   const empName = localStorage.getItem("employeeName") || "Unknown Staff";
   const date = new Date().toLocaleDateString("en-GB");
   
   // UI లోని కార్డుల నుండి నేరుగా డేటా తీసుకోవడం
+  const areaName = document.getElementById("areaFilter").value || "Overall (All Areas)";
+  
   const visited = document.getElementById("statVisited").innerText;
   const cashCollected = document.getElementById("statCollectedCash").innerText;
   const collected = document.getElementById("countCollected").innerText;
@@ -836,8 +879,9 @@ function shareWhatsAppReport() {
       return;
   }
 
-  const msgText = `⚡ *TGNPDCL Consolidated Daily Report* ⚡\n\n` +
+  const msgText = `⚡ *TGNPDCL Daily Report* ⚡\n\n` +
                   `👤 *Staff:* ${empName}\n` +
+                  `🌍 *Area:* ${areaName}\n` + // 👈 ఇక్కడ బ్యాక్‌టిక్ (`) గుర్తును సరిచేశాను సార్
                   `📅 *Date:* ${date}\n` +
                   `----------------------------\n` +
                   `✅ *Total Visited:* ${visited}\n` +
