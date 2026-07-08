@@ -340,7 +340,24 @@ button { cursor: pointer; font-weight: bold; }
     <button onclick="closeEmployeeModal()" style="background: #ef4444; color: white; margin-top: 10px;">❌ Close</button>
   </div>
 </div>
-
+<div id="limitModal" class="modal-overlay">
+  <div class="modal-content" style="text-align: center; padding: 30px 20px;">
+    <div style="font-size: 50px; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(239,68,68,0.3);">🛑</div>
+    <h2 style="margin-top: 0; color: #ef4444; font-size: 24px; font-weight: 900;"><span id="limitModalCount">0</span> Services Found</h2>
+    
+    <p style="font-size: 15px; color: #1e293b; font-weight: 800; margin-bottom: 12px; line-height: 1.4;">
+      డేటా చాలా ఎక్కువగా ఉంది! <span style="color:#ef4444;">Map స్పీడ్ కోసం 500 సర్వీసులు లోపు ఉంటేనే లోడ్ అవుతుంది.</span>
+    </p>
+    
+    <p style="font-size: 14px; color: #2563eb; margin-bottom: 25px; font-weight: 700; padding: 0 10px; border: 1px dashed #3b82f6; background: #eff6ff; padding: 10px; border-radius: 8px;">
+      ముందుకు వెళ్లాలంటే తప్పనిసరిగా Advanced Filters లో "Amount Range" లేదా "Pole" సెలెక్ట్ చేసుకొని తగ్గించండి!
+    </p>
+    
+    <button id="limitModalBtn" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 14px 24px; border-radius: 12px; font-size: 16px; font-weight: bold; width: 100%; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); cursor: pointer;">
+      ⚙️ ఓకే, ఫిల్టర్స్ వాడుతాను
+    </button>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
