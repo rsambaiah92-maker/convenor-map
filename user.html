@@ -863,6 +863,8 @@ function shareWhatsAppReport() {
   const date = new Date().toLocaleDateString("en-GB");
   
   // UI లోని కార్డుల నుండి నేరుగా డేటా తీసుకోవడం
+  const areaName = document.getElementById("areaFilter").value || "Overall (All Areas)";
+  
   const visited = document.getElementById("statVisited").innerText;
   const cashCollected = document.getElementById("statCollectedCash").innerText;
   const collected = document.getElementById("countCollected").innerText;
@@ -876,8 +878,9 @@ function shareWhatsAppReport() {
       return;
   }
 
-  const msgText = `⚡ *TGNPDCL Consolidated Daily Report* ⚡\n\n` +
+  const msgText = `⚡ *TGNPDCL Daily Report* ⚡\n\n` +
                   `👤 *Staff:* ${empName}\n` +
+                   🌍 *Area:* ${areaName}
                   `📅 *Date:* ${date}\n` +
                   `----------------------------\n` +
                   `✅ *Total Visited:* ${visited}\n` +
