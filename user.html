@@ -490,11 +490,29 @@ async function loadData(isSearch = false){
  if(search){
   filtered=filtered.filter(r=> String(r.scno||"").toLowerCase().includes(search) || String(r.name||"").toLowerCase().includes(search) || String(r.mobile_no||"").toLowerCase().includes(search));
  }
- 
- currentFilteredData = filtered; 
+ // 🛑 500 Services Hard Block & Force Filter Logic 🛑
+         if (filtered.length > 500) {
+            document.getElementById("limitModalCount").innerText = filtered.length;
+            document.getElementById("limitModal").style.display = "flex";
+            
+            document.getElementById("limitModalBtn").onclick = () => {
+                document.getElementById("limitModal").style.display = "none";
+                // యూజర్ ఓకే నొక్కగానే ఆటోమేటిక్‌గా ఫిల్టర్స్ బాక్స్ ఓపెన్ అవుతుంది!
+                document.getElementById("filtersBox").open = true; 
+            };
+            
+            // డేటా లోడ్ అవ్వకుండా కచ్చితంగా ఆపేయడానికి (Return) వాడుతున్నాం
+            clearMarkers();
+            document.getElementById("listSection").innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444; font-weight:bold; font-size:16px;">⚠️ తప్పనిసరిగా ఫిల్టర్స్ ఉపయోగించి 500 లోపుకు తగ్గించండి</div>`;
+            document.getElementById("totalRecords").innerText = "0";
+            document.getElementById("totalAmount").innerText = "0.00";
+            return; // ఇక్కడితో ఫంక్షన్ ఆగిపోతుంది! మ్యాప్‌లోకి వెళ్ళదు.
+         }
 
- document.getElementById("totalRecords").innerText=filtered.length;
- let total=0; filtered.forEach(r=>{ total += Number(r.total_amt||0); });
+         // ఒకవేళ 500 లోపు ఉంటే అప్పుడు మాత్రమే యాప్ మామూలుగా ముందుకు వెళ్తుంది
+         currentFilteredData = filtered; 
+         document.getElementById("totalRecords").innerText = filtered.length;
+  let total=0; filtered.forEach(r=>{ total += Number(r.total_amt||0); });
  document.getElementById("totalAmount").innerText = Number(total).toLocaleString("en-IN", {minimumFractionDigits: 2});
 
  let html='';
