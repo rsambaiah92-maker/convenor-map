@@ -607,8 +607,8 @@ async function loadData(isSearch = false){
        <div><b>Cat:</b> ${r.cat || ""}</div>
        <div><b>Status:</b> ${r.status || ""}</div>
        <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px;"><b>📱 Mob:</b> ${r.mobile_no || ""}</div>
-       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px; color:#000;"><b>📅 LP Paid:</b> $
-       {r.last_paid_date || "-"}</div>
+       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px; color:#000;"><b>📅 LP Paid:</b>
+       ${r.last_paid_date || "-"}</div>
      </div>
      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:8px; border-radius:8px; margin-bottom:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border:1px solid #bfdbfe;">
         <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold; color:#475569;">
