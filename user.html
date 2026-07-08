@@ -543,7 +543,9 @@ async function loadData(isSearch = false){
     <div style="font-size:13px; color:#475569; margin-bottom:10px; border-bottom:1px dashed #e2e8f0; padding-bottom:8px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <span><b>SCNO:</b> <span style="color:#2563eb; font-weight:bold; font-size:15px;">${r.scno}</span></span>
-        <span style="color:#000000; font-size:11px; font-weight:bold;">📅 LP Paid: 15-05-2026</span>
+        <span style="color:#000000; font-size:11px; font-weight:bold;">
+📅 LP Paid: ${r.last_paid_date || "-"}
+</span>
       </div>
       <b>Pole:</b> ${r.pole_no||''} | <b>Status:</b> ${r.status||''}
     </div>
@@ -583,7 +585,9 @@ async function loadData(isSearch = false){
      <b style="font-size:14px; color:#0f172a;">👤 ${r.name || ""}</b>
      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
        <span style="color:#2563eb; font-weight:bold; font-size:13px;">SCNO: ${r.scno}</span>
-       <span style="font-size:10px; font-weight:bold; color:#000;">📅 LP Paid: 15-05-2026</span>
+       <span style="font-size:10px; font-weight:bold; color:#000;">
+📅 LP Paid: ${r.last_paid_date || "-"}
+</span>
      </div>
      <div style="display:flex; gap:8px; margin-top:8px;">
        <button onclick="showRoute(${lat},${lng})" style="flex:1; background:#8b5cf6; color:white; border:none; padding:6px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 3px #5b21b6;">🛣️ Route</button>
@@ -603,7 +607,8 @@ async function loadData(isSearch = false){
        <div><b>Cat:</b> ${r.cat || ""}</div>
        <div><b>Status:</b> ${r.status || ""}</div>
        <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px;"><b>📱 Mob:</b> ${r.mobile_no || ""}</div>
-       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px; color:#000;"><b>📅 LP Paid:</b> 15-05-2026</div>
+       <div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-top:2px; color:#000;"><b>📅 LP Paid:</b> $
+       {r.last_paid_date || "-"}</div>
      </div>
      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); padding:8px; border-radius:8px; margin-bottom:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border:1px solid #bfdbfe;">
         <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:bold; color:#475569;">
