@@ -698,17 +698,21 @@ async function calculateStats() {
     return;
   }
 
-  document.getElementById("statCollectedCash").innerText = "Loading...";
+    document.getElementById("statCollectedCash").innerText = "Loading...";
 
-  // ఆన్లైన్ నుండి డైరెక్ట్ గా డేటా లాగడం
+  // ఆన్లైన్ నుండి డైరెక్ట్ గా డేటా లాగడం (ఇక్కడ current_demand, arrears కూడా లాగుతున్నాం)
   const { data, error } = await supabaseClient
     .from("records")
-    .select("scno, area, total_amt")
+    .select("scno, area, total_amt, current_demand, arrears")
     .in("scno", todayScnos);
 
   if (error) return;
 
+  // 🌟 కొత్తగా యాడ్ చేసిన లైన్: ఈరోజు తిరిగిన ఏరియాల పేర్లను యాప్ ఇక్కడే గుర్తుపెట్టుకుంటుంది 🌟
+  window.todayVisitedAreas = [...new Set(data.map(r => r.area).filter(Boolean))];
+
   let visited = todayScnos.length;
+
   let collected = 0, disconnected = 0, promise = 0, locked = 0, others = 0;
   let totalCash = 0;
 
