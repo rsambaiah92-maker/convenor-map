@@ -474,7 +474,17 @@ async function loadData(isSearch = false){
 
    const { data, error } = await query;
    if(error){ alert(error.message); return; }
-   masterData = data || [];
+   masterData = (data || []).map(r => {
+    let demand = Number(r.current_demand || 0);
+    let arrears = Number(r.arrears || 0);
+    let total = Number(r.total_amt || 0);
+
+    if (total === 0) {
+        total = demand + arrears;
+    }
+
+    return { ...r, total_amt: total };
+});
    document.getElementById("filtersBox").open = false; 
  }
 
