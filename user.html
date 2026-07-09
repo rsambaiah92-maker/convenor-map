@@ -876,8 +876,13 @@ function shareWhatsAppReport() {
   const empName = localStorage.getItem("employeeName") || "Unknown Staff";
   const date = new Date().toLocaleDateString("en-GB");
   
-  // UI లోని కార్డుల నుండి నేరుగా డేటా తీసుకోవడం
-  const areaName = document.getElementById("areaFilter").value || "Overall (All Areas)";
+  // 🌍 కచ్చితంగా రిమార్క్ చేసిన ఏరియాల పేర్లు మాత్రమే తీసుకునే లాజిక్ 
+  let areaName = document.getElementById("areaFilter").value;
+  if (!areaName && window.todayVisitedAreas && window.todayVisitedAreas.length > 0) {
+      areaName = window.todayVisitedAreas.join(", "); // ఎన్ని ఏరియాలు ఉంటే అన్నీ కామాలతో వస్తాయి
+  } else if (!areaName) {
+      areaName = "Overall (All Areas)";
+  }
   
   const visited = document.getElementById("statVisited").innerText;
   const cashCollected = document.getElementById("statCollectedCash").innerText;
@@ -894,7 +899,7 @@ function shareWhatsAppReport() {
 
   const msgText = `⚡ *TGNPDCL Daily Report* ⚡\n\n` +
                   `👤 *Staff:* ${empName}\n` +
-                  `🌍 *Area:* ${areaName}\n` + // 👈 ఇక్కడ బ్యాక్‌టిక్ (`) గుర్తును సరిచేశాను సార్
+                  `🌍 *Area:* ${areaName}\n` + 
                   `📅 *Date:* ${date}\n` +
                   `----------------------------\n` +
                   `✅ *Total Visited:* ${visited}\n` +
