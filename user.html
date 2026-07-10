@@ -661,7 +661,7 @@ localStorage.setItem("savedPole", pole);
 
  document.getElementById("listSection").innerHTML = html || `<div style="text-align:center; padding:30px; color:#64748b;"><b>No Records Found</b><br>Try changing filters or search</div>`;
  document.getElementById("tableBody").innerHTML = tableHtml; 
-
+window.allPrintRows = tableHtml;
  if(!map.hasLayer(markersGroup)){
    map.addLayer(markersGroup);
  }
@@ -778,14 +778,47 @@ document.getElementById("areaFilter").onchange = async () => {
 };
 
 function printReport(){
- document.getElementById("printEmployee").innerText = localStorage.getItem("employeeName") || "Not Set";
- document.getElementById("printArea").innerText = document.getElementById("areaFilter").value || "ALL AREAS";
- const now = new Date();
- document.getElementById("printDate").innerText = now.toLocaleDateString();
- document.getElementById("printTime").innerText = now.toLocaleTimeString();
- document.getElementById("printServices").innerText = document.getElementById("totalRecords").innerText;
- document.getElementById("printTotal").innerText = document.getElementById("totalAmount").innerText;
- window.print();
+
+let visitedRows = "";
+
+currentFilteredData.forEach(r => {
+
+    let remark = remarksData[String(r.scno)];
+
+    if(remark){
+
+        visitedRows += `
+        <tr>
+          <td>${r.scno||''}</td>
+          <td>${r.name||''}</td>
+          <td>${r.cat||''}</td>
+          <td>${r.status||''}</td>
+          <td>${r.mobile_no||''}</td>
+          <td>${r.current_demand||0}</td>
+          <td>${r.arrears||0}</td>
+          <td>${r.total_amt||0}</td>
+          <td>${remark}</td>
+        </tr>`;
+    }
+
+});
+
+document.getElementById("tableBody").innerHTML = visitedRows;
+
+document.getElementById("printEmployee").innerText = localStorage.getItem("employeeName") || "Not Set";
+document.getElementById("printArea").innerText = document.getElementById("areaFilter").value || "ALL AREAS";
+
+const now = new Date();
+
+document.getElementById("printDate").innerText = now.toLocaleDateString();
+document.getElementById("printTime").innerText = now.toLocaleTimeString();
+
+document.getElementById("printServices").innerText = visitedRows.split("<tr>").length - 1;
+
+document.getElementById("printTotal").innerText = document.getElementById("totalAmount").innerText;
+
+window.print();
+
 }
 
 function setEmployeeName(){ let name = prompt("Enter Employee Name"); if(!name) return; localStorage.setItem("employeeName", name); document.getElementById("profileBtn").innerText = name.charAt(0).toUpperCase(); document.getElementById("empModalName").innerText = name; closeEmployeeModal(); }
