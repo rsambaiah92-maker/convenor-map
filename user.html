@@ -448,7 +448,17 @@ window.onload = async () => {
   
   areas.forEach(a=>{ areaDropdown.innerHTML += `<option value="${a}">${a}</option>`; });
 };
+// Restore saved filters
+const savedArea = localStorage.getItem("savedArea");
+const savedPole = localStorage.getItem("savedPole");
 
+if (savedArea) {
+    document.getElementById("areaFilter").value = savedArea;
+}
+
+if (savedPole) {
+    document.getElementById("poleFilter").value = savedPole;
+}
 function clearMarkers(){
  if (map && map.hasLayer(markersGroup)) { markersGroup.clearLayers(); map.removeLayer(markersGroup); }
  markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
@@ -462,12 +472,16 @@ document.getElementById("searchBox").addEventListener("input", () => {
 
 async function loadData(isSearch = false){
  const area=document.getElementById("areaFilter").value;
+  localStorage.setItem("savedArea", area);
+
+const pole = document.getElementById("poleFilter").value;
+localStorage.setItem("savedPole", pole);
  if(!area && !isSearch){ alert("Please Select Area"); return; }
  
  if(!isSearch) {
    let query = supabaseClient.from("records").select("*").range(0, 5000); 
    if(area){ query = query.eq("area", area); }
-   const pole=document.getElementById("poleFilter").value;
+   
    const selectedCats = [...document.querySelectorAll('#catBox input[type="checkbox"]:checked')].map(cb => cb.value);
    if(pole){ query = query.ilike("pole_no", pole + "%"); }
    if(selectedCats.length > 0){ query = query.in("cat", selectedCats); }
