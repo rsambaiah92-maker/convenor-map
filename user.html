@@ -924,7 +924,7 @@ function shareWhatsAppReport() {
   const date = new Date().toLocaleDateString("en-GB");
   
   // 🌍 కచ్చితంగా రిమార్క్ చేసిన ఏరియాల పేర్లు మాత్రమే తీసుకునే లాజిక్ 
-  let areaName = document.getElementById("areaFilter").value;
+  let areaName = "";
   if (!areaName && window.todayVisitedAreas && window.todayVisitedAreas.length > 0) {
       areaName = window.todayVisitedAreas.join(", "); // ఎన్ని ఏరియాలు ఉంటే అన్నీ కామాలతో వస్తాయి
   } else if (!areaName) {
