@@ -88,7 +88,21 @@ button { cursor: pointer; font-weight: bold; }
 #map { height: 40vh; min-height: 370px; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 100%; }
 
 #myLocationBtn { position: absolute; bottom: 30px; right: 10px; z-index: 10001; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #3b82f6; font-size: 24px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
-#fullScreenBtn { position: absolute; bottom: 75px; right: 10px; z-index: 10001; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #334155; font-size: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+
+#fullScreenBtn {
+  position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+  width: auto; z-index: 10001; background: #ff0000; color: white; border: 2px solid #cc0000;
+  padding: 10px 24px; border-radius: 30px; font-weight: 900; font-size: 14px;
+  box-shadow: 0 4px 10px rgba(255,0,0,0.5); cursor: pointer; text-transform: uppercase;
+  letter-spacing: 1px; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  animation: fullMapPulse 1.6s infinite;
+}
+
+@keyframes fullMapPulse {
+  0% { box-shadow: 0 4px 10px rgba(255,0,0,0.5), 0 0 0 0 rgba(255,0,0,0.6); }
+  70% { box-shadow: 0 4px 10px rgba(255,0,0,0.5), 0 0 0 12px rgba(255,0,0,0); }
+  100% { box-shadow: 0 4px 10px rgba(255,0,0,0.5), 0 0 0 0 rgba(255,0,0,0); }
+}
 
 #closeMapBtn { 
   display: none; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); 
@@ -204,7 +218,7 @@ button { cursor: pointer; font-weight: bold; }
 
   <div class="map-wrapper" id="mapWrapper">
     <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
-    <button id="fullScreenBtn" onclick="openFullMap()" title="Full Screen">⛶</button>
+    <button id="fullScreenBtn" onclick="openFullMap()" title="Full Screen">🗺️ OPEN FULL MAP</button>
     <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">⌖</button>
     <div id="map"></div>
   </div>
@@ -338,9 +352,6 @@ button { cursor: pointer; font-weight: bold; }
     <button onclick="setEmployeeName()" style="background: #3b82f6; color: white; margin-top: 10px;">✏️ Change Name</button>
     <button onclick="logoutUser()" style="background: #f59e0b; color: white; margin-top: 10px;">🚪 Logout</button>
     <button onclick="closeEmployeeModal()" style="background: #ef4444; color: white; margin-top: 10px;">❌ Close</button>
-    <div style="margin:10px 0;text-align:center;font-size:12px;color:#666;font-weight:bold;">
-📱 Version : <span id="appVersion"></span>
-</div>
   </div>
 </div>
 <div id="limitModal" class="modal-overlay">
@@ -422,7 +433,6 @@ function closeFullMap() {
   setTimeout(() => { if(map) map.invalidateSize(); }, 300);
 }
 
-const APP_VERSION = "v1.0.82";
 let masterData=[];
 let currentFilteredData=[]; 
 let map = L.map('map').setView([17.95,80.82],11);
@@ -442,8 +452,7 @@ window.onload = async () => {
   let emp = localStorage.getItem("employeeName");
   if(!emp){ emp = prompt("Enter Employee Name"); if(emp){ localStorage.setItem("employeeName", emp); } }
   document.getElementById("profileBtn").innerText = (emp || "U").charAt(0).toUpperCase();
-document.getElementById("empModalName").innerText = emp || "Employee";
-document.getElementById("appVersion").innerText = APP_VERSION;
+
   const { data, error } = await supabaseClient.from("records").select("area").range(0,12000);
   if(error) return;
   const areas = [...new Set(data.map(r => r.area).filter(Boolean))];
