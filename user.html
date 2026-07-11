@@ -476,9 +476,33 @@ async function loadData(isSearch = false){
 
 const pole = document.getElementById("poleFilter").value;
 localStorage.setItem("savedPole", pole);
- if(!area && !isSearch){ alert("Please Select Area"); return; }
+
+// 🌐 5+ అక్షరాలు టైప్ చేస్తే, Area/Pole/Category పట్టించుకోకుండా మొత్తం Supabase DB లో గ్లోబల్ సెర్చ్
+const rawSearchVal = document.getElementById("searchBox").value.trim();
+const isGlobalSearch = isSearch && rawSearchVal.length >= 5;
+
+ if(!area && !isSearch && !isGlobalSearch){ alert("Please Select Area"); return; }
  
- if(!isSearch) {
+ if(isGlobalSearch) {
+   const { data, error } = await supabaseClient
+     .from("records")
+     .select("*")
+     .or(`scno.ilike.%${rawSearchVal}%,name.ilike.%${rawSearchVal}%,mobile_no.ilike.%${rawSearchVal}%`)
+     .range(0, 500);
+   if(error){ alert(error.message); return; }
+   masterData = (data || []).map(r => {
+    let demand = Number(r.current_demand || 0);
+    let arrears = Number(r.arrears || 0);
+    let total = Number(r.total_amt || 0);
+
+    if (total === 0) {
+        total = demand + arrears;
+    }
+
+    return { ...r, total_amt: total };
+});
+ }
+ else if(!isSearch) {
    let query = supabaseClient.from("records").select("*").range(0, 5000); 
    if(area){ query = query.eq("area", area); }
    
