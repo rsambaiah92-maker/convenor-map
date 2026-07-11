@@ -338,6 +338,9 @@ button { cursor: pointer; font-weight: bold; }
     <button onclick="setEmployeeName()" style="background: #3b82f6; color: white; margin-top: 10px;">✏️ Change Name</button>
     <button onclick="logoutUser()" style="background: #f59e0b; color: white; margin-top: 10px;">🚪 Logout</button>
     <button onclick="closeEmployeeModal()" style="background: #ef4444; color: white; margin-top: 10px;">❌ Close</button>
+    <div style="margin:10px 0;text-align:center;font-size:12px;color:#666;font-weight:bold;">
+📱 Version : <span id="appVersion"></span>
+</div>
   </div>
 </div>
 <div id="limitModal" class="modal-overlay">
@@ -419,6 +422,7 @@ function closeFullMap() {
   setTimeout(() => { if(map) map.invalidateSize(); }, 300);
 }
 
+const APP_VERSION = "v1.0.24";
 let masterData=[];
 let currentFilteredData=[]; 
 let map = L.map('map').setView([17.95,80.82],11);
@@ -438,7 +442,8 @@ window.onload = async () => {
   let emp = localStorage.getItem("employeeName");
   if(!emp){ emp = prompt("Enter Employee Name"); if(emp){ localStorage.setItem("employeeName", emp); } }
   document.getElementById("profileBtn").innerText = (emp || "U").charAt(0).toUpperCase();
-
+document.getElementById("empModalName").innerText = emp || "Employee";
+document.getElementById("appVersion").innerText = APP_VERSION;
   const { data, error } = await supabaseClient.from("records").select("area").range(0,12000);
   if(error) return;
   const areas = [...new Set(data.map(r => r.area).filter(Boolean))];
