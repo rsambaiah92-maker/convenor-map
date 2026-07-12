@@ -112,6 +112,27 @@ button { cursor: pointer; font-weight: bold; }
   letter-spacing: 1px; white-space: nowrap;
 }
 
+#mapSearchFab {
+  display: none; position: absolute; bottom: 75px; right: 10px; z-index: 10001;
+  width: 44px; height: 44px; border: none; border-radius: 50%; background: #2563eb; color: white;
+  font-size: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); align-items: center; justify-content: center;
+}
+.fullMapMode #mapSearchFab { display: flex !important; }
+
+#mapSearchPopup {
+  display: none; position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+  z-index: 10005; background: white; border-radius: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  padding: 6px 10px; align-items: center; gap: 6px; width: 88%; max-width: 380px;
+}
+#mapSearchPopup.open { display: flex; }
+#mapSearchPopup input { border: none; outline: none; flex: 1; font-size: 14px; padding: 8px 6px; min-width: 0; }
+#mapSearchPopup button { border: none; background: transparent; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+
+.fullMapMode #closeMapBtn { top: 15px; }
+.fullMapMode #mapSearchPopup { top: 65px; }
+
+#mapVoiceBtn.listening { animation: fullMapPulse 1s infinite; border-radius: 50%; }
+
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 10002 !important; background: white; margin: 0 !important; padding: 0 !important; }
 .fullMapMode #map { height: 100% !important; border-radius: 0 !important; border: none !important; }
 .fullMapMode #fullScreenBtn { display: none !important; }
@@ -226,6 +247,12 @@ button { cursor: pointer; font-weight: bold; }
     <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
     <button id="fullScreenBtn" onclick="openFullMap()" title="Full Screen">🗺️ OPEN FULL MAP</button>
     <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">⌖</button>
+    <button id="mapSearchFab" onclick="toggleMapSearchPopup()" title="Search SCNO">🔍</button>
+    <div id="mapSearchPopup">
+      <input type="text" id="mapSearchInput" placeholder="🔍 SCNO / Name / Mobile వెతకండి..." oninput="onMapSearchInput()">
+      <button id="mapVoiceBtn" onclick="startMapVoiceSearch()" title="Voice Search">🎤</button>
+      <button onclick="toggleMapSearchPopup()" title="Close">✖</button>
+    </div>
     <div id="map"></div>
   </div>
 </div>
@@ -436,7 +463,65 @@ function closeFullMap() {
   const mapWrap = document.getElementById('mapWrapper');
   mapWrap.classList.remove('fullMapMode');
   document.getElementById('closeMapBtn').style.display = 'none';
+  document.getElementById('mapSearchPopup').classList.remove('open');
   setTimeout(() => { if(map) map.invalidateSize(); }, 300);
+}
+
+// 🔍 Full Map Floating Search Popup
+function toggleMapSearchPopup(){
+  const popup = document.getElementById('mapSearchPopup');
+  const willOpen = !popup.classList.contains('open');
+  popup.classList.toggle('open', willOpen);
+  if(willOpen){
+    document.getElementById('mapSearchInput').value = '';
+    setTimeout(()=>document.getElementById('mapSearchInput').focus(), 100);
+  }
+}
+
+function onMapSearchInput(){
+  const val = document.getElementById('mapSearchInput').value.trim();
+  if(val.length >= 3){ runMapSearch(val); }
+}
+
+function runMapSearch(val){
+  const lower = val.toLowerCase();
+  let targetScno = null;
+
+  if(window.scnoMarkerMap && window.scnoMarkerMap[val]){
+    targetScno = val;
+  } else {
+    const found = (currentFilteredData||[]).find(r =>
+      String(r.scno||'').toLowerCase().includes(lower) ||
+      String(r.name||'').toLowerCase().includes(lower) ||
+      String(r.mobile_no||'').includes(val)
+    );
+    if(found) targetScno = String(found.scno);
+  }
+
+  const marker = targetScno && window.scnoMarkerMap ? window.scnoMarkerMap[targetScno] : null;
+  if(marker){
+    map.flyTo(marker.getLatLng(), 18, { duration: 0.8 });
+    setTimeout(()=>{ marker.openPopup(); }, 850);
+    // ✅ Search పూర్తయ్యాక Auto Hide
+    setTimeout(()=>{ toggleMapSearchPopup(); }, 1300);
+  }
+}
+
+function startMapVoiceSearch(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){ alert('⚠️ ఈ బ్రౌజర్‌లో Voice Search సపోర్ట్ లేదు'); return; }
+  const recog = new SpeechRecognition();
+  recog.lang = 'en-IN';
+  const btn = document.getElementById('mapVoiceBtn');
+  btn.classList.add('listening');
+  recog.onresult = (e) => {
+    const text = e.results[0][0].transcript.replace(/\s+/g,'');
+    document.getElementById('mapSearchInput').value = text;
+    runMapSearch(text);
+  };
+  recog.onerror = () => { btn.classList.remove('listening'); };
+  recog.onend = () => { btn.classList.remove('listening'); };
+  recog.start();
 }
 
 let masterData=[];
@@ -587,6 +672,7 @@ const isGlobalSearch = isSearch && rawSearchVal.length >= 5;
  let html='';
  let tableHtml = ''; 
  clearMarkers();
+ window.scnoMarkerMap = {};
  
  filtered.forEach(r=>{
   const lat = cleanCoord(r.latitude);
@@ -645,6 +731,7 @@ const isGlobalSearch = isSearch && rawSearchVal.length >= 5;
      iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
    });
    const m = L.marker([lat,lng], {icon});
+   window.scnoMarkerMap[String(r.scno||"")] = m;
    m.bindTooltip(String(r.scno || "").slice(-5), { permanent: true, direction: "top", offset: [0, -25], className: "scno-label" });
    
    let uId = "pop_" + Math.random().toString(36).substr(2, 9);
