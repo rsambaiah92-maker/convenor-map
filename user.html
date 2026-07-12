@@ -133,6 +133,22 @@ button { cursor: pointer; font-weight: bold; }
 
 #mapVoiceBtn.listening { animation: fullMapPulse 1s infinite; border-radius: 50%; }
 
+#mapSearchNotFound {
+  display: none; position: absolute; top: 118px; left: 50%; transform: translateX(-50%);
+  z-index: 10005; background: #ef4444; color: white; font-weight: bold; font-size: 13px;
+  padding: 6px 16px; border-radius: 20px; box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+#mapSearchNotFound.show { display: block; }
+
+.search-highlight-ring {
+  border: 3px solid #ef4444; border-radius: 50%; background: rgba(239,68,68,0.25);
+  animation: searchHighlightPulse 1s ease-out 3;
+}
+@keyframes searchHighlightPulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
 .fullMapMode { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 10002 !important; background: white; margin: 0 !important; padding: 0 !important; }
 .fullMapMode #map { height: 100% !important; border-radius: 0 !important; border: none !important; }
 .fullMapMode #fullScreenBtn { display: none !important; }
@@ -249,10 +265,11 @@ button { cursor: pointer; font-weight: bold; }
     <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">⌖</button>
     <button id="mapSearchFab" onclick="toggleMapSearchPopup()" title="Search SCNO">🔍</button>
     <div id="mapSearchPopup">
-      <input type="text" id="mapSearchInput" placeholder="🔍 SCNO / Name / Mobile వెతకండి..." oninput="onMapSearchInput()">
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="5" id="mapSearchInput" placeholder="🔍 SCNO చివరి 5 అంకెలు..." oninput="onMapSearchInput()">
       <button id="mapVoiceBtn" onclick="startMapVoiceSearch()" title="Voice Search">🎤</button>
       <button onclick="toggleMapSearchPopup()" title="Close">✖</button>
     </div>
+    <div id="mapSearchNotFound"></div>
     <div id="map"></div>
   </div>
 </div>
@@ -474,36 +491,50 @@ function toggleMapSearchPopup(){
   popup.classList.toggle('open', willOpen);
   if(willOpen){
     document.getElementById('mapSearchInput').value = '';
+    document.getElementById('mapSearchNotFound').classList.remove('show');
     setTimeout(()=>document.getElementById('mapSearchInput').focus(), 100);
   }
 }
 
 function onMapSearchInput(){
-  const val = document.getElementById('mapSearchInput').value.trim();
-  if(val.length >= 3){ runMapSearch(val); }
+  const input = document.getElementById('mapSearchInput');
+  const digits = input.value.replace(/\D/g,'').slice(0,5);
+  input.value = digits;
+  if(digits.length === 5){ runMapSearch(digits); }
+}
+
+function showMapSearchMsg(text){
+  const el = document.getElementById('mapSearchNotFound');
+  el.textContent = text;
+  el.classList.add('show');
+  setTimeout(()=>{ el.classList.remove('show'); }, 2000);
+}
+
+function highlightMarker(marker){
+  const icon = L.divIcon({ className: '', html: '<div class="search-highlight-ring" style="width:40px;height:40px;"></div>', iconSize: [40,40], iconAnchor: [20,20] });
+  const ring = L.marker(marker.getLatLng(), { icon, interactive: false, zIndexOffset: -1000 }).addTo(map);
+  setTimeout(()=>{ map.removeLayer(ring); }, 3000);
 }
 
 function runMapSearch(val){
-  const lower = val.toLowerCase();
+  if(!val || val.length !== 5) return;
   let targetScno = null;
-
-  if(window.scnoMarkerMap && window.scnoMarkerMap[val]){
-    targetScno = val;
-  } else {
-    const found = (currentFilteredData||[]).find(r =>
-      String(r.scno||'').toLowerCase().includes(lower) ||
-      String(r.name||'').toLowerCase().includes(lower) ||
-      String(r.mobile_no||'').includes(val)
-    );
-    if(found) targetScno = String(found.scno);
+  if(window.scnoMarkerMap){
+    targetScno = Object.keys(window.scnoMarkerMap).find(k => k.slice(-5) === val);
   }
+  const marker = targetScno ? window.scnoMarkerMap[targetScno] : null;
 
-  const marker = targetScno && window.scnoMarkerMap ? window.scnoMarkerMap[targetScno] : null;
   if(marker){
     map.flyTo(marker.getLatLng(), 18, { duration: 0.8 });
-    setTimeout(()=>{ marker.openPopup(); }, 850);
+    setTimeout(()=>{
+      marker.openPopup();
+      highlightMarker(marker);
+    }, 850);
     // ✅ Search పూర్తయ్యాక Auto Hide
     setTimeout(()=>{ toggleMapSearchPopup(); }, 1300);
+  } else {
+    // ❌ కనబడలేదు
+    showMapSearchMsg('❌ కనబడలేదు');
   }
 }
 
@@ -515,11 +546,15 @@ function startMapVoiceSearch(){
   const btn = document.getElementById('mapVoiceBtn');
   btn.classList.add('listening');
   recog.onresult = (e) => {
-    const text = e.results[0][0].transcript.replace(/\s+/g,'');
-    document.getElementById('mapSearchInput').value = text;
-    runMapSearch(text);
+    const digits = e.results[0][0].transcript.replace(/\D/g,'').slice(0,5);
+    document.getElementById('mapSearchInput').value = digits;
+    if(digits.length === 5){
+      runMapSearch(digits);
+    } else {
+      showMapSearchMsg('🎤 5 అంకెలు వినబడలేదు, మళ్ళీ ప్రయత్నించండి');
+    }
   };
-  recog.onerror = () => { btn.classList.remove('listening'); };
+  recog.onerror = () => { btn.classList.remove('listening'); showMapSearchMsg('🎤 వినబడలేదు, మళ్ళీ ప్రయత్నించండి'); };
   recog.onend = () => { btn.classList.remove('listening'); };
   recog.start();
 }
