@@ -78,7 +78,7 @@ button { cursor: pointer; font-weight: bold; }
 .advanced-filters { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; }
 .advanced-filters summary { font-weight: bold; cursor: pointer; color: #334155; font-size: 15px; padding: 5px; outline: none; }
 .amount-inputs { display: flex; gap: 10px; }
-#catBox { margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: white; }
+#catBox, #poleBox { margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; background: white; }
 .cat-list { margin-top: 8px; max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .cat-list label { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 0; }
 .cat-list input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); }
@@ -207,7 +207,13 @@ button { cursor: pointer; font-weight: bold; }
           <label><input type="checkbox" value="9"> Category 9</label>
         </div>
       </details>
-      <select id="poleFilter"><option value="">📍 ALL POLES</option></select>
+      <select id="poleFilter" style="display:none;"><option value="">📍 ALL POLES</option></select>
+      <details id="poleBox">
+        <summary>📍 ALL POLES</summary>
+        <div class="cat-list" id="poleList">
+          <label><input type="checkbox" id="poleSelectAll" onchange="toggleAllPoles(this)"> ✅ Select All</label>
+        </div>
+      </details>
       <div class="amount-inputs">
         <input type="number" id="minAmount" placeholder="Min Amount (₹)" value="0">
         <input type="number" id="maxAmount" placeholder="Max Amount (₹)" value="1000000">
@@ -488,8 +494,8 @@ async function loadData(isSearch = false){
  const area=document.getElementById("areaFilter").value;
   localStorage.setItem("savedArea", area);
 
-const pole = document.getElementById("poleFilter").value;
-localStorage.setItem("savedPole", pole);
+const selectedPolesInit = [...document.querySelectorAll('#poleList input[type="checkbox"]:checked:not(#poleSelectAll)')].map(cb => cb.value);
+localStorage.setItem("savedPole", selectedPolesInit.join(","));
 
 // 🌐 5+ అక్షరాలు టైప్ చేస్తే, Area/Pole/Category పట్టించుకోకుండా మొత్తం Supabase DB లో గ్లోబల్ సెర్చ్
 const rawSearchVal = document.getElementById("searchBox").value.trim();
@@ -521,7 +527,8 @@ const isGlobalSearch = isSearch && rawSearchVal.length >= 5;
    if(area){ query = query.eq("area", area); }
    
    const selectedCats = [...document.querySelectorAll('#catBox input[type="checkbox"]:checked')].map(cb => cb.value);
-   if(pole){ query = query.ilike("pole_no", pole + "%"); }
+   const selectedPoles = [...document.querySelectorAll('#poleList input[type="checkbox"]:checked:not(#poleSelectAll)')].map(cb => cb.value);
+   if(selectedPoles.length > 0){ query = query.or(selectedPoles.map(p => `pole_no.ilike.${p}%`).join(',')); }
    if(selectedCats.length > 0){ query = query.in("cat", selectedCats); }
 
    const { data, error } = await query;
@@ -804,6 +811,8 @@ document.getElementById("areaFilter").onchange = async () => {
  
  const poleDropdown = document.getElementById("poleFilter");
  poleDropdown.innerHTML = '<option value="">📍 ALL POLES</option>'; 
+ const poleListDiv = document.getElementById("poleList");
+ poleListDiv.innerHTML = '<label><input type="checkbox" id="poleSelectAll" onchange="toggleAllPoles(this)"> ✅ Select All</label>';
  document.querySelectorAll('#catBox input[type="checkbox"]').forEach(x => x.checked = false);
 
  const selectedArea = document.getElementById("areaFilter").value;
@@ -812,8 +821,17 @@ document.getElementById("areaFilter").onchange = async () => {
  if(error) return;
 
  const poles = [...new Set(data.map(r=>{ const pole = String(r.pole_no||""); const match = pole.match(/^[A-Za-z]+/); return match ? match[0].toUpperCase() : null; }).filter(Boolean))];
- poles.forEach(p=>{ poleDropdown.innerHTML += `<option value="${p}">${p}</option>`; });
+ poles.forEach(p=>{ poleDropdown.innerHTML += `<option value="${p}">${p}</option>`; poleListDiv.innerHTML += `<label><input type="checkbox" value="${p}"> ${p}</label>`; });
+
+ const savedPoleList = (localStorage.getItem("savedPole")||"").split(",").filter(Boolean);
+ if(savedPoleList.length){
+   document.querySelectorAll('#poleList input[type="checkbox"]:not(#poleSelectAll)').forEach(cb=>{ if(savedPoleList.includes(cb.value)) cb.checked = true; });
+ }
 };
+
+function toggleAllPoles(master){
+  document.querySelectorAll('#poleList input[type="checkbox"]:not(#poleSelectAll)').forEach(cb => cb.checked = master.checked);
+}
 
 function printReport(){
 
