@@ -206,7 +206,7 @@ button { cursor: pointer; font-weight: bold; }
 </div>
 
 <div id="searchBoxWrap">
-  <input type="text" id="searchBox" placeholder="🔍 Search SCNO / Name / Mobile">
+  <input type="text" id="searchBox" placeholder="🔍 Search SCNO / UAN NO / Name">
   <button id="homeVoiceBtn" onclick="startHomeVoiceSearch()" title="Voice Search">🎤</button>
 </div>
 
@@ -657,7 +657,7 @@ const isGlobalSearch = isSearch && rawSearchVal.length >= 5;
    const { data, error } = await supabaseClient
      .from("records")
      .select("*")
-     .or(`scno.ilike.%${rawSearchVal}%,name.ilike.%${rawSearchVal}%,mobile_no.ilike.%${rawSearchVal}%`)
+     .or(`scno.ilike.%${rawSearchVal}%,name.ilike.%${rawSearchVal}%,uan_no.ilike.%${rawSearchVal}%`)
      .range(0, 500);
    if(error){ alert(error.message); return; }
    masterData = (data || []).map(r => {
@@ -707,7 +707,7 @@ const isGlobalSearch = isSearch && rawSearchVal.length >= 5;
  });
 
  if(search){
-  filtered=filtered.filter(r=> String(r.scno||"").toLowerCase().includes(search) || String(r.name||"").toLowerCase().includes(search) || String(r.mobile_no||"").toLowerCase().includes(search));
+  filtered=filtered.filter(r=> String(r.scno||"").toLowerCase().includes(search) || String(r.name||"").toLowerCase().includes(search) || String(r.uan_no||"").toLowerCase().includes(search));
  }
  // 🛑 500 Services Hard Block & Force Filter Logic 🛑
          if (filtered.length > 500) {
