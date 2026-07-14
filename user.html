@@ -91,6 +91,18 @@ button { cursor: pointer; font-weight: bold; }
 
 #myLocationBtn { position: absolute; bottom: 30px; right: 10px; z-index: 10001; width: 44px; height: 44px; border: none; border-radius: 50%; background: white; color: #3b82f6; font-size: 24px; box-shadow: 0 3px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
 
+#distanceBubble {
+  display: none; position: absolute; bottom: 82px; right: 10px; z-index: 10001;
+  padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.7);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25); white-space: nowrap;
+}
+#distanceBubble.show { display: block; }
+#distanceBubble.dist-green { color: #16a34a; }
+#distanceBubble.dist-yellow { color: #ca8a04; }
+#distanceBubble.dist-red { color: #dc2626; }
+
 #fullScreenBtn {
   position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
   width: auto; z-index: 10001; background: #ff0000; color: white; border: 2px solid #cc0000;
@@ -272,6 +284,7 @@ button { cursor: pointer; font-weight: bold; }
     <button id="closeMapBtn" onclick="closeFullMap()">❌ Close Map</button>
     <button id="fullScreenBtn" onclick="openFullMap()" title="Full Screen">🗺️ OPEN FULL MAP</button>
     <button id="myLocationBtn" onclick="showMyLocation()" title="My Location">⌖</button>
+    <div id="distanceBubble"></div>
     <button id="mapSearchFab" onclick="toggleMapSearchPopup()" title="Search SCNO">🔍</button>
     <div id="mapSearchPopup">
       <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="5" id="mapSearchInput" placeholder="🔍 SCNO చివరి 5 అంకెలు..." oninput="onMapSearchInput()">
@@ -598,6 +611,7 @@ normalLayer.addTo(map);
 L.control.layers({ "🗺 Normal": normalLayer, "🛰 Satellite": satelliteLayer }).addTo(map);
 let markersGroup = L.markerClusterGroup({ maxClusterRadius: 50 }); 
 let routingControl = null;
+let routeTargetLatLng = null;
 let myLocationMarker = null;
 let watchId = null;
 
@@ -1120,6 +1134,7 @@ function closeRemark(){
         myLocationMarker = L.marker([lat,lng], {icon: dotIcon, zIndexOffset: 1000}).addTo(map).bindPopup("📍 మీరు ఇక్కడ ఉన్నారు");
         map.setView([lat,lng], 16);
       } else { myLocationMarker.setLatLng([lat, lng]); }
+      updateDistanceBubble(lat, lng);
     }, (err)=>{ alert("Location error. Please turn on GPS."); }, { enableHighAccuracy: true });
   }
 }
@@ -1130,10 +1145,27 @@ function showRoute(lat,lng){
     const myLat = pos.coords.latitude; const myLng = pos.coords.longitude;
     if(routingControl){ map.removeControl(routingControl); }
     routingControl = L.Routing.control({ waypoints:[ L.latLng(myLat,myLng), L.latLng(lat,lng) ], routeWhileDragging: false, show: false, lineOptions: { styles: [{color: '#8b5cf6', opacity: 0.9, weight: 6}] }, createMarker: function() { return null; } }).addTo(map);
+    routeTargetLatLng = L.latLng(lat,lng);
+    updateDistanceBubble(myLat, myLng);
     showMyLocation();
     switchTab('home');
     openFullMap(); 
   });
+}
+
+// 📍 My Location బటన్ పైన Distance Bubble అప్డేట్ చేసే ఫంక్షన్ (🟢/🟡/🔴)
+function updateDistanceBubble(userLat, userLng){
+  const el = document.getElementById('distanceBubble');
+  if(!routeTargetLatLng){ el.classList.remove('show'); return; }
+  const dist = map.distance([userLat, userLng], routeTargetLatLng); // meters
+  el.classList.remove('dist-green','dist-yellow','dist-red');
+  let icon, cls;
+  if(dist < 200){ icon = '🟢'; cls = 'dist-green'; }
+  else if(dist <= 1000){ icon = '🟡'; cls = 'dist-yellow'; }
+  else { icon = '🔴'; cls = 'dist-red'; }
+  const label = dist < 1000 ? `${Math.round(dist)} m` : `${(dist/1000).toFixed(1)} km`;
+  el.textContent = `${icon} ${label}`;
+  el.classList.add(cls, 'show');
 }
 
 // 📲 వాట్సాప్ గ్రూప్ కి సమ్మరీ షేర్ చేసే ఫంక్షన్ (డైరెక్ట్ గా కార్డుల మీద ఉన్నదే వెళ్తుంది)
